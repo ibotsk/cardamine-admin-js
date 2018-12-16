@@ -9,7 +9,6 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
 import Filter from '../segments/Filter';
-import CPaginator from '../segments/CPaginator';
 
 import config from '../../config/config';
 
