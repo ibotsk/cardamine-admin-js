@@ -8,13 +8,101 @@ import config from '../../config/config';
 const PAGE_DETAIL = "/checklist/detail/";
 const EDIT_RECORD = "/chromosome-data/edit/"
 
-const tableHeader = ["ID", "Action", "Orig. identification", "Last revision", "Publ. author", "Year", "n", "2n", "Ploidy",
-    "Ploidy revised", "x revised", "Counted by", "Counted date", "N. of plants", "Note", "E/D/A", "Duplicate", "Deposited in",
-    "W4", "Country", "Latitude", "Longitude", "Loc. description"];
+const columns = [
+    {
+        dataField: 'id',
+        text: 'ID'
+    }, {
+        dataField: 'action',
+        text: 'Action'
+    }, {
+        dataField: 'originalIdentification',
+        text: 'Orig. identification'
+    },
+    {
+        dataField: "lastRevision",
+        text: "Last revision"
+    },
+    {
+        dataField: "publicationAuthor",
+        text: "Publ. author"
+    },
+    {
+        dataField: "year",
+        text: "Year"
+    },
+    {
+        dataField: "n",
+        text: "n"
+    },
+    {
+        dataField: "dn",
+        text: "2n"
+    },
+    {
+        dataField: "ploidy",
+        text: "Ploidy"
+    },
+    {
+        dataField: "ploidyRevised",
+        text: "Ploidy revised"
+    },
+    {
+        dataField: "xRevised",
+        text: "x revised"
+    },
+    {
+        dataField: "countedBy",
+        text: "Counted by"
+    },
+    {
+        dataField: "countedDate",
+        text: "Counted date"
+    },
+    {
+        dataField: "nOfPlants",
+        text: "N. of plants"
+    },
+    {
+        dataField: "note",
+        text: "Note"
+    },
+    {
+        dataField: "eda",
+        text: "E/D/A"
+    },
+    {
+        dataField: "duplicate",
+        text: "Duplicate"
+    },
+    {
+        dataField: "depositedIn",
+        text: "Deposited in"
+    },
+    {
+        dataField: "w4",
+        text: "W4"
+    },
+    {
+        dataField: "country",
+        text: "Country"
+    },
+    {
+        dataField: "latitude",
+        text: "Latitude"
+    },
+    {
+        dataField: "longitude",
+        text: "Longitude"
+    },
+    {
+        dataField: "localityDescription",
+        text: "Loc. description"
+    }
+];
 
 const formatResult = (result) => {
     return result.data.map(d => {
-        console.log(d);
         const origIdentification = d.material.reference["original-identification"];
         const latestRevision = d["latest-revision"];
         return {
@@ -59,6 +147,6 @@ const Cdata = (props) => {
 export default TabledPage({
     getAll: config.uris.chromosomeDataUri.getAll,
     getCount: config.uris.chromosomeDataUri.count,
-    tableHeader,
+    columns,
     formatResult
 })(Cdata);

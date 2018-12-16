@@ -3,9 +3,10 @@ import { Grid } from 'react-bootstrap';
 import axios from 'axios';
 import template from 'url-template';
 
+import BootstrapTable from 'react-bootstrap-table-next';
+
 import Filter from '../segments/Filter';
 import CPaginator from '../segments/CPaginator';
-import CTable from '../segments/CTable';
 
 import config from '../../config/config';
 
@@ -82,7 +83,7 @@ const TabledPage = injectedProps => WrappingComponent => {
                             numOfElementsAtEnds={config.format.numOfElementsAtEnds}
                             onHandleSelect={(activePage) => this.handlePageChange(activePage)}
                         />
-                        <CTable head={injectedProps.tableHeader} rows={this.state.records} />
+                        <BootstrapTable keyField='id' data={ this.state.records } columns={ injectedProps.columns } />
                     </Grid>
                 </WrappingComponent>
             );
