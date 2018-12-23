@@ -4,11 +4,14 @@ import CNavbar from '../segments/Navbar';
 import Cdata from './Cdata';
 
 import { Route, Switch } from 'react-router-dom';
+import Record from './CRecord';
 
 const Routing = () => {
   return (
     <Switch>
       <Route exact path="/chromosome-data" component={Cdata} />
+      <Route path="/chromosome-data/new" component={Record} />
+      <Route path="/chromosome-data/edit/:recordId" component={Record} />
     </Switch>
   );
 }

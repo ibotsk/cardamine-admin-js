@@ -54,6 +54,7 @@ export default {
     uris: {
         chromosomeDataUri: {
             getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":["counted-by", "latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
+            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["counted-by", "latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
             count: `${backendBase}/api/cdata/count?where={whereString}`
         }
     },

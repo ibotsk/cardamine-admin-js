@@ -79,7 +79,7 @@ const TabledPage = injectedProps => WrappingComponent => {
             const paginationCurrents = { page: this.state.activePage, sizePerPage: this.state.sizePerPage, totalSize: this.state.numOfRecords };
             return (
                 <WrappingComponent>
-                    <Grid id="functions">
+                    <Grid id="old-functions">
                         {/* <Filter
                             include={injectedProps.filterInclude}
                             onHandleChange={(where) => this.handleFilterChange(where)}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button, Glyphicon, Grid } from 'react-bootstrap';
 
 import TabledPage from './TabledPageParent';
 import LosName from '../segments/LosName';
@@ -6,7 +7,8 @@ import LosName from '../segments/LosName';
 import config from '../../config/config';
 
 const PAGE_DETAIL = "/checklist/detail/";
-const EDIT_RECORD = "/chromosome-data/edit/"
+const EDIT_RECORD = "/chromosome-data/edit/";
+const NEW_RECORD = "/chromosome-data/new";
 
 const columns = [
     {
@@ -107,7 +109,7 @@ const formatResult = (result) => {
         const latestRevision = d["latest-revision"];
         return {
             id: d.id,
-            action: <a className="btn btn-default btn-sm" href={`${EDIT_RECORD}${d.id}`} >Edit</a>,
+            action: <Button bsStyle="default" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
             originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} nomen={origIdentification} format='plain' /></a> : "",
             lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} nomen={latestRevision["list-of-species"]} format='plain' /></a> : "",
             publicationAuthor: d.material.reference.literature ? d.material.reference.literature.paperAuthor : "",
@@ -137,6 +139,9 @@ const Cdata = (props) => {
 
     return (
         <div id='chromosome-data'>
+            <Grid id="functions">
+                <Button bsStyle="success" href={NEW_RECORD}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+            </Grid>
             <h2>Chromosome data</h2>
             {props.children}
         </div>
