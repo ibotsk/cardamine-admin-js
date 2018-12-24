@@ -4,6 +4,8 @@ import { Button, Glyphicon, Grid } from 'react-bootstrap';
 import TabledPage from './TabledPageParent';
 import LosName from '../segments/LosName';
 
+import { textFilter } from 'react-bootstrap-table2-filter';
+
 import config from '../../config/config';
 
 const PAGE_DETAIL = "/checklist/detail/";
@@ -13,7 +15,8 @@ const NEW_RECORD = "/chromosome-data/new";
 const columns = [
     {
         dataField: 'id',
-        text: 'ID'
+        text: 'ID',
+        filter: textFilter()
     }, {
         dataField: 'action',
         text: 'Action'
