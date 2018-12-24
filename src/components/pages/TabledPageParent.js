@@ -3,11 +3,22 @@ import { Grid } from 'react-bootstrap';
 import axios from 'axios';
 import template from 'url-template';
 
-import Filter from '../segments/Filter';
-import CPaginator from '../segments/CPaginator';
-import CTable from '../segments/CTable';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
+import BootstrapTable from 'react-bootstrap-table-next';
+import filterFactory from 'react-bootstrap-table2-filter';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+
+import helper from '../../utils/helper';
 import config from '../../config/config';
+
+const customTotal = (from, to, size) => (
+    <span className="react-bootstrap-table-pagination-total">
+        Showing {from} to {to} of {size} Results
+    </span>
+);
+const paginationOptions = config.pagination;
+paginationOptions.paginationTotalRenderer = customTotal;
 
 const TabledPage = injectedProps => WrappingComponent => {
 
@@ -22,29 +33,24 @@ const TabledPage = injectedProps => WrappingComponent => {
                 records: [],
                 numOfRecords: 0,
                 activePage: 1,
+                sizePerPage: paginationOptions.sizePerPageList[0].value,
                 where: {}
             }
         }
 
-        handlePageChange(activePage) {
-            this.handleChange(activePage, this.state.where);
-            this.setState({ activePage: activePage });
+        handleTableChange(type, { page, sizePerPage, filters }) {
+            const where = helper.makeWhere(filters); //TODO make function to take into account existing where
+            this.handleChange(page, sizePerPage, where);
+            this.setState({ activePage: page, where: where });
         }
 
-        handleFilterChange(where) {
-            this.handleChange(this.state.activePage, where);
-            this.setState({ where: where });
-        }
-
-        handleChange(activePage, where) {
+        handleChange(page, sizePerPage, where) {
             return this.fetchCount(where).then(() => {
-                const page = Math.max(activePage - 1, 0);
-                const limit = config.format.recordsPerPage;
-                const offset = page * limit;
-                return this.fetchRecords(where, offset, limit);
+                const offset = (page - 1) * sizePerPage;
+                return this.fetchRecords(where, offset, sizePerPage);
             }).then(response => {
-                const noms = injectedProps.formatResult(response);
-                this.setState({ records: noms });
+                const records = injectedProps.formatResult(response);
+                this.setState({ records: records });
             }).catch(e => console.error(e));
         }
 
@@ -60,29 +66,23 @@ const TabledPage = injectedProps => WrappingComponent => {
         }
 
         componentDidMount() {
-            this.handleChange(this.state.activePage, this.state.where);
+            this.handleChange(this.state.activePage, paginationOptions.sizePerPageList[0].value, this.state.where);
         }
 
         render() {
+            const paginationCurrents = { page: this.state.activePage, sizePerPage: this.state.sizePerPage, totalSize: this.state.numOfRecords };
             return (
                 <WrappingComponent>
-                    <Grid id="functions">
-                        <Filter
-                            include={injectedProps.filterInclude}
-                            onHandleChange={(where) => this.handleFilterChange(where)}
-                            searchFields={injectedProps.searchFields}
-                            searchFieldMinLength={config.format.searchFieldMinLength}
-                        />
-                    </Grid>
                     <Grid fluid={true}>
-                        <CPaginator
-                            totalItems={this.state.numOfRecords}
-                            recordsPerPage={config.format.recordsPerPage}
-                            displayRange={config.format.rangeDisplayed}
-                            numOfElementsAtEnds={config.format.numOfElementsAtEnds}
-                            onHandleSelect={(activePage) => this.handlePageChange(activePage)}
+                        <BootstrapTable hover striped condensed
+                            remote={{ filter: true }}
+                            keyField='id'
+                            data={this.state.records}
+                            columns={injectedProps.columns}
+                            filter={ filterFactory() }
+                            onTableChange={(type, opts) => this.handleTableChange(type, opts)}
+                            pagination={paginationFactory({ ...paginationOptions, ...paginationCurrents })}
                         />
-                        <CTable head={injectedProps.tableHeader} rows={this.state.records} />
                     </Grid>
                 </WrappingComponent>
             );
