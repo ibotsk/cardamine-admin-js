@@ -19,7 +19,7 @@ const sl = (string) => {
     const sl = config_name.sl;
     if (string && string.includes(sl)) {
         let modString = string.replace(sl, '');
-        return { s: modString, hasSl: true};
+        return { s: modString, hasSl: true };
     }
     return { s: string, hasSl: false };
 }
@@ -132,9 +132,28 @@ const listOfSpieces = (nomenclature, options = {}) => {
     if (opts.isTribus) {
         name.push(Plain(nomenclature.tribus));
     }
-    
+
     return name;
 
 }
 
-export default { listOfSpieces };
+const makeWhere = (filters) => {
+    const whereList = [];
+    const keys = Object.keys(filters);
+    for (const key of keys) {
+        whereList.push({ 
+            [key]: { 
+                like: `%${filters[key].filterVal}%` 
+            } 
+        });
+    }
+    if (whereList.length > 1) {
+        return {'OR': whereList};
+    }
+    if (whereList.length === 1) {
+        return whereList[0];
+    }
+    return {};
+}
+
+export default { listOfSpieces, makeWhere };

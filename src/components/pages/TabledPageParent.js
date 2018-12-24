@@ -6,12 +6,11 @@ import template from 'url-template';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 import BootstrapTable from 'react-bootstrap-table-next';
+import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
-// import Filter from '../segments/Filter';
-
+import helper from '../../utils/helper';
 import config from '../../config/config';
-
 
 const customTotal = (from, to, size) => (
     <span className="react-bootstrap-table-pagination-total">
@@ -39,24 +38,19 @@ const TabledPage = injectedProps => WrappingComponent => {
             }
         }
 
-        handleTableChange(type, { page, sizePerPage }) {
-            this.handleChange(page, sizePerPage, this.state.where);
-            this.setState({ activePage: page });
+        handleTableChange(type, { page, sizePerPage, filters }) {
+            const where = helper.makeWhere(filters); //TODO make function to take into account existing where
+            this.handleChange(page, sizePerPage, where);
+            this.setState({ activePage: page, where: where });
         }
-
-        // handleFilterChange(where) {
-        //     this.handleChange(this.state.activePage, where);
-        //     this.setState({ where: where });
-        // }
 
         handleChange(page, sizePerPage, where) {
             return this.fetchCount(where).then(() => {
-                // const page = Math.max(activePage - 1, 0);
                 const offset = (page - 1) * sizePerPage;
                 return this.fetchRecords(where, offset, sizePerPage);
             }).then(response => {
-                const noms = injectedProps.formatResult(response);
-                this.setState({ records: noms });
+                const records = injectedProps.formatResult(response);
+                this.setState({ records: records });
             }).catch(e => console.error(e));
         }
 
@@ -79,20 +73,13 @@ const TabledPage = injectedProps => WrappingComponent => {
             const paginationCurrents = { page: this.state.activePage, sizePerPage: this.state.sizePerPage, totalSize: this.state.numOfRecords };
             return (
                 <WrappingComponent>
-                    <Grid id="functions">
-                        {/* <Filter
-                            include={injectedProps.filterInclude}
-                            onHandleChange={(where) => this.handleFilterChange(where)}
-                            searchFields={injectedProps.searchFields}
-                            searchFieldMinLength={config.format.searchFieldMinLength}
-                        /> */}
-                    </Grid>
                     <Grid fluid={true}>
-                        <BootstrapTable
-                            remote
+                        <BootstrapTable hover striped condensed
+                            remote={{ filter: true }}
                             keyField='id'
                             data={this.state.records}
                             columns={injectedProps.columns}
+                            filter={ filterFactory() }
                             onTableChange={(type, opts) => this.handleTableChange(type, opts)}
                             pagination={paginationFactory({ ...paginationOptions, ...paginationCurrents })}
                         />

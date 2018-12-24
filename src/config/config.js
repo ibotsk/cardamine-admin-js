@@ -53,7 +53,50 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":["counted-by", "latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
+            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[
+                %7B
+                    "relation":"counted-by",
+                    "scope":%7B
+                        "where":%7B%7D
+                    %7D
+                %7D,
+                %7B
+                    "relation":"latest-revision",
+                    "scope":%7B
+                        "include":%7B
+                            "relation":"list-of-species",
+                            "where":%7B%7D
+                        %7D
+                    %7D 
+                %7D,
+                %7B
+                    "relation":"material",
+                    "scope":%7B
+                        "where":%7B%7D,
+                        "include":[
+                            %7B
+                                "relation":"world-l4",
+                                "scope":%7B
+                                    "where":%7B%7D
+                                %7D
+                            %7D,
+                            %7B
+                                "relation":"reference",
+                                "scope":%7B
+                                    "include":[
+                                        %7B
+                                            "relation":"literature"
+                                        %7D,
+                                        %7B
+                                            "relation":"original-identification"
+                                        %7D
+                                    ]
+                                %7D
+                            %7D
+                        ]
+                    %7D
+                %7D
+            ]%7D`,
             count: `${backendBase}/api/cdata/count?where={whereString}`
         }
     },
