@@ -143,9 +143,11 @@ const Cdata = (props) => {
     return (
         <div id='chromosome-data'>
             <Grid id="functions">
-                <Button bsStyle="success" href={NEW_RECORD}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                <div id="functions">
+                    <Button bsStyle="success" href={NEW_RECORD}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                </div>
+                <h2>Chromosome data</h2>
             </Grid>
-            <h2>Chromosome data</h2>
             {props.children}
         </div>
     )

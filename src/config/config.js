@@ -53,7 +53,7 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["counted-by", "latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
+            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
             getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[
                 %7B
                     "relation":"counted-by",
@@ -99,6 +99,12 @@ export default {
                 %7D
             ]%7D`,
             count: `${backendBase}/api/cdata/count?where={whereString}`
+        },
+        personsUri: {
+            getAllUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
+        },
+        worldl4Uri: {
+            getAllWorldsUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
         }
     },
 

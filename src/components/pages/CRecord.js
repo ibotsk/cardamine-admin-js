@@ -5,10 +5,14 @@ import {
     Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid
 } from 'react-bootstrap';
 
+import { Typeahead } from 'react-bootstrap-typeahead';
+
 import axios from 'axios';
 import template from 'url-template';
 
 import config from '../../config/config';
+
+const SELECTED = (prop) => `${prop}Selected`;
 
 class Record extends Component {
 
@@ -16,42 +20,116 @@ class Record extends Component {
         super(props);
 
         this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getById);
+        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllUri);
+        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWorldsUri);
         this.state = {
             chromrecord: {},
             material: {},
             reference: {},
-            literature: {}
+            literature: {},
+            persons: [],
+            world4s: []
         };
     }
 
-    componentDidMount() {
+    getChromosomeRecord = async () => {
         const recordId = this.props.match.params.recordId;
         if (recordId) {
             const getCdataByIdUri = this.getByIdUri.expand({ id: recordId });
-            axios.get(getCdataByIdUri).then(response => {
-                const cdata = response.data;
-                const mat = cdata.material;
-                const ref = mat.reference;
-                const lit = ref.literature;
+            const response = await axios.get(getCdataByIdUri); // get chromosome record
 
-                delete cdata.material;
-                delete mat.reference;
-                delete ref.literature;
+            const cdata = response.data;
+            const mat = cdata.material;
+            const ref = mat.reference;
+            const lit = ref.literature;
 
-                this.setState({
-                    chromrecord: cdata,
-                    material: mat,
-                    reference: ref,
-                    literature: lit
-                });
-            }).catch(e => console.error(e));
+            delete cdata.material;
+            delete mat.reference;
+            delete ref.literature;
+
+            this.setState({
+                chromrecord: cdata,
+                material: mat,
+                reference: ref,
+                literature: lit
+            });
         }
     }
 
-    onChange = (e, objName) => {
+    getPersons = async () => {
+        const response = await axios.get(this.getAllPersonsUri.expand());  // get all persons
+
+        const persons = response.data.map(p => ({ id: p.id, label: p.persName, countedByText: p.persName, collectedByText: p.persName }));
+        const countedByInitial = persons.find(p => p.id === this.state.chromrecord.countedBy);
+        const collectedByInitial = persons.find(p => p.id === this.state.material.collectedBy);
+        const identifiedByInitial = persons.find(p => p.id === this.state.material.identifiedBy);
+        const checkedByInitial = persons.find(p => p.id === this.state.material.checkedBy);
+
+        this.setState({
+            persons,
+            countedBySelected: countedByInitial ? [countedByInitial] : null,
+            collectedBySelected: collectedByInitial ? [collectedByInitial] : null,
+            identifiedBySelected: identifiedByInitial ? [identifiedByInitial] : null,
+            checkedBySelected: checkedByInitial ? [checkedByInitial] : null
+        });
+    }
+
+    getWorld4s = async () => {
+        const response = await axios.get(this.getAllWorld4sUri.expand()); // get all world4s
+
+        const world4s = response.data.map(w => ({ id: w.id, label: w.description, idWorld3: w.idParent }));
+
+        const world4Initial = world4s.find(w => w.id === this.state.material.idWorld4);
+
+        this.setState({
+            world4s,
+            idWorld4Selected: world4Initial ? [world4Initial] : null
+        });
+    }
+
+    componentDidMount() {
+        this.getChromosomeRecord().then(() => {
+            return this.getPersons();
+        }).then(() => {
+            return this.getWorld4s();
+        }).catch(e => console.error(e));
+    }
+
+    onChangeTextInput = (e, objName) => {
         const obj = { ...this.state[objName] };
         obj[e.target.id] = e.target.value;
         this.setState({ [objName]: obj });
+    }
+
+    onChangeTypeaheadChromrecord = (selected, prop) => {
+        this.onChangeTypeahead(selected, 'chromrecord', prop);
+    }
+
+    onChangeTypeaheadMaterial = (selected, prop) => {
+        this.onChangeTypeahead(selected, 'material', prop);
+    }
+
+    onChangeTypeahead = (selected, objName, prop) => {
+        console.log(selected);
+        const obj = { ...this.state[objName] }
+
+        obj[prop] = null;
+
+        if (selected && selected.length > 0) {
+            obj[prop] = selected[0].id;
+
+            const { id, label, ...noIdLabel } = selected[0]; // loop properties except id and label and try to assign them to the obj
+            for (const p in noIdLabel) {
+                if (p in obj) {
+                    obj[p] = noIdLabel[p];
+                }
+            }
+        }
+
+        this.setState({
+            [SELECTED(prop)]: selected,
+            [objName]: obj
+        });
     }
 
     render() {
@@ -82,7 +160,7 @@ class Record extends Component {
                                     <small>(with spelling errors)</small>:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.reference.nameAsPublished || ''} onChange={e => this.onChange(e, 'reference')} placeholder="Name as published" />
+                                    <FormControl type="text" value={this.state.reference.nameAsPublished || ''} onChange={e => this.onChangeTextInput(e, 'reference')} placeholder="Name as published" />
                                 </Col>
                             </FormGroup>
                         </div>
@@ -90,7 +168,7 @@ class Record extends Component {
                             <h3>Identification history</h3>
                         </div>
                         <div id="literature">
-                            <h3>Publication</h3>
+                            <h3>Publication</h3>chromrecord
                             <FormGroup controlId="publication" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Publication:
@@ -104,7 +182,7 @@ class Record extends Component {
                                     Data published on pages:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.reference.page || ''} onChange={e => this.onChange(e, 'reference')} placeholder="Data published on pages" />
+                                    <FormControl type="text" value={this.state.reference.page || ''} onChange={e => this.onChangeTextInput(e, 'reference')} placeholder="Data published on pages" />
                                 </Col>
                             </FormGroup>
                         </div>
@@ -115,7 +193,7 @@ class Record extends Component {
                                     n:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.n || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.n || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="dn" bsSize="sm">
@@ -123,7 +201,7 @@ class Record extends Component {
                                     2n:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.dn || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.dn || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="x" bsSize="sm">
@@ -131,7 +209,7 @@ class Record extends Component {
                                     x:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text"value={this.state.chromrecord.x || ''} onChange={e => this.onChange(e, 'chromrecord')}  placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.x || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="xRevised" bsSize="sm">
@@ -139,7 +217,7 @@ class Record extends Component {
                                     x revised:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.xRevised || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.xRevised || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="ploidyLevel" bsSize="sm">
@@ -147,7 +225,7 @@ class Record extends Component {
                                     Ploidy level:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.ploidyLevel || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.ploidyLevel || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="ploidyLevelRevised" bsSize="sm">
@@ -155,15 +233,19 @@ class Record extends Component {
                                     Ploidy level revised:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.ploidyLevelRevised || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.ploidyLevelRevised || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="cd-counted-by" bsSize="sm">
+                            <FormGroup controlId="countedBy" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Counted by:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing" />
+                                    <Typeahead
+                                        options={this.state.persons}
+                                        selected={this.state.countedBySelected}
+                                        onChange={(selected) => this.onChangeTypeaheadChromrecord(selected, 'countedBy')}
+                                        placeholder="Start by typing a surname present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="countedDate" bsSize="sm">
@@ -171,7 +253,7 @@ class Record extends Component {
                                     Counted date:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.countedDate || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.countedDate || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="karyotype" bsSize="sm">
@@ -179,7 +261,7 @@ class Record extends Component {
                                     Karyotype:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.karyotype || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.karyotype || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="numberOfAnalysedPlants" bsSize="sm">
@@ -187,7 +269,7 @@ class Record extends Component {
                                     N° of analysed plants:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.numberOfAnalysedPlants || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.numberOfAnalysedPlants || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="slideNo" bsSize="sm">
@@ -195,7 +277,7 @@ class Record extends Component {
                                     Slide N°:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.slideNo || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.slideNo || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="depositedIn" bsSize="sm">
@@ -203,7 +285,7 @@ class Record extends Component {
                                     Deposited in:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.chromrecord.depositedIn || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl type="text" value={this.state.chromrecord.depositedIn || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="cd-drawing-photo-idiogram">
@@ -218,7 +300,7 @@ class Record extends Component {
                                     Note:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl componentClass="textarea" value={this.state.chromrecord.note || ''} onChange={e => this.onChange(e, 'chromrecord')} placeholder="" />
+                                    <FormControl componentClass="textarea" value={this.state.chromrecord.note || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
                         </div>
@@ -229,15 +311,19 @@ class Record extends Component {
                                     Country:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.country || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.country || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="mat-world4" bsSize="sm">
+                            <FormGroup controlId="world4" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     World 4:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing country" />
+                                    <Typeahead
+                                        options={this.state.world4s}
+                                        selected={this.state.idWorld4Selected}
+                                        onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
+                                        placeholder="Start by typing a country present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="geographicalDistrict" bsSize="sm">
@@ -245,7 +331,7 @@ class Record extends Component {
                                     Geogr. district:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.geographicalDistrict || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.geographicalDistrict || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="centralEuropeanMappingUnit" bsSize="sm">
@@ -253,7 +339,7 @@ class Record extends Component {
                                     CEMU:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.centralEuropeanMappingUnit || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.centralEuropeanMappingUnit || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="administrativeUnit" bsSize="sm">
@@ -261,7 +347,7 @@ class Record extends Component {
                                     Administr. unit:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.administrativeUnit || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.administrativeUnit || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="closestVillageTown" bsSize="sm">
@@ -269,7 +355,7 @@ class Record extends Component {
                                     Closest village:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.closestVillageTown || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.closestVillageTown || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="altitude" bsSize="sm">
@@ -277,7 +363,7 @@ class Record extends Component {
                                     Altitude:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.altitude || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.altitude || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="exposition" bsSize="sm">
@@ -285,7 +371,7 @@ class Record extends Component {
                                     Exposition:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.exposition || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.exposition || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="description" bsSize="sm">
@@ -293,15 +379,19 @@ class Record extends Component {
                                     Description:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl componentClass="textarea" value={this.state.material.description || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl componentClass="textarea" value={this.state.material.description || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="mat-collected-by" bsSize="sm">
+                            <FormGroup controlId="collectedBy" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Collected by:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing a surname present in the database" />
+                                    <Typeahead
+                                        options={this.state.persons}
+                                        selected={this.state.collectedBySelected}
+                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'collectedBy')}
+                                        placeholder="Start by typing a surname present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="collectedDate" bsSize="sm">
@@ -309,15 +399,19 @@ class Record extends Component {
                                     Collected date:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.collectedDate || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.collectedDate || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="mat-identified-by" bsSize="sm">
+                            <FormGroup controlId="identifiedBy" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Identified by:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing a surname present in the database" />
+                                    <Typeahead
+                                        options={this.state.persons}
+                                        selected={this.state.identifiedBySelected}
+                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'identifiedBy')}
+                                        placeholder="Start by typing a surname present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="voucherSpecimenNo" bsSize="sm">
@@ -325,7 +419,7 @@ class Record extends Component {
                                     Voucher specimen N°:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.voucherSpecimenNo || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.voucherSpecimenNo || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="depositedIn" bsSize="sm">
@@ -333,15 +427,19 @@ class Record extends Component {
                                     Deposited in:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.depositedIn || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.depositedIn || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="mat-checked-by" bsSize="sm">
+                            <FormGroup controlId="checkedBy" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Checked by:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing a surname present in the database" />
+                                    <Typeahead
+                                        options={this.state.persons}
+                                        selected={this.state.checkedBySelected}
+                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'checkedBy')}
+                                        placeholder="Start by typing a surname present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="coordinatesLat" bsSize="sm">
@@ -349,7 +447,7 @@ class Record extends Component {
                                     Lat. orig:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.coordinatesLat || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.coordinatesLat || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="coordinatesLon" bsSize="sm">
@@ -357,7 +455,7 @@ class Record extends Component {
                                     Lon. orig:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.coordinatesLon || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.coordinatesLon || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="coordinatesGeorefLat" bsSize="sm">
@@ -365,7 +463,7 @@ class Record extends Component {
                                     Lat. georef:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.coordinatesGeorefLat || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.coordinatesGeorefLat || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="coordinatesGeorefLon" bsSize="sm">
@@ -373,7 +471,7 @@ class Record extends Component {
                                     Lon. georef:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={this.state.material.coordinatesGeorefLon || ''} onChange={e => this.onChange(e, 'material')} placeholder="" />
+                                    <FormControl type="text" value={this.state.material.coordinatesGeorefLon || ''} onChange={e => this.onChangeTextInput(e, 'material')} placeholder="" />
                                 </Col>
                             </FormGroup>
                         </div>

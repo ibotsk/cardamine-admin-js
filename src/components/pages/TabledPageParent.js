@@ -79,7 +79,7 @@ const TabledPage = injectedProps => WrappingComponent => {
                             keyField='id'
                             data={this.state.records}
                             columns={injectedProps.columns}
-                            filter={ filterFactory() }
+                            filter={filterFactory()}
                             onTableChange={(type, opts) => this.handleTableChange(type, opts)}
                             pagination={paginationFactory({ ...paginationOptions, ...paginationCurrents })}
                         />
