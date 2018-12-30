@@ -11,6 +11,7 @@ import axios from 'axios';
 import template from 'url-template';
 
 import config from '../../config/config';
+import helper from '../../utils/helper';
 
 const SELECTED = (prop) => `${prop}Selected`;
 
@@ -20,15 +21,16 @@ class Record extends Component {
         super(props);
 
         this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getById);
+        this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllUri);
         this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllUri);
-        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWorldsUri);
+        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllUri);
         this.state = {
             chromrecord: {},
             material: {},
             reference: {},
-            literature: {},
             persons: [],
-            world4s: []
+            world4s: [],
+            literatures: []
         };
     }
 
@@ -41,17 +43,14 @@ class Record extends Component {
             const cdata = response.data;
             const mat = cdata.material;
             const ref = mat.reference;
-            const lit = ref.literature;
 
             delete cdata.material;
             delete mat.reference;
-            delete ref.literature;
 
             this.setState({
                 chromrecord: cdata,
                 material: mat,
-                reference: ref,
-                literature: lit
+                reference: ref
             });
         }
     }
@@ -78,7 +77,6 @@ class Record extends Component {
         const response = await axios.get(this.getAllWorld4sUri.expand()); // get all world4s
 
         const world4s = response.data.map(w => ({ id: w.id, label: w.description, idWorld3: w.idParent }));
-
         const world4Initial = world4s.find(w => w.id === this.state.material.idWorld4);
 
         this.setState({
@@ -87,17 +85,53 @@ class Record extends Component {
         });
     }
 
+    getLiteratures = async () => {
+        const response = await axios.get(this.getAllLiteraturesUri.expand()); // get all publications
+
+        const literatures = response.data.map(l => ({
+            id: l.id, label: helper.parsePublication({
+                type: l.displayType,
+                authors: l.paperAuthor,
+                title: l.paperTitle,
+                series: l.seriesSource,
+                volume: l.volume,
+                issue: l.issue,
+                publisher: l.publisher,
+                editor: l.editor,
+                year: l.year,
+                pages: l.pages,
+                journal: l.journalName
+            })
+        }));
+        const literatureInitial = literatures.find(l => l.id === this.state.reference.idLiterature);
+
+        this.setState({
+            literatures,
+            idLiteratureSelected: literatureInitial ? [literatureInitial] : null
+        });
+    }
+
     componentDidMount() {
-        this.getChromosomeRecord().then(() => {
-            return this.getPersons();
-        }).then(() => {
-            return this.getWorld4s();
-        }).catch(e => console.error(e));
+        this.getChromosomeRecord()
+            .then(() => this.getPersons())
+            .then(() => this.getWorld4s())
+            .then(() => this.getLiteratures())
+            .catch(e => console.error(e));
     }
 
     onChangeTextInput = (e, objName) => {
+        // id is set from FormGroup controlId
+        this.onChageInput(objName, e.target.id, e.target.value);
+    }
+
+    onChangeCheckbox = (e, objName) => {
+        console.log(e.target);
+        this.onChageInput(objName, e.target.name, e.target.checked);
+    }
+
+    onChageInput = (objName, property, value) => {
         const obj = { ...this.state[objName] };
-        obj[e.target.id] = e.target.value;
+        obj[property] = value;
         this.setState({ [objName]: obj });
     }
 
@@ -110,7 +144,6 @@ class Record extends Component {
     }
 
     onChangeTypeahead = (selected, objName, prop) => {
-        console.log(selected);
         const obj = { ...this.state[objName] }
 
         obj[prop] = null;
@@ -118,7 +151,7 @@ class Record extends Component {
         if (selected && selected.length > 0) {
             obj[prop] = selected[0].id;
 
-            const { id, label, ...noIdLabel } = selected[0]; // loop properties except id and label and try to assign them to the obj
+            const { id, label, ...noIdLabel } = selected[0]; // loop properties in selected (except id and label) and try to assign them to the obj
             for (const p in noIdLabel) {
                 if (p in obj) {
                     obj[p] = noIdLabel[p];
@@ -133,11 +166,10 @@ class Record extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div id="chromosome-record">
                 <Grid>
-                    <h2>Chromosome record</h2>
+                    <h2>Chromosome record {this.state.chromrecord.id ? <small>({this.state.chromrecord.id})</small> : ''}</h2>
                     <Form horizontal>
                         <div id="original-identification">
                             {
@@ -168,13 +200,17 @@ class Record extends Component {
                             <h3>Identification history</h3>
                         </div>
                         <div id="literature">
-                            <h3>Publication</h3>chromrecord
+                            <h3>Publication</h3>
                             <FormGroup controlId="publication" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Publication:
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing a publication title present in the database" />
+                                    <Typeahead
+                                        options={this.state.literatures}
+                                        selected={this.state.idLiteratureSelected}
+                                        onChange={(selected) => this.onChangeTypeahead(selected, 'literature', 'idLiterature')}
+                                        placeholder="Start by typing a publication in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="page" bsSize="sm">
@@ -288,11 +324,11 @@ class Record extends Component {
                                     <FormControl type="text" value={this.state.chromrecord.depositedIn || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
                                 </Col>
                             </FormGroup>
-                            <FormGroup controlId="cd-drawing-photo-idiogram">
+                            <FormGroup>
                                 <Col sm={10} smOffset={2}>
-                                    <Checkbox inline>Drawing</Checkbox>
-                                    <Checkbox inline>Photo</Checkbox>
-                                    <Checkbox inline>Idiogram</Checkbox>
+                                    <Checkbox inline name="drawing" value={this.state.chromrecord.drawing || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Drawing</Checkbox>
+                                    <Checkbox inline name="photo" value={this.state.chromrecord.photo || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Photo</Checkbox>
+                                    <Checkbox inline name="idiogram" value={this.state.chromrecord.idiogram || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Idiogram</Checkbox>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="note" bsSize="sm">

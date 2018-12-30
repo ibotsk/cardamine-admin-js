@@ -17,13 +17,26 @@ export default {
             tribus: 'tribus',
             hybrid: 'x',
         },
-        filter: {
-            ntypesGroup: []
+        publication: {
+            paper: "{{authors}} ({{year}}) {{title}}. {{journal}}, {{volume}}{{issue}}:{{pages}}",
+            book: "{{authors}} ({{year}}) {{title}}. {{publisher}}. {{pages}}",
+            manuscript: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
+            chapter: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
+            report: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}"
         }
     },
     format: {
         formatted: "formatted",
         plain: "plain"
+    },
+    mappings: {
+        displayType: {
+            1: "paper",
+            2: "book",
+            3: "manuscript",
+            4: "chapter",
+            5: "report"
+        }
     },
     pagination: {
         paginationSize: 7,
@@ -53,7 +66,7 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["latest-revision", %7B"material": ["world-l4", %7B"reference": ["literature", "original-identification"]%7D]%7D]%7D`,
+            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["latest-revision", %7B"material": ["world-l4", %7B"reference": ["original-identification"]%7D]%7D]%7D`,
             getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[
                 %7B
                     "relation":"counted-by",
@@ -100,11 +113,14 @@ export default {
             ]%7D`,
             count: `${backendBase}/api/cdata/count?where={whereString}`
         },
+        literaturesUri: {
+            getAllUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
+        },
         personsUri: {
             getAllUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
         },
         worldl4Uri: {
-            getAllWorldsUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
+            getAllUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
         }
     },
 

@@ -1,5 +1,7 @@
 import config from '../config/config';
 
+import Mustache from 'mustache';
+
 const config_name = config.nomenclature.name;
 const ff = config.format.formatted;
 const plf = config.format.plain;
@@ -137,18 +139,37 @@ const listOfSpieces = (nomenclature, options = {}) => {
 
 }
 
+const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
+
+    const typeMapping = config.mappings.displayType[type];
+    const template = config.nomenclature.publication[typeMapping];
+
+    return Mustache.render(template, {
+        authors, 
+        title, 
+        series, 
+        volume, 
+        issue: issue ? `(${issue})` : '', 
+        publisher, 
+        editor, 
+        year, 
+        pages, 
+        journal
+    });
+}
+
 const makeWhere = (filters) => {
     const whereList = [];
     const keys = Object.keys(filters);
     for (const key of keys) {
-        whereList.push({ 
-            [key]: { 
-                like: `%${filters[key].filterVal}%` 
-            } 
+        whereList.push({
+            [key]: {
+                like: `%${filters[key].filterVal}%`
+            }
         });
     }
     if (whereList.length > 1) {
-        return {'OR': whereList};
+        return { 'OR': whereList };
     }
     if (whereList.length === 1) {
         return whereList[0];
@@ -156,4 +177,4 @@ const makeWhere = (filters) => {
     return {};
 }
 
-export default { listOfSpieces, makeWhere };
+export default { listOfSpieces, makeWhere, parsePublication };
