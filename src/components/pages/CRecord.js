@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import {
     Col,
-    Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid
+    Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid, ListGroup, ListGroupItem
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -22,12 +22,16 @@ class Record extends Component {
 
         this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getById);
         this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllUri);
+        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllUri);
         this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllUri);
         this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllUri);
+
         this.state = {
             chromrecord: {},
             material: {},
             reference: {},
+            listOfSpecies: [],
+            histories: [],
             persons: [],
             world4s: [],
             literatures: []
@@ -43,14 +47,17 @@ class Record extends Component {
             const cdata = response.data;
             const mat = cdata.material;
             const ref = mat.reference;
+            const hist = cdata.histories;
 
             delete cdata.material;
+            delete cdata.histories;
             delete mat.reference;
 
             this.setState({
                 chromrecord: cdata,
                 material: mat,
-                reference: ref
+                reference: ref,
+                histories: hist
             });
         }
     }
@@ -89,7 +96,8 @@ class Record extends Component {
         const response = await axios.get(this.getAllLiteraturesUri.expand()); // get all publications
 
         const literatures = response.data.map(l => ({
-            id: l.id, label: helper.parsePublication({
+            id: l.id,
+            label: helper.parsePublication({
                 type: l.displayType,
                 authors: l.paperAuthor,
                 title: l.paperTitle,
@@ -111,11 +119,28 @@ class Record extends Component {
         });
     }
 
+    getSpecies = async () => {
+        const response = await axios.get(this.getAllListOfSpeciesUri.expand());
+
+        const listOfSpecies = response.data.map(l => ({
+            id: l.id,
+            label: helper.listOfSpeciesString(l)
+        }));
+
+        const originalIdentificationInitial = listOfSpecies.find(l => l.id === this.state.reference.idStandardisedName);
+
+        this.setState({
+            listOfSpecies,
+            idStandardisedNameSelected: originalIdentificationInitial ? [originalIdentificationInitial] : null
+        });
+    }
+
     componentDidMount() {
         this.getChromosomeRecord()
             .then(() => this.getPersons())
             .then(() => this.getWorld4s())
             .then(() => this.getLiteratures())
+            .then(() => this.getSpecies())
             .catch(e => console.error(e));
     }
 
@@ -166,26 +191,14 @@ class Record extends Component {
     }
 
     render() {
+        console.log(this.state);
         return (
             <div id="chromosome-record">
                 <Grid>
                     <h2>Chromosome record {this.state.chromrecord.id ? <small>({this.state.chromrecord.id})</small> : ''}</h2>
                     <Form horizontal>
-                        <div id="original-identification">
-                            {
-                                // TODO make identification history as a list/table with editable and movable rows 
-                                // leave name as published with errors as is
-                            }
-                            <h3>Original identification</h3>
-
-                            <FormGroup controlId="reference-los" bsSize="sm">
-                                <Col componentClass={ControlLabel} sm={2}>
-                                    Name from checklist:
-                                </Col>
-                                <Col sm={10}>
-                                    <FormControl type="text" placeholder="Start by typing a name present in database" />
-                                </Col>
-                            </FormGroup>
+                        <div id="identification">
+                            <h3>Identification</h3>
                             <FormGroup controlId="nameAsPublished" bsSize="sm">
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Name as published<br />
@@ -195,9 +208,35 @@ class Record extends Component {
                                     <FormControl type="text" value={this.state.reference.nameAsPublished || ''} onChange={e => this.onChangeTextInput(e, 'reference')} placeholder="Name as published" />
                                 </Col>
                             </FormGroup>
-                        </div>
-                        <div id="identification-history">
-                            <h3>Identification history</h3>
+                            <FormGroup controlId="original-identification" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Original identification<br />
+                                    <small>(name from checklist)</small>:
+                                </Col>
+                                <Col sm={10}>
+                                    <Typeahead
+                                        options={this.state.listOfSpecies}
+                                        selected={this.state.idStandardisedNameSelected}
+                                        onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idStandardisedName')}
+                                        placeholder="Start by typing a species in the database" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Identification history - revisions<br />
+                                    <small>(names from checklist)</small>:
+                                </Col>
+                                <Col sm={10}>
+                                    {
+                                        // TODO, necakat, ze history bude obsahovat hned originalnu identifikaciu.
+                                        // 
+                                    }
+                                    <ListGroup>
+                                        <ListGroupItem>Revision 1</ListGroupItem>
+                                        <ListGroupItem>Revision</ListGroupItem>
+                                    </ListGroup>
+                                </Col>
+                            </FormGroup>
                         </div>
                         <div id="literature">
                             <h3>Publication</h3>

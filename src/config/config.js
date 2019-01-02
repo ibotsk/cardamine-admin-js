@@ -66,8 +66,8 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["latest-revision", %7B"material": ["world-l4", %7B"reference": ["original-identification"]%7D]%7D]%7D`,
-            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[
+            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["histories",%7B"material":"reference"%7D]%7D`,
+            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",
                     "scope":%7B
@@ -113,6 +113,9 @@ export default {
             ]%7D`,
             count: `${backendBase}/api/cdata/count?where={whereString}`
         },
+        listOfSpeciesUri: {
+            getAllUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`
+        },
         literaturesUri: {
             getAllUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
         },
@@ -121,7 +124,7 @@ export default {
         },
         worldl4Uri: {
             getAllUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
-        }
+        },
     },
 
     logging: {

@@ -16,7 +16,8 @@ const columns = [
     {
         dataField: 'id',
         text: 'ID',
-        filter: textFilter()
+        filter: textFilter(),
+        headerStyle: { width: '80px' }
     }, {
         dataField: 'action',
         text: 'Action'
@@ -113,8 +114,8 @@ const formatResult = (result) => {
         return {
             id: d.id,
             action: <Button bsStyle="default" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
-            originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} nomen={origIdentification} format='plain' /></a> : "",
-            lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} nomen={latestRevision["list-of-species"]} format='plain' /></a> : "",
+            originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></a> : "",
+            lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></a> : "",
             publicationAuthor: d.material.reference.literature ? d.material.reference.literature.paperAuthor : "",
             year: d.material.reference.literature ? d.material.reference.literature.year : "",
             n: d.n,
