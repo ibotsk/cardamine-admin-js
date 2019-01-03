@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import {
-    Col,
-    Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid, ListGroup, ListGroupItem
+    Col, Row,
+    Button, Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -10,8 +10,27 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import axios from 'axios';
 import template from 'url-template';
 
+import BootstrapTable from 'react-bootstrap-table-next';
+
 import config from '../../config/config';
 import helper from '../../utils/helper';
+import LosName from '../segments/LosName';
+
+const revisionsColumns = [
+    {
+        dataField: 'id',
+        text: 'Name',
+        formatter: (cell, row, rowIndex, formatExtraData) => {
+            return (
+                <LosName data={row['list-of-species']} />
+            );
+        }
+    },
+    {
+        dataField: 'hDate',
+        text: 'Date'
+    }
+]
 
 const SELECTED = (prop) => `${prop}Selected`;
 
@@ -150,7 +169,6 @@ class Record extends Component {
     }
 
     onChangeCheckbox = (e, objName) => {
-        console.log(e.target);
         this.onChageInput(objName, e.target.name, e.target.checked);
     }
 
@@ -190,6 +208,10 @@ class Record extends Component {
         });
     }
 
+    handleSave = () => {
+        console.log("save clicked");
+    }
+
     render() {
         console.log(this.state);
         return (
@@ -227,14 +249,11 @@ class Record extends Component {
                                     <small>(names from checklist)</small>:
                                 </Col>
                                 <Col sm={10}>
-                                    {
-                                        // TODO, necakat, ze history bude obsahovat hned originalnu identifikaciu.
-                                        // 
-                                    }
-                                    <ListGroup>
-                                        <ListGroupItem>Revision 1</ListGroupItem>
-                                        <ListGroupItem>Revision</ListGroupItem>
-                                    </ListGroup>
+                                    <BootstrapTable condensed
+                                        keyField='id'
+                                        data={this.state.histories}
+                                        columns={revisionsColumns}
+                                    />
                                 </Col>
                             </FormGroup>
                         </div>
@@ -551,6 +570,14 @@ class Record extends Component {
                             </FormGroup>
                         </div>
                     </Form>
+                    <Row>
+                        <Col sm={5} smOffset={2}>
+                            <Button bsStyle="default" onClick={() => {}} >Cancel</Button>
+                        </Col>
+                        <Col sm={5}>
+                            <Button bsStyle="primary" onClick={() => this.handleSave()} >Save</Button>
+                        </Col>
+                    </Row>
                 </Grid>
             </div>
         );

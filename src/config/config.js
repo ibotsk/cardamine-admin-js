@@ -66,7 +66,7 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":["histories",%7B"material":"reference"%7D]%7D`,
+            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
             getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",

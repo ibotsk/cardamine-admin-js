@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import CNavbar from '../segments/Navbar';
+import Footer from '../segments/Footer';
 
 import Cdata from './Cdata';
 
@@ -22,6 +23,7 @@ class App extends Component {
       <React.Fragment>
         <CNavbar />
         <Routing />
+        <Footer />
       </React.Fragment>
     );
   }

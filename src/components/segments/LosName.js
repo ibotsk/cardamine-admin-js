@@ -8,7 +8,9 @@ const LosName = (props) => {
         return '';
     }
 
-    return helper.listOfSpeciesForComponent(name, props.format);
+    const format = props.format || 'plain';
+
+    return helper.listOfSpeciesForComponent(name, format);
 
 }
 
