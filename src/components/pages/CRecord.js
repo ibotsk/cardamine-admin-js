@@ -173,6 +173,13 @@ class Record extends Component {
         });
     }
 
+    getLists = async () => {
+        await this.getPersons();
+        await this.getWorld4s();
+        await this.getLiteratures();
+        await this.getSpecies();
+    }
+
     showModal = (prop) => {
         const modals = this.state.modals;
         modals[prop] = true;
@@ -185,15 +192,16 @@ class Record extends Component {
             modals[m] = false;
         }
         this.setState({ modals });
+        this.getLists();
     }
 
     componentDidMount() {
         this.getChromosomeRecord()
-            .then(() => this.getPersons())
-            .then(() => this.getWorld4s())
-            .then(() => this.getLiteratures())
-            .then(() => this.getSpecies())
-            .catch(e => console.error(e));
+            .then(this.getLists())
+            .catch(e => {
+                console.error(e)
+                throw e;
+            });
     }
 
     onChangeTextInput = (e, objName) => {
