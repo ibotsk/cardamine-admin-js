@@ -107,8 +107,8 @@ const columns = [
     }
 ];
 
-const formatResult = (result) => {
-    return result.data.map(d => {
+const formatResult = (data) => {
+    return data.map(d => {
         const origIdentification = d.material.reference["original-identification"];
         const latestRevision = d["latest-revision"];
         return {
@@ -156,8 +156,8 @@ const Cdata = (props) => {
 }
 
 export default TabledPage({
-    getAll: config.uris.chromosomeDataUri.getAll,
-    getCount: config.uris.chromosomeDataUri.count,
+    getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
+    getCount: config.uris.chromosomeDataUri.countUri,
     columns,
     formatResult
 })(Cdata);

@@ -32,6 +32,7 @@ const revisionsColumns = [
     }
 ]
 
+const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
 
 class Record extends Component {
@@ -39,18 +40,18 @@ class Record extends Component {
     constructor(props) {
         super(props);
 
-        this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getById);
-        this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllUri);
-        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllUri);
-        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllUri);
-        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllUri);
+        this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getByIdUri);
+        this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllWFilterUri);
+        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWFilterUri);
+        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllWFilterUri);
+        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWFilterUri);
 
         this.state = {
-            chromrecord: {},
-            material: {},
-            reference: {},
+            chromrecord: {}, //to save
+            material: {}, //to save
+            reference: {}, //to save
+            histories: [], //to save - not persisted yet
             listOfSpecies: [],
-            histories: [],
             persons: [],
             world4s: [],
             literatures: []
@@ -165,14 +166,14 @@ class Record extends Component {
 
     onChangeTextInput = (e, objName) => {
         // id is set from FormGroup controlId
-        this.onChageInput(objName, e.target.id, e.target.value);
+        this.onChangeInput(objName, e.target.id, e.target.value);
     }
 
     onChangeCheckbox = (e, objName) => {
-        this.onChageInput(objName, e.target.name, e.target.checked);
+        this.onChangeInput(objName, e.target.name, e.target.checked);
     }
 
-    onChageInput = (objName, property, value) => {
+    onChangeInput = (objName, property, value) => {
         const obj = { ...this.state[objName] };
         obj[property] = value;
         this.setState({ [objName]: obj });
@@ -208,17 +209,27 @@ class Record extends Component {
         });
     }
 
-    handleSave = () => {
-        console.log("save clicked");
+    submitForm = (e) => {
+        const cdataUri = template.parse(config.uris.chromosomeDataUri.baseUri).expand();
+        const materialUri = template.parse(config.uris.materialUri.baseUri).expand();
+        const referenceUri = template.parse(config.uris.referenceUri.baseUri).expand();
+
+        axios.put(cdataUri, this.state.chromrecord) //upsert cdata
+            .then(response => {
+                const body = { ...this.state.material, idCdata: response.data.id };
+                return axios.put(materialUri, body); //upsert material
+            }).then(response => {
+                const body = { ...this.state.reference, idMaterial: response.data.id };
+                return axios.put(referenceUri, body); //upsert reference
+            }).catch(e => console.log(e));
     }
 
     render() {
-        console.log(this.state);
         return (
             <div id="chromosome-record">
                 <Grid>
                     <h2>Chromosome record {this.state.chromrecord.id ? <small>({this.state.chromrecord.id})</small> : ''}</h2>
-                    <Form horizontal>
+                    <Form horizontal onSubmit={(e) => this.submitForm(e)} action={CHROM_DATA_LIST_URI}>
                         <div id="identification">
                             <h3>Identification</h3>
                             <FormGroup controlId="nameAsPublished" bsSize="sm">
@@ -267,7 +278,7 @@ class Record extends Component {
                                     <Typeahead
                                         options={this.state.literatures}
                                         selected={this.state.idLiteratureSelected}
-                                        onChange={(selected) => this.onChangeTypeahead(selected, 'literature', 'idLiterature')}
+                                        onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idLiterature')}
                                         placeholder="Start by typing a publication in the database" />
                                 </Col>
                             </FormGroup>
@@ -569,15 +580,15 @@ class Record extends Component {
                                 </Col>
                             </FormGroup>
                         </div>
+                        <Row>
+                            <Col sm={5} smOffset={2}>
+                                <Button bsStyle="default" href={CHROM_DATA_LIST_URI} >Cancel</Button>
+                            </Col>
+                            <Col sm={5}>
+                                <Button bsStyle="primary" type='submit' >Save</Button>
+                            </Col>
+                        </Row>
                     </Form>
-                    <Row>
-                        <Col sm={5} smOffset={2}>
-                            <Button bsStyle="default" onClick={() => {}} >Cancel</Button>
-                        </Col>
-                        <Col sm={5}>
-                            <Button bsStyle="primary" onClick={() => this.handleSave()} >Save</Button>
-                        </Col>
-                    </Row>
                 </Grid>
             </div>
         );

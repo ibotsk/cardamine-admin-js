@@ -39,9 +39,9 @@ const TabledPage = injectedProps => WrappingComponent => {
         }
 
         handleTableChange(type, { page, sizePerPage, filters }) {
+            console.log({ page, sizePerPage, filters });
             const where = helper.makeWhere(filters); //TODO make function to take into account existing where
             this.handleChange(page, sizePerPage, where);
-            this.setState({ activePage: page, where: where });
         }
 
         handleChange(page, sizePerPage, where) {
@@ -49,13 +49,18 @@ const TabledPage = injectedProps => WrappingComponent => {
                 const offset = (page - 1) * sizePerPage;
                 return this.fetchRecords(where, offset, sizePerPage);
             }).then(response => {
-                const records = injectedProps.formatResult(response);
-                this.setState({ records: records });
+                const records = injectedProps.formatResult(response.data);
+                this.setState({
+                    records,
+                    activePage: page, 
+                    where: where 
+                });
             }).catch(e => console.error(e));
         }
 
         fetchRecords(where, offset, limit) {
             const uri = this.getAllUri.expand({ offset: offset, where: JSON.stringify(where), limit: limit });
+            console.log(uri);
             return axios.get(uri);
         }
 

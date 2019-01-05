@@ -66,8 +66,9 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getById: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
-            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
+            baseUri: `${backendBase}/api/cdata/`,
+            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
+            getAllWFilterUri: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",
                     "scope":%7B
@@ -111,19 +112,28 @@ export default {
                     %7D
                 %7D
             ]%7D`,
-            count: `${backendBase}/api/cdata/count?where={whereString}`
+            countUri: `${backendBase}/api/cdata/count?where={whereString}`
+        },
+        materialUri: {
+            baseUri: `${backendBase}/api/materials`
+        },
+        referenceUri: {
+            baseUri: `${backendBase}/api/references`
         },
         listOfSpeciesUri: {
-            getAllUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`
+            baseUri: `${backendBase}/api/list-of-species`,
+            getAllWFilterUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`
         },
         literaturesUri: {
-            getAllUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
+            baseUri: `${backendBase}/api/literature`,
+            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
         },
         personsUri: {
-            getAllUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
+            baseUri: `${backendBase}/api/persons`,
+            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
         },
         worldl4Uri: {
-            getAllUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
+            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
         },
     },
 
