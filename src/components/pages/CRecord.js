@@ -6,6 +6,7 @@ import {
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
+import PropTypes from 'prop-types';
 
 import axios from 'axios';
 import template from 'url-template';
@@ -36,6 +37,10 @@ const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
 
 class Record extends Component {
+
+    static contextTypes = {
+        router: PropTypes.object
+    }
 
     constructor(props) {
         super(props);
@@ -210,6 +215,8 @@ class Record extends Component {
     }
 
     submitForm = (e) => {
+        e.preventDefault();
+
         const cdataUri = template.parse(config.uris.chromosomeDataUri.baseUri).expand();
         const materialUri = template.parse(config.uris.materialUri.baseUri).expand();
         const referenceUri = template.parse(config.uris.referenceUri.baseUri).expand();
@@ -221,14 +228,20 @@ class Record extends Component {
             }).then(response => {
                 const body = { ...this.state.reference, idMaterial: response.data.id };
                 return axios.put(referenceUri, body); //upsert reference
-            }).catch(e => console.log(e));
+            }).then(() => {
+                this.context.router.history.push(CHROM_DATA_LIST_URI);
+            }).catch(e => {
+                console.log(e);
+                throw e;
+            });
     }
 
     render() {
+        console.log(this.state);
         return (
             <div id="chromosome-record">
                 <Grid>
-                    <h2>Chromosome record {this.state.chromrecord.id ? <small>({this.state.chromrecord.id})</small> : ''}</h2>
+                    <h2>Chromosome record <small>{this.state.chromrecord.id ? this.state.chromrecord.id : 'new'}</small></h2>
                     <Form horizontal onSubmit={(e) => this.submitForm(e)} action={CHROM_DATA_LIST_URI}>
                         <div id="identification">
                             <h3>Identification</h3>
