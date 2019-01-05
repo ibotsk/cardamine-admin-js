@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
 
 import {
-    Col, Row,
-    Button, Checkbox, ControlLabel, Form, FormControl, FormGroup, Grid
+    Col, Grid, Row,
+    InputGroup,
+    Button, Checkbox, ControlLabel, Form, FormControl, FormGroup
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';
+import BootstrapTable from 'react-bootstrap-table-next';
 
 import axios from 'axios';
 import template from 'url-template';
 
-import BootstrapTable from 'react-bootstrap-table-next';
-
 import config from '../../config/config';
 import helper from '../../utils/helper';
+
 import LosName from '../segments/LosName';
+import NewPersonModal from '../segments/NewPersonModal';
+import NewLiteratureModal from '../segments/NewLiteratureModal';
+import NewSpeciesNameModal from '../segments/NewSpeciesNameModal';
+import NewWorld4Modal from '../segments/NewWorld4Modal';
 
 const revisionsColumns = [
     {
@@ -35,6 +40,11 @@ const revisionsColumns = [
 
 const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
+
+const MODAL_PERSONS = 'showModalPerson';
+const MODAL_LITERATURE = 'showModalLiterature';
+const MODAL_SPECIES = 'showModalSpecies';
+const MODAL_WORLD4 = 'showModalWorld4';
 
 class Record extends Component {
 
@@ -59,7 +69,10 @@ class Record extends Component {
             listOfSpecies: [],
             persons: [],
             world4s: [],
-            literatures: []
+            literatures: [],
+            modals: {
+                [MODAL_PERSONS]: false
+            }
         };
     }
 
@@ -160,6 +173,20 @@ class Record extends Component {
         });
     }
 
+    showModal = (prop) => {
+        const modals = this.state.modals;
+        modals[prop] = true;
+        this.setState({ modals });
+    }
+
+    hideModal = () => {
+        const modals = this.state.modals;
+        for (const m in modals) {
+            modals[m] = false;
+        }
+        this.setState({ modals });
+    }
+
     componentDidMount() {
         this.getChromosomeRecord()
             .then(() => this.getPersons())
@@ -237,7 +264,6 @@ class Record extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div id="chromosome-record">
                 <Grid>
@@ -260,11 +286,20 @@ class Record extends Component {
                                     <small>(name from checklist)</small>:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.listOfSpecies}
-                                        selected={this.state.idStandardisedNameSelected}
-                                        onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idStandardisedName')}
-                                        placeholder="Start by typing a species in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.listOfSpecies}
+                                            selected={this.state.idStandardisedNameSelected}
+                                            onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idStandardisedName')}
+                                            placeholder="Start by typing a species in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_SPECIES)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup bsSize="sm">
@@ -288,11 +323,20 @@ class Record extends Component {
                                     Publication:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.literatures}
-                                        selected={this.state.idLiteratureSelected}
-                                        onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idLiterature')}
-                                        placeholder="Start by typing a publication in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.literatures}
+                                            selected={this.state.idLiteratureSelected}
+                                            onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idLiterature')}
+                                            placeholder="Start by typing a publication in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_LITERATURE)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="page" bsSize="sm">
@@ -359,11 +403,20 @@ class Record extends Component {
                                     Counted by:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.persons}
-                                        selected={this.state.countedBySelected}
-                                        onChange={(selected) => this.onChangeTypeaheadChromrecord(selected, 'countedBy')}
-                                        placeholder="Start by typing a surname present in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.persons}
+                                            selected={this.state.countedBySelected}
+                                            onChange={(selected) => this.onChangeTypeaheadChromrecord(selected, 'countedBy')}
+                                            placeholder="Start by typing a surname present in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_PERSONS)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="countedDate" bsSize="sm">
@@ -437,11 +490,20 @@ class Record extends Component {
                                     World 4:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.world4s}
-                                        selected={this.state.idWorld4Selected}
-                                        onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
-                                        placeholder="Start by typing a country present in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.world4s}
+                                            selected={this.state.idWorld4Selected}
+                                            onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
+                                            placeholder="Start by typing a country present in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_WORLD4)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="geographicalDistrict" bsSize="sm">
@@ -505,11 +567,20 @@ class Record extends Component {
                                     Collected by:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.persons}
-                                        selected={this.state.collectedBySelected}
-                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'collectedBy')}
-                                        placeholder="Start by typing a surname present in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.persons}
+                                            selected={this.state.collectedBySelected}
+                                            onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'collectedBy')}
+                                            placeholder="Start by typing a surname present in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_PERSONS)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="collectedDate" bsSize="sm">
@@ -525,11 +596,20 @@ class Record extends Component {
                                     Identified by:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.persons}
-                                        selected={this.state.identifiedBySelected}
-                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'identifiedBy')}
-                                        placeholder="Start by typing a surname present in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.persons}
+                                            selected={this.state.identifiedBySelected}
+                                            onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'identifiedBy')}
+                                            placeholder="Start by typing a surname present in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_PERSONS)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="voucherSpecimenNo" bsSize="sm">
@@ -553,11 +633,20 @@ class Record extends Component {
                                     Checked by:
                                 </Col>
                                 <Col sm={10}>
-                                    <Typeahead
-                                        options={this.state.persons}
-                                        selected={this.state.checkedBySelected}
-                                        onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'checkedBy')}
-                                        placeholder="Start by typing a surname present in the database" />
+                                    <InputGroup bsSize='sm'>
+                                        <Typeahead
+                                            options={this.state.persons}
+                                            selected={this.state.checkedBySelected}
+                                            onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'checkedBy')}
+                                            placeholder="Start by typing a surname present in the database" />
+                                        <InputGroup.Button>
+                                            <Button
+                                                bsStyle='info'
+                                                onClick={() => this.showModal(MODAL_PERSONS)}>
+                                                Add new
+                                            </Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="coordinatesLat" bsSize="sm">
@@ -603,6 +692,10 @@ class Record extends Component {
                         </Row>
                     </Form>
                 </Grid>
+                <NewPersonModal show={this.state.modals[MODAL_PERSONS]} onHide={() => this.hideModal()} />
+                <NewLiteratureModal show={this.state.modals[MODAL_LITERATURE]} onHide={() => this.hideModal()} />
+                <NewSpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={() => this.hideModal()} />
+                <NewWorld4Modal show={this.state.modals[MODAL_WORLD4]} onHide={() => this.hideModal()} />
             </div>
         );
     }
