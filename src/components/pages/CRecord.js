@@ -20,7 +20,6 @@ import LosName from '../segments/LosName';
 import NewPersonModal from '../segments/NewPersonModal';
 import NewLiteratureModal from '../segments/NewLiteratureModal';
 import NewSpeciesNameModal from '../segments/NewSpeciesNameModal';
-import NewWorld4Modal from '../segments/NewWorld4Modal';
 
 const revisionsColumns = [
     {
@@ -44,7 +43,6 @@ const SELECTED = (prop) => `${prop}Selected`;
 const MODAL_PERSONS = 'showModalPerson';
 const MODAL_LITERATURE = 'showModalLiterature';
 const MODAL_SPECIES = 'showModalSpecies';
-const MODAL_WORLD4 = 'showModalWorld4';
 
 class Record extends Component {
 
@@ -71,7 +69,9 @@ class Record extends Component {
             world4s: [],
             literatures: [],
             modals: {
-                [MODAL_PERSONS]: false
+                [MODAL_PERSONS]: false,
+                [MODAL_LITERATURE]: false,
+                [MODAL_SPECIES]: false
             }
         };
     }
@@ -498,20 +498,11 @@ class Record extends Component {
                                     World 4:
                                 </Col>
                                 <Col sm={10}>
-                                    <InputGroup bsSize='sm'>
-                                        <Typeahead
-                                            options={this.state.world4s}
-                                            selected={this.state.idWorld4Selected}
-                                            onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
-                                            placeholder="Start by typing a country present in the database" />
-                                        <InputGroup.Button>
-                                            <Button
-                                                bsStyle='info'
-                                                onClick={() => this.showModal(MODAL_WORLD4)}>
-                                                Add new
-                                            </Button>
-                                        </InputGroup.Button>
-                                    </InputGroup>
+                                    <Typeahead
+                                        options={this.state.world4s}
+                                        selected={this.state.idWorld4Selected}
+                                        onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
+                                        placeholder="Start by typing a country present in the database" />
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="geographicalDistrict" bsSize="sm">
@@ -703,7 +694,6 @@ class Record extends Component {
                 <NewPersonModal show={this.state.modals[MODAL_PERSONS]} onHide={() => this.hideModal()} />
                 <NewLiteratureModal show={this.state.modals[MODAL_LITERATURE]} onHide={() => this.hideModal()} />
                 <NewSpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={() => this.hideModal()} />
-                <NewWorld4Modal show={this.state.modals[MODAL_WORLD4]} onHide={() => this.hideModal()} />
             </div>
         );
     }
