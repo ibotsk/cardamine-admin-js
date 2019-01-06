@@ -36,6 +36,13 @@ export default {
             3: "manuscript",
             4: "chapter",
             5: "report"
+        },
+        losType: {
+            "A": "Accepted name",
+            "PA": "Provisionally accepted",
+            "S": "Synonym",
+            "DS": "Doubtful synonym",
+            "U": "Unresolved"
         }
     },
     pagination: {

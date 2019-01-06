@@ -34,6 +34,17 @@ class NewLiteratureModal extends Component {
         };
     }
 
+    // at least one field must be non-empty - prevent accidental saving of all-empty
+    getValidationState = () => {
+        const { displayType, ...state } = this.state;
+        for (const key in state) { // without displayType
+            if (state[key].length > 0) {
+                return true; //'success'
+            }
+        }
+        return false; // 'error'
+    }
+
     handleChange = (e) => {
         this.setState({ [e.target.id]: e.target.value });
     }
@@ -58,10 +69,14 @@ class NewLiteratureModal extends Component {
     }
 
     handleSave = () => {
-        const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand();
-        axios.post(literaturesUri, {
-            ...this.state
-        }).then(() => this.handleHide());
+        if (this.getValidationState()) {
+            const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand();
+            axios.post(literaturesUri, {
+                ...this.state
+            }).then(() => this.handleHide());
+        } else {
+            alert('At least one field must not be empty!');
+        }
     }
 
     render() {
@@ -144,7 +159,7 @@ class NewLiteratureModal extends Component {
                             </FormGroup>
                         }
                         {
-                            (displayType === '3' || displayType === '4'|| displayType === '5') &&
+                            (displayType === '3' || displayType === '4' || displayType === '5') &&
                             <FormGroup controlId="editor" bsSize='sm'>
                                 <FormControl
                                     type="text"
