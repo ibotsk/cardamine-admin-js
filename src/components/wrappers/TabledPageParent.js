@@ -38,13 +38,13 @@ const TabledPage = injectedProps => WrappingComponent => {
             }
         }
 
-        handleTableChange(type, { page, sizePerPage, filters }) {
-            console.log({ page, sizePerPage, filters });
+        handleTableChange = (type, { page, sizePerPage, filters }) => {
             const where = helper.makeWhere(filters); //TODO make function to take into account existing where
             this.handleChange(page, sizePerPage, where);
         }
 
-        handleChange(page, sizePerPage, where) {
+        handleChange = (page, sizePerPage, where) => {
+            console.log({page, sizePerPage, where});
             return this.fetchCount(where).then(() => {
                 const offset = (page - 1) * sizePerPage;
                 return this.fetchRecords(where, offset, sizePerPage);
@@ -58,13 +58,12 @@ const TabledPage = injectedProps => WrappingComponent => {
             }).catch(e => console.error(e));
         }
 
-        fetchRecords(where, offset, limit) {
+        fetchRecords = (where, offset, limit) => {
             const uri = this.getAllUri.expand({ offset: offset, where: JSON.stringify(where), limit: limit });
-            console.log(uri);
             return axios.get(uri);
         }
 
-        fetchCount(where) {
+        fetchCount = (where) => {
             const whereString = JSON.stringify(where);
             const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString: whereString });
             return axios.get(uri).then(response => this.setState({ numOfRecords: response.data.count }));
@@ -85,7 +84,7 @@ const TabledPage = injectedProps => WrappingComponent => {
                             data={this.state.records}
                             columns={injectedProps.columns}
                             filter={filterFactory()}
-                            onTableChange={(type, opts) => this.handleTableChange(type, opts)}
+                            onTableChange={this.handleTableChange}
                             pagination={paginationFactory({ ...paginationOptions, ...paginationCurrents })}
                         />
                     </Grid>

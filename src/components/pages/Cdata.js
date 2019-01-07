@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Glyphicon, Grid } from 'react-bootstrap';
 
-import TabledPage from './TabledPageParent';
+import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import { textFilter } from 'react-bootstrap-table2-filter';
