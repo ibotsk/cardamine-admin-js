@@ -1,20 +1,24 @@
 import React from 'react';
+import { Button, Glyphicon, Grid } from 'react-bootstrap';
 
-import TabledPage from './TabledPageParent';
+import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import { textFilter } from 'react-bootstrap-table2-filter';
+import get from 'lodash.get';
 
 import config from '../../config/config';
 
 const PAGE_DETAIL = "/checklist/detail/";
-const EDIT_RECORD = "/chromosome-data/edit/"
+const EDIT_RECORD = "/chromosome-data/edit/";
+const NEW_RECORD = "/chromosome-data/new";
 
 const columns = [
     {
         dataField: 'id',
         text: 'ID',
-        filter: textFilter()
+        filter: textFilter(),
+        headerStyle: { width: '80px' }
     }, {
         dataField: 'action',
         text: 'Action'
@@ -104,17 +108,21 @@ const columns = [
     }
 ];
 
-const formatResult = (result) => {
-    return result.data.map(d => {
-        const origIdentification = d.material.reference["original-identification"];
+const formatResult = (data) => {
+    return data.map(d => {
+        const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
+        const coordinatesLatGeoref = get(d, 'material.coordinatesGeorefLat', null);
+        const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
+        const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
+        const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return {
             id: d.id,
-            action: <a className="btn btn-default btn-sm" href={`${EDIT_RECORD}${d.id}`} >Edit</a>,
-            originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} nomen={origIdentification} format='plain' /></a> : "",
-            lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} nomen={latestRevision["list-of-species"]} format='plain' /></a> : "",
-            publicationAuthor: d.material.reference.literature ? d.material.reference.literature.paperAuthor : "",
-            year: d.material.reference.literature ? d.material.reference.literature.year : "",
+            action: <Button bsStyle="default" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
+            originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></a> : "",
+            lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></a> : "",
+            publicationAuthor: get(d, 'material.reference.literature.paperAuthor', ''),
+            year: get(d, 'material.reference.literature.year', ''),
             n: d.n,
             dn: d.dn,
             ploidy: d.ploidyLevel,
@@ -127,11 +135,11 @@ const formatResult = (result) => {
             eda: '',
             duplicate: d.duplicateData,
             depositedIn: d.depositedIn,
-            w4: d.material["world-l4"] ? d.material["world-l4"].name : "",
-            country: d.material.country,
-            latitude: d.material.coordinatesGeorefLat ? `${d.material.coordinatesGeorefLat} (gr)` : (d.material.coordinatesLat ? `${d.material.coordinatesLat} (orig)` : ""),
-            longitude: d.material.coordinatesGeorefLon ? `${d.material.coordinatesGeorefLon} (gr)` : (d.material.coordinatesLon ? `${d.material.coordinatesLon} (orig)` : ""),
-            localityDescription: d.material.description
+            w4: get(d, ['material', 'world-l4', 'name'], ''),
+            country: get(d, 'material.country', ''),
+            latitude: coordinatesLatGeoref ? `${coordinatesLatGeoref} (gr)` : (coordinatesLatOrig ? `${coordinatesLatOrig} (orig)` : ''),
+            longitude: coordinatesLonGeoref ? `${coordinatesLonGeoref} (gr)` : (coordinatesLonOrig ? `${coordinatesLonOrig} (orig)` : ''),
+            localityDescription: get(d, 'material.description')
         }
     });
 }
@@ -140,7 +148,12 @@ const Cdata = (props) => {
 
     return (
         <div id='chromosome-data'>
-            <h2>Chromosome data</h2>
+            <Grid id="functions">
+                <div id="functions">
+                    <Button bsStyle="success" href={NEW_RECORD}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                </div>
+                <h2>Chromosome data</h2>
+            </Grid>
             {props.children}
         </div>
     )
@@ -148,8 +161,8 @@ const Cdata = (props) => {
 }
 
 export default TabledPage({
-    getAll: config.uris.chromosomeDataUri.getAll,
-    getCount: config.uris.chromosomeDataUri.count,
+    getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
+    getCount: config.uris.chromosomeDataUri.countUri,
     columns,
     formatResult
 })(Cdata);

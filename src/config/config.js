@@ -17,13 +17,33 @@ export default {
             tribus: 'tribus',
             hybrid: 'x',
         },
-        filter: {
-            ntypesGroup: []
+        publication: {
+            paper: "{{authors}} ({{year}}) {{title}}. {{journal}}, {{volume}}{{issue}}:{{pages}}",
+            book: "{{authors}} ({{year}}) {{title}}. {{publisher}}. {{pages}}",
+            manuscript: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
+            chapter: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
+            report: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}"
         }
     },
     format: {
         formatted: "formatted",
         plain: "plain"
+    },
+    mappings: {
+        displayType: {
+            1: "paper",
+            2: "book",
+            3: "manuscript",
+            4: "chapter",
+            5: "report"
+        },
+        losType: {
+            "A": "Accepted name",
+            "PA": "Provisionally accepted",
+            "S": "Synonym",
+            "DS": "Doubtful synonym",
+            "U": "Unresolved"
+        }
     },
     pagination: {
         paginationSize: 7,
@@ -53,7 +73,9 @@ export default {
     },
     uris: {
         chromosomeDataUri: {
-            getAll: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[
+            baseUri: `${backendBase}/api/cdata/`,
+            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
+            getAllWFilterUri: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",
                     "scope":%7B
@@ -97,8 +119,29 @@ export default {
                     %7D
                 %7D
             ]%7D`,
-            count: `${backendBase}/api/cdata/count?where={whereString}`
-        }
+            countUri: `${backendBase}/api/cdata/count?where={whereString}`
+        },
+        materialUri: {
+            baseUri: `${backendBase}/api/materials`
+        },
+        referenceUri: {
+            baseUri: `${backendBase}/api/references`
+        },
+        listOfSpeciesUri: {
+            baseUri: `${backendBase}/api/list-of-species`,
+            getAllWFilterUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`
+        },
+        literaturesUri: {
+            baseUri: `${backendBase}/api/literature`,
+            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
+        },
+        personsUri: {
+            baseUri: `${backendBase}/api/persons`,
+            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
+        },
+        worldl4Uri: {
+            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
+        },
     },
 
     logging: {

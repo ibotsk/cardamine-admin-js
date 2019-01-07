@@ -1,25 +1,16 @@
 
-import config from '../../config/config';
 import helper from '../../utils/helper';
-import format from '../../utils/formatter';
 
 const LosName = (props) => {
 
-    const nomen = props.nomen;
-    if (!nomen) {
+    const name = props.data;
+    if (!name) {
         return '';
     }
 
-    const nameArr = helper.listOfSpieces(nomen).map(t => {
+    const format = props.format || 'plain';
 
-        if (t.format === config.format.formatted) {
-            return format(t.string, props.format);
-        } else {
-            return t.string;
-        }
-    }).reduce((prev, curr) => [prev, ' ', curr]);
-
-    return nameArr;
+    return helper.listOfSpeciesForComponent(name, format);
 
 }
 

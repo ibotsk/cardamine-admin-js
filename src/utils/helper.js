@@ -1,4 +1,7 @@
 import config from '../config/config';
+import format from './formatter';
+
+import Mustache from 'mustache';
 
 const config_name = config.nomenclature.name;
 const ff = config.format.formatted;
@@ -76,7 +79,7 @@ const invalidDesignation = (name, syntype) => {
     return name;
 }
 
-const listOfSpieces = (nomenclature, options = {}) => {
+const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
     let opts = Object.assign({}, {
         isPublication: false,
@@ -121,7 +124,7 @@ const listOfSpieces = (nomenclature, options = {}) => {
             authors: nomenclature.authors_h,
         }
         name.push(Plain(config_name.hybrid));
-        name = name.concat(listOfSpieces(h));
+        name = name.concat(listOfSpeciesFormat(h));
     }
 
     name = invalidDesignation(name, options.syntype);
@@ -137,18 +140,56 @@ const listOfSpieces = (nomenclature, options = {}) => {
 
 }
 
+const listOfSpeciesForComponent = (name, formatString) => {
+
+    const nameArr = listOfSpeciesFormat(name);
+
+    const formattedNameArr = nameArr.map(t => {
+        if (t.format === ff) {
+            return format(t.string, formatString);
+        } else {
+            return t.string;
+        }
+    });
+
+    return formattedNameArr.reduce((acc, el) => acc.concat(el, ' '), []).slice(0, -1);
+}
+
+const listOfSpeciesString = (name) => {
+    return listOfSpeciesForComponent(name, 'plain').join('');
+}
+
+const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
+
+    const typeMapping = config.mappings.displayType[type];
+    const template = config.nomenclature.publication[typeMapping];
+
+    return Mustache.render(template, {
+        authors,
+        title,
+        series,
+        volume,
+        issue: issue ? `(${issue})` : '',
+        publisher,
+        editor,
+        year,
+        pages,
+        journal
+    });
+}
+
 const makeWhere = (filters) => {
     const whereList = [];
     const keys = Object.keys(filters);
     for (const key of keys) {
-        whereList.push({ 
-            [key]: { 
-                like: `%${filters[key].filterVal}%` 
-            } 
+        whereList.push({
+            [key]: {
+                like: `%${filters[key].filterVal}%`
+            }
         });
     }
     if (whereList.length > 1) {
-        return {'OR': whereList};
+        return { 'OR': whereList };
     }
     if (whereList.length === 1) {
         return whereList[0];
@@ -156,4 +197,4 @@ const makeWhere = (filters) => {
     return {};
 }
 
-export default { listOfSpieces, makeWhere };
+export default { listOfSpeciesForComponent, listOfSpeciesString, makeWhere, parsePublication };
