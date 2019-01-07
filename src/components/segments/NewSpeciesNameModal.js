@@ -104,7 +104,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.genusH}
                                 placeholder="Hybrid Genus"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="speciesH" bsSize='sm'>
@@ -112,7 +112,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.speciesH}
                                 placeholder="Hybrid Species"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="subspH" bsSize='sm'>
@@ -120,7 +120,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.subspH}
                                 placeholder="Hybrid Subsp"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="varH" bsSize='sm'>
@@ -128,7 +128,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.varH}
                                 placeholder="Hybrid Var"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="subvarH" bsSize='sm'>
@@ -136,7 +136,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.subvarH}
                                 placeholder="Hybrid Subvar"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="formaH" bsSize='sm'>
@@ -144,7 +144,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.formaH}
                                 placeholder="Hybrid Forma"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="authorsH" bsSize='sm'>
@@ -152,7 +152,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.authorsH}
                                 placeholder="Hybrid Authors"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                     </Panel.Body>
@@ -162,9 +162,8 @@ class NewSpeciesNameModal extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
-            <Modal show={this.props.show} onHide={() => this.handleHide()}>
+            <Modal show={this.props.show} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create new name</Modal.Title>
                 </Modal.Header>
@@ -174,7 +173,7 @@ class NewSpeciesNameModal extends Component {
                             <FormControl
                                 componentClass="select"
                                 placeholder="select"
-                                onChange={(e) => this.handleChange(e)} >
+                                onChange={this.handleChange} >
                                 {
                                     Object.keys(this.ntypes).map(t => <option value={t} key={t}>{this.ntypes[t]}</option>)
                                 }
@@ -185,7 +184,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.genus}
                                 placeholder="Genus"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="species" bsSize='sm'>
@@ -193,7 +192,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.species}
                                 placeholder="Species"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="subsp" bsSize='sm'>
@@ -201,7 +200,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.subsp}
                                 placeholder="Subsp"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="var" bsSize='sm'>
@@ -209,7 +208,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.var}
                                 placeholder="Var"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="subvar" bsSize='sm'>
@@ -217,7 +216,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.subvar}
                                 placeholder="Subvar"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="forma" bsSize='sm'>
@@ -225,7 +224,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.forma}
                                 placeholder="Forma"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="authors" bsSize='sm'>
@@ -233,14 +232,14 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.authors}
                                 placeholder="Authors"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="hybrid">
                             <Checkbox inline
                                 id="hybrid"
                                 value={this.state.hybrid}
-                                onChange={e => this.handleChangeCheckbox(e)}>Hybrid</Checkbox>
+                                onChange={this.handleChangeCheckbox}>Hybrid</Checkbox>
                         </FormGroup>
                         {
                             this.renderHybridFields(this.state.hybrid)
@@ -250,7 +249,7 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.publication}
                                 placeholder="Publication"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="tribus" bsSize='sm'>
@@ -258,14 +257,14 @@ class NewSpeciesNameModal extends Component {
                                 type="text"
                                 value={this.state.tribus}
                                 placeholder="Tribus"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => this.handleHide()}>Close</Button>
-                    <Button bsStyle="primary" onClick={() => this.handleSave()}>Save changes</Button>
+                    <Button onClick={this.handleHide}>Close</Button>
+                    <Button bsStyle="primary" onClick={this.handleSave}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
         )

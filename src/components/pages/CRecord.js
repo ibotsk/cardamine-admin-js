@@ -264,7 +264,7 @@ class Record extends Component {
                 const body = { ...this.state.reference, idMaterial: response.data.id };
                 return axios.put(referenceUri, body); //upsert reference
             }).then(() => {
-                this.context.router.history.push(CHROM_DATA_LIST_URI);
+                this.context.router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
             }).catch(e => {
                 console.log(e);
                 throw e;
@@ -691,9 +691,9 @@ class Record extends Component {
                         </Row>
                     </Form>
                 </Grid>
-                <NewPersonModal show={this.state.modals[MODAL_PERSONS]} onHide={() => this.hideModal()} />
-                <NewLiteratureModal show={this.state.modals[MODAL_LITERATURE]} onHide={() => this.hideModal()} />
-                <NewSpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={() => this.hideModal()} />
+                <NewPersonModal show={this.state.modals[MODAL_PERSONS]} onHide={this.hideModal} />
+                <NewLiteratureModal show={this.state.modals[MODAL_LITERATURE]} onHide={this.hideModal} />
+                <NewSpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={this.hideModal} />
             </div>
         );
     }

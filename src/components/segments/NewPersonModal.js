@@ -45,7 +45,7 @@ class NewPersonModal extends Component {
 
     render() {
         return (
-            <Modal show={this.props.show} onHide={() => this.handleHide()}>
+            <Modal show={this.props.show} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create new person(s)</Modal.Title>
                 </Modal.Header>
@@ -60,15 +60,15 @@ class NewPersonModal extends Component {
                                 type="text"
                                 value={this.state.persName}
                                 placeholder="Person name"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                             <FormControl.Feedback />
                         </FormGroup>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => this.handleHide()}>Close</Button>
-                    <Button bsStyle="primary" onClick={() => this.handleSave()}>Save changes</Button>
+                    <Button onClick={ this.handleHide}>Close</Button>
+                    <Button bsStyle="primary" onClick={this.handleSave}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
         )

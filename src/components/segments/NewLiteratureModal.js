@@ -82,7 +82,7 @@ class NewLiteratureModal extends Component {
     render() {
         const displayType = this.state.displayType;
         return (
-            <Modal show={this.props.show} onHide={() => this.handleHide()}>
+            <Modal show={this.props.show} onHide={this.handleHide}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create new publication</Modal.Title>
                 </Modal.Header>
@@ -92,7 +92,7 @@ class NewLiteratureModal extends Component {
                             <FormControl
                                 componentClass="select"
                                 placeholder="select"
-                                onChange={(e) => this.handleChange(e)} >
+                                onChange={this.handleChange} >
                                 {
                                     Object.keys(this.displayTypes).map(k => <option value={k} key={k}>{this.displayTypes[k]}</option>)
                                 }
@@ -103,7 +103,7 @@ class NewLiteratureModal extends Component {
                                 type="text"
                                 value={this.state.paperAuthor}
                                 placeholder="Paper author"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="year" bsSize='sm'>
@@ -111,7 +111,7 @@ class NewLiteratureModal extends Component {
                                 type="text"
                                 value={this.state.year}
                                 placeholder="Year"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         {
@@ -121,7 +121,7 @@ class NewLiteratureModal extends Component {
                                     type="text"
                                     value={this.state.seriesSource}
                                     placeholder="Series source"
-                                    onChange={(e) => this.handleChange(e)}
+                                    onChange={this.handleChange}
                                 />
                             </FormGroup>
                         }
@@ -132,7 +132,7 @@ class NewLiteratureModal extends Component {
                                     type="text"
                                     value={this.state.publisher}
                                     placeholder="Publisher"
-                                    onChange={(e) => this.handleChange(e)}
+                                    onChange={this.handleChange}
                                 />
                             </FormGroup>
                         }
@@ -143,7 +143,7 @@ class NewLiteratureModal extends Component {
                                     type="text"
                                     value={this.state.volume}
                                     placeholder="Volume"
-                                    onChange={(e) => this.handleChange(e)}
+                                    onChange={this.handleChange}
                                 />
                             </FormGroup>
                         }
@@ -154,7 +154,7 @@ class NewLiteratureModal extends Component {
                                     type="text"
                                     value={this.state.issue}
                                     placeholder="Issue"
-                                    onChange={(e) => this.handleChange(e)}
+                                    onChange={this.handleChange}
                                 />
                             </FormGroup>
                         }
@@ -165,7 +165,7 @@ class NewLiteratureModal extends Component {
                                     type="text"
                                     value={this.state.editor}
                                     placeholder="Editors"
-                                    onChange={(e) => this.handleChange(e)}
+                                    onChange={this.handleChange}
                                 />
                             </FormGroup>
                         }
@@ -174,7 +174,7 @@ class NewLiteratureModal extends Component {
                                 type="text"
                                 value={this.state.pages}
                                 placeholder="Pages"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="journalName" bsSize='sm'>
@@ -182,7 +182,7 @@ class NewLiteratureModal extends Component {
                                 type="text"
                                 value={this.state.journalName}
                                 placeholder="Journal"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                         <FormGroup controlId="note" bsSize='sm'>
@@ -190,14 +190,14 @@ class NewLiteratureModal extends Component {
                                 componentClass="textarea"
                                 value={this.state.note}
                                 placeholder="Note"
-                                onChange={(e) => this.handleChange(e)}
+                                onChange={this.handleChange}
                             />
                         </FormGroup>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={() => this.handleHide()}>Close</Button>
-                    <Button bsStyle="primary" onClick={() => this.handleSave()}>Save changes</Button>
+                    <Button onClick={this.handleHide}>Close</Button>
+                    <Button bsStyle="primary" onClick={this.handleSave}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
         )
