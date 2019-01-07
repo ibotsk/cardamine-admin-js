@@ -5,6 +5,7 @@ import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import { textFilter } from 'react-bootstrap-table2-filter';
+import get from 'lodash.get';
 
 import config from '../../config/config';
 
@@ -109,15 +110,19 @@ const columns = [
 
 const formatResult = (data) => {
     return data.map(d => {
-        const origIdentification = d.material.reference["original-identification"];
+        const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
+        const coordinatesLatGeoref = get(d, 'material.coordinatesGeorefLat', null);
+        const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
+        const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
+        const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return {
             id: d.id,
             action: <Button bsStyle="default" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
             originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></a> : "",
             lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></a> : "",
-            publicationAuthor: d.material.reference.literature ? d.material.reference.literature.paperAuthor : "",
-            year: d.material.reference.literature ? d.material.reference.literature.year : "",
+            publicationAuthor: get(d, 'material.reference.literature.paperAuthor', ''),
+            year: get(d, 'material.reference.literature.year', ''),
             n: d.n,
             dn: d.dn,
             ploidy: d.ploidyLevel,
@@ -130,11 +135,11 @@ const formatResult = (data) => {
             eda: '',
             duplicate: d.duplicateData,
             depositedIn: d.depositedIn,
-            w4: d.material["world-l4"] ? d.material["world-l4"].name : "",
-            country: d.material.country,
-            latitude: d.material.coordinatesGeorefLat ? `${d.material.coordinatesGeorefLat} (gr)` : (d.material.coordinatesLat ? `${d.material.coordinatesLat} (orig)` : ""),
-            longitude: d.material.coordinatesGeorefLon ? `${d.material.coordinatesGeorefLon} (gr)` : (d.material.coordinatesLon ? `${d.material.coordinatesLon} (orig)` : ""),
-            localityDescription: d.material.description
+            w4: get(d, ['material', 'world-l4', 'name'], ''),
+            country: get(d, 'material.country', ''),
+            latitude: coordinatesLatGeoref ? `${coordinatesLatGeoref} (gr)` : (coordinatesLatOrig ? `${coordinatesLatOrig} (orig)` : ''),
+            longitude: coordinatesLonGeoref ? `${coordinatesLonGeoref} (gr)` : (coordinatesLonOrig ? `${coordinatesLonOrig} (orig)` : ''),
+            localityDescription: get(d, 'material.description')
         }
     });
 }

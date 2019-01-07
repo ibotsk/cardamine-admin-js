@@ -31,8 +31,8 @@ const TabledPage = injectedProps => WrappingComponent => {
             this.getCountUri = template.parse(injectedProps.getCount);
             this.state = {
                 records: [],
-                numOfRecords: 0,
-                activePage: 1,
+                totalSize: 0,
+                page: 1,
                 sizePerPage: paginationOptions.sizePerPageList[0].value,
                 where: {}
             }
@@ -44,7 +44,6 @@ const TabledPage = injectedProps => WrappingComponent => {
         }
 
         handleChange = (page, sizePerPage, where) => {
-            console.log({page, sizePerPage, where});
             return this.fetchCount(where).then(() => {
                 const offset = (page - 1) * sizePerPage;
                 return this.fetchRecords(where, offset, sizePerPage);
@@ -52,8 +51,8 @@ const TabledPage = injectedProps => WrappingComponent => {
                 const records = injectedProps.formatResult(response.data);
                 this.setState({
                     records,
-                    activePage: page, 
-                    where: where 
+                    page,
+                    where
                 });
             }).catch(e => console.error(e));
         }
@@ -66,26 +65,29 @@ const TabledPage = injectedProps => WrappingComponent => {
         fetchCount = (where) => {
             const whereString = JSON.stringify(where);
             const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString: whereString });
-            return axios.get(uri).then(response => this.setState({ numOfRecords: response.data.count }));
+            return axios.get(uri).then(response => this.setState({ 
+                totalSize: response.data.count 
+            }));
         }
 
         componentDidMount() {
-            this.handleChange(this.state.activePage, paginationOptions.sizePerPageList[0].value, this.state.where);
+            this.handleChange(this.state.page, paginationOptions.sizePerPageList[0].value, this.state.where);
         }
 
         render() {
-            const paginationCurrents = { page: this.state.activePage, sizePerPage: this.state.sizePerPage, totalSize: this.state.numOfRecords };
+            const { page, sizePerPage, totalSize } = this.state;
+            const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
             return (
                 <WrappingComponent>
                     <Grid fluid={true}>
                         <BootstrapTable hover striped condensed
-                            remote={{ filter: true }}
+                            remote={{ filter: true, pagination: true }}
                             keyField='id'
                             data={this.state.records}
                             columns={injectedProps.columns}
                             filter={filterFactory()}
                             onTableChange={this.handleTableChange}
-                            pagination={paginationFactory({ ...paginationOptions, ...paginationCurrents })}
+                            pagination={paginationFactory(allPaginationOptions)}
                         />
                     </Grid>
                 </WrappingComponent>
