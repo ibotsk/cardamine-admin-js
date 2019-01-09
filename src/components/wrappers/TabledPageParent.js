@@ -51,6 +51,7 @@ const TabledPage = injectedProps => WrappingComponent => {
                 const records = injectedProps.formatResult(response.data);
                 this.setState({
                     records,
+                    sizePerPage,
                     page,
                     where
                 });
@@ -77,6 +78,7 @@ const TabledPage = injectedProps => WrappingComponent => {
         render() {
             const { page, sizePerPage, totalSize } = this.state;
             const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
+            console.log(allPaginationOptions);
             return (
                 <WrappingComponent>
                     <Grid fluid={true}>

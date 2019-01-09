@@ -69,6 +69,9 @@ export default {
             }, {
                 text: '50', 
                 value: 50
+            }, {
+                text: '100',
+                value: 100
             }] // A numeric array is also available. the purpose of above example is custom the text
     },
     uris: {
