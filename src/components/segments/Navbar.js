@@ -1,5 +1,8 @@
 import React from "react";
-import { Nav, Navbar, NavItem, Glyphicon } from 'react-bootstrap';
+import { 
+    Nav, Navbar, NavDropdown, NavItem, 
+    MenuItem,
+    Glyphicon } from 'react-bootstrap';
 
 const CNavbar = (props) => {
 
@@ -14,9 +17,10 @@ const CNavbar = (props) => {
                 </Navbar.Header>
                 <Navbar.Collapse>
                     <Nav>
-                        <NavItem eventKey={1} href="/chromosome-data">
-                            Chromosome data
-                        </NavItem>
+                        <NavDropdown eventKey={1} title="Chromosome data" id="basic-nav-dropdown">
+                            <MenuItem eventKey={1.1} href="/chromosome-data">All data</MenuItem>
+                            <MenuItem eventKey={1.2} href="/publications">Publications</MenuItem>
+                        </NavDropdown>
                     </Nav>
                     <Nav pullRight>
                         <NavItem eventKey={1} href="#">
