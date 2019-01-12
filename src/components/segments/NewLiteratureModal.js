@@ -34,6 +34,16 @@ class NewLiteratureModal extends Component {
         };
     }
 
+    componentDidMount() {
+        if (this.props.id) {
+            const getByIdUri = template.parse(config.uris.literaturesUri.getByIdUri).expand({ id: this.props.id });
+            axios.get(getByIdUri).then(response => {
+                const data = response.data;
+                this.setState({ ...data });
+            });
+        }
+    }
+
     // at least one field must be non-empty - prevent accidental saving of all-empty
     getValidationState = () => {
         const { displayType, ...state } = this.state;
@@ -71,7 +81,7 @@ class NewLiteratureModal extends Component {
     handleSave = () => {
         if (this.getValidationState()) {
             const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand();
-            axios.post(literaturesUri, {
+            axios.put(literaturesUri, {
                 ...this.state
             }).then(() => this.handleHide());
         } else {

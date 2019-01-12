@@ -138,6 +138,7 @@ export default {
             baseUri: `${backendBase}/api/literature`,
             getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D`,
             getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`,
+            getByIdUri: `${backendBase}/api/literature/{id}`,
             countUri: `${backendBase}/api/literature/count`
         },
         personsUri: {
