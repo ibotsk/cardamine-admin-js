@@ -161,7 +161,7 @@ const listOfSpeciesString = (name) => {
 
 const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
 
-    const typeMapping = config.mappings.displayType[type];
+    const typeMapping = config.mappings.displayType[type].name;
     const template = config.nomenclature.publication[typeMapping];
 
     return Mustache.render(template, {
@@ -197,4 +197,16 @@ const makeWhere = (filters) => {
     return {};
 }
 
-export default { listOfSpeciesForComponent, listOfSpeciesString, makeWhere, parsePublication };
+// useful when changing type of publication, so the unused fields are set to empty
+const publicationCurateFields = (publication) => {
+    const usedFields = config.mappings.displayType[publication.displayType].columns;
+    const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(el => !usedFields.includes(el));
+
+    const curatedPubl = {...publication};
+    for (const field of fieldsToBeEmpty) {
+        curatedPubl[field] = '';
+    }
+    return curatedPubl;
+}
+
+export default { listOfSpeciesForComponent, listOfSpeciesString, makeWhere, parsePublication, publicationCurateFields };

@@ -11,11 +11,28 @@ import template from 'url-template';
 
 import config from '../../config/config';
 import utils from '../../utils/utils';
+import helper from '../../utils/helper';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
 
 const intCols = ['displayType'];
+
+const initialValues = {
+    displayType: 1,
+    paperAuthor: '',
+    paperTitle: '',
+    seriesSource: '',
+    volume: '',
+    issue: '',
+    publisher: '',
+    editor: '',
+    year: '',
+    pages: '',
+    journalName: '',
+    inputDate: '',
+    note: ''
+};
 
 class NewLiteratureModal extends Component {
 
@@ -24,21 +41,7 @@ class NewLiteratureModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            displayType: 1,
-            paperAuthor: '',
-            paperTitle: '',
-            seriesSource: '',
-            volume: '',
-            issue: '',
-            publisher: '',
-            editor: '',
-            year: '',
-            pages: '',
-            journalName: '',
-            inputDate: '',
-            note: ''
-        };
+        this.state = { ...initialValues };
     }
 
     onEnter = () => {
@@ -73,19 +76,7 @@ class NewLiteratureModal extends Component {
 
     handleHide = () => {
         this.setState({
-            displayType: 1,
-            paperAuthor: '',
-            paperTitle: '',
-            seriesSource: '',
-            volume: '',
-            issue: '',
-            publisher: '',
-            editor: '',
-            year: '',
-            pages: '',
-            journalName: '',
-            inputDate: '',
-            note: ''
+            initialValues
         });
         this.props.onHide();
     }
@@ -93,9 +84,8 @@ class NewLiteratureModal extends Component {
     handleSave = () => {
         if (this.getValidationState()) {
             const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand();
-            axios.put(literaturesUri, {
-                ...this.state
-            }).then(() => this.handleHide());
+            const publicationToBeSaved = helper.publicationCurateFields(this.state);
+            axios.put(literaturesUri, publicationToBeSaved).then(() => this.handleHide());
         } else {
             alert('At least one field must not be empty!');
         }
@@ -111,13 +101,18 @@ class NewLiteratureModal extends Component {
                 <Modal.Body>
                     <Form horizontal>
                         <FormGroup controlId="displayType" bsSize='sm'>
-                            <Col xs={12}>
+                            <Col componentClass={ControlLabel} sm={titleColWidth}>
+                                Type
+                            </Col>
+                            <Col xs={mainColWidth}>
                                 <FormControl
                                     componentClass="select"
                                     placeholder="select"
-                                    onChange={this.handleChange} >
+                                    onChange={this.handleChange} 
+                                    value={this.state.displayType}
+                                    >
                                     {
-                                        Object.keys(this.displayTypes).map(k => <option value={k} key={k}>{this.displayTypes[k]}</option>)
+                                        Object.keys(this.displayTypes).map(k => <option value={k} key={k}>{this.displayTypes[k].name}</option>)
                                     }
                                 </FormControl>
                             </Col>

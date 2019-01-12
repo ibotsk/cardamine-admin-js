@@ -31,11 +31,27 @@ export default {
     },
     mappings: {
         displayType: {
-            1: "paper",
-            2: "book",
-            3: "manuscript",
-            4: "chapter",
-            5: "report"
+            nullableFields: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "publisher", "year", "pages", "journalName", "note"],
+            1: {
+                name: "paper",
+                columns: ["paperAuthor", "paperTitle", "volume", "issue", "year", "pages", "journalName", "note"]
+            },
+            2: {
+                name: "book",
+                columns: ["paperAuthor", "paperTitle", "publisher", "year", "pages", "note"]
+            },
+            3: {
+                name: "manuscript",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+            },
+            4: {
+                name: "chapter",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+            },
+            5: {
+                name: "report",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "year", "pages", "journalName", "note"]
+            }
         },
         losType: {
             "A": "Accepted name",
