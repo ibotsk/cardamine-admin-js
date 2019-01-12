@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Button, Grid } from 'react-bootstrap';
+import { Button, Grid, Glyphicon } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -44,21 +44,23 @@ class Publications extends Component {
     }
 
     showModal = (id) => {
-        this.setState({ 
+        this.setState({
             [MODAL_LITERATURE]: true,
             editId: id
         });
     }
 
     hideModal = () => {
+        this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
         this.setState({ [MODAL_LITERATURE]: false });
     }
 
     formatResult = (data) => {
+
         return data.map(l => ({
             id: l.id,
             action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(l.id)}>Edit</Button>,
-            type: config.mappings.displayType[l.displayType],
+            type: config.mappings.displayType[l.displayType].name,
             publication: helper.parsePublication({
                 type: l.displayType,
                 authors: l.paperAuthor,
@@ -72,14 +74,16 @@ class Publications extends Component {
                 pages: l.pages,
                 journal: l.journalName
             })
-        })
-        );
+        }));
     }
 
     render() {
         return (
             <div id='publications'>
                 <Grid id="functions">
+                    <div id="functions">
+                        <Button bsStyle="success" onClick={() => this.showModal('')}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                    </div>
                     <h2>Publications</h2>
                 </Grid>
                 <Grid fluid={true}>
