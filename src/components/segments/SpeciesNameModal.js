@@ -11,7 +11,7 @@ import template from 'url-template';
 
 import config from '../../config/config';
 
-class NewSpeciesNameModal extends Component {
+class SpeciesNameModal extends Component {
 
     ntypes = config.mappings.losType;
 
@@ -271,4 +271,4 @@ class NewSpeciesNameModal extends Component {
     }
 }
 
-export default NewSpeciesNameModal;
+export default SpeciesNameModal;

@@ -6,7 +6,7 @@ import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
 import TabledPage from '../wrappers/TabledPageParent';
-import NewLiteratureModal from '../segments/NewLiteratureModal';
+import PublicationModal from '../segments/PublicationModal';
 
 import helper from '../../utils/helper';
 import config from '../../config/config';
@@ -97,7 +97,7 @@ class Publications extends Component {
                         pagination={paginationFactory(this.props.paginationOptions)}
                     />
                 </Grid>
-                <NewLiteratureModal id={this.state.editId} show={this.state[MODAL_LITERATURE]} onHide={this.hideModal} />
+                <PublicationModal id={this.state.editId} show={this.state[MODAL_LITERATURE]} onHide={this.hideModal} />
             </div>
         );
     }

@@ -17,9 +17,9 @@ import config from '../../config/config';
 import helper from '../../utils/helper';
 
 import LosName from '../segments/LosName';
-import NewPersonModal from '../segments/NewPersonModal';
-import NewLiteratureModal from '../segments/NewLiteratureModal';
-import NewSpeciesNameModal from '../segments/NewSpeciesNameModal';
+import PersonModal from '../segments/PersonModal';
+import PublicationModal from '../segments/PublicationModal';
+import SpeciesNameModal from '../segments/SpeciesNameModal';
 
 const revisionsColumns = [
     {
@@ -691,9 +691,9 @@ class Record extends Component {
                         </Row>
                     </Form>
                 </Grid>
-                <NewPersonModal show={this.state.modals[MODAL_PERSONS]} onHide={this.hideModal} />
-                <NewLiteratureModal show={this.state.modals[MODAL_LITERATURE]} onHide={this.hideModal} />
-                <NewSpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={this.hideModal} />
+                <PersonModal show={this.state.modals[MODAL_PERSONS]} onHide={this.hideModal} />
+                <PublicationModal show={this.state.modals[MODAL_LITERATURE]} onHide={this.hideModal} />
+                <SpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={this.hideModal} />
             </div>
         );
     }

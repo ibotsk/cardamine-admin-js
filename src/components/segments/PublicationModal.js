@@ -34,7 +34,7 @@ const initialValues = {
     note: ''
 };
 
-class NewLiteratureModal extends Component {
+class PublicationModal extends Component {
 
     displayTypes = config.mappings.displayType;
 
@@ -280,11 +280,11 @@ class NewLiteratureModal extends Component {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.handleHide}>Close</Button>
-                    <Button bsStyle="primary" onClick={this.handleSave}>Save changes</Button>
+                    <Button bsStyle="primary" onClick={this.handleSave}>Save</Button>
                 </Modal.Footer>
             </Modal>
         )
     }
 }
 
-export default NewLiteratureModal;
+export default PublicationModal;
