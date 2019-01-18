@@ -10,7 +10,7 @@ import template from 'url-template';
 
 import config from '../../config/config';
 
-class NewPersonModal extends Component {
+class PersonModal extends Component {
 
     constructor(props) {
         super(props);
@@ -77,4 +77,4 @@ class NewPersonModal extends Component {
 
 }
 
-export default NewPersonModal;
+export default PersonModal;

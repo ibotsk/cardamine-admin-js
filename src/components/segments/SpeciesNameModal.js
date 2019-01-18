@@ -11,32 +11,36 @@ import template from 'url-template';
 
 import config from '../../config/config';
 
-class NewSpeciesNameModal extends Component {
+const initialValues = {
+    ntype: 'A',
+    hybrid: false,
+    genus: '',
+    species: '',
+    subsp: '',
+    var: '',
+    subvar: '',
+    forma: '',
+    authors: '',
+    genusH: '',
+    speciesH: '',
+    subspH: '',
+    varH: '',
+    subvarH: '',
+    formaH: '',
+    authorsH: '',
+    publication: '',
+    tribus: ''
+};
+
+class SpeciesNameModal extends Component {
 
     ntypes = config.mappings.losType;
 
     constructor(props) {
         super(props);
 
-        this.state = {
-            ntype: 'A',
-            hybrid: false,
-            genus: '',
-            species: '',
-            subsp: '',
-            var: '',
-            subvar: '',
-            forma: '',
-            authors: '',
-            genusH: '',
-            speciesH: '',
-            subspH: '',
-            varH: '',
-            subvarH: '',
-            formaH: '',
-            authorsH: '',
-            publication: '',
-            tribus: ''
+        this.state = { 
+            ...initialValues 
         }
     }
 
@@ -61,24 +65,7 @@ class NewSpeciesNameModal extends Component {
 
     handleHide = () => {
         this.setState({
-            ntype: 'A',
-            hybrid: false,
-            genus: '',
-            species: '',
-            subsp: '',
-            var: '',
-            subvar: '',
-            forma: '',
-            authors: '',
-            genusH: '',
-            speciesH: '',
-            subspH: '',
-            varH: '',
-            subvarH: '',
-            formaH: '',
-            authorsH: '',
-            publication: '',
-            tribus: ''
+            ...initialValues
         });
         this.props.onHide();
     }
@@ -271,4 +258,4 @@ class NewSpeciesNameModal extends Component {
     }
 }
 
-export default NewSpeciesNameModal;
+export default SpeciesNameModal;

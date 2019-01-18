@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
-import { Grid } from 'react-bootstrap';
 import axios from 'axios';
 import template from 'url-template';
 
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-
-import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory from 'react-bootstrap-table2-filter';
-import paginationFactory from 'react-bootstrap-table2-paginator';
 
 import helper from '../../utils/helper';
 import config from '../../config/config';
@@ -48,9 +43,11 @@ const TabledPage = injectedProps => WrappingComponent => {
                 const offset = (page - 1) * sizePerPage;
                 return this.fetchRecords(where, offset, sizePerPage);
             }).then(response => {
-                const records = injectedProps.formatResult(response.data);
+                // const records = injectedProps.formatResult(response.data);
+                const records = response.data;
                 this.setState({
                     records,
+                    sizePerPage,
                     page,
                     where
                 });
@@ -65,8 +62,8 @@ const TabledPage = injectedProps => WrappingComponent => {
         fetchCount = (where) => {
             const whereString = JSON.stringify(where);
             const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString: whereString });
-            return axios.get(uri).then(response => this.setState({ 
-                totalSize: response.data.count 
+            return axios.get(uri).then(response => this.setState({
+                totalSize: response.data.count
             }));
         }
 
@@ -78,19 +75,12 @@ const TabledPage = injectedProps => WrappingComponent => {
             const { page, sizePerPage, totalSize } = this.state;
             const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
             return (
-                <WrappingComponent>
-                    <Grid fluid={true}>
-                        <BootstrapTable hover striped condensed
-                            remote={{ filter: true, pagination: true }}
-                            keyField='id'
-                            data={this.state.records}
-                            columns={injectedProps.columns}
-                            filter={filterFactory()}
-                            onTableChange={this.handleTableChange}
-                            pagination={paginationFactory(allPaginationOptions)}
-                        />
-                    </Grid>
-                </WrappingComponent>
+                <WrappingComponent
+                    {...this.props}
+                    onTableChange={this.handleTableChange}
+                    paginationOptions={allPaginationOptions}
+                    data={this.state.records}
+                />
             );
         }
 

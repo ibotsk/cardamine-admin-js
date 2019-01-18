@@ -31,11 +31,27 @@ export default {
     },
     mappings: {
         displayType: {
-            1: "paper",
-            2: "book",
-            3: "manuscript",
-            4: "chapter",
-            5: "report"
+            nullableFields: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "publisher", "year", "pages", "journalName", "note"],
+            1: {
+                name: "paper",
+                columns: ["paperAuthor", "paperTitle", "volume", "issue", "year", "pages", "journalName", "note"]
+            },
+            2: {
+                name: "book",
+                columns: ["paperAuthor", "paperTitle", "publisher", "year", "pages", "note"]
+            },
+            3: {
+                name: "manuscript",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+            },
+            4: {
+                name: "chapter",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+            },
+            5: {
+                name: "report",
+                columns: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "year", "pages", "journalName", "note"]
+            }
         },
         losType: {
             "A": "Accepted name",
@@ -69,6 +85,9 @@ export default {
             }, {
                 text: '50', 
                 value: 50
+            }, {
+                text: '100',
+                value: 100
             }] // A numeric array is also available. the purpose of above example is custom the text
     },
     uris: {
@@ -133,7 +152,10 @@ export default {
         },
         literaturesUri: {
             baseUri: `${backendBase}/api/literature`,
-            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`
+            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D`,
+            getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`,
+            getByIdUri: `${backendBase}/api/literature/{id}`,
+            countUri: `${backendBase}/api/literature/count`
         },
         personsUri: {
             baseUri: `${backendBase}/api/persons`,

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Button, Glyphicon, Grid } from 'react-bootstrap';
 
+import { textFilter } from 'react-bootstrap-table2-filter';
+import BootstrapTable from 'react-bootstrap-table-next';
+import filterFactory from 'react-bootstrap-table2-filter';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import get from 'lodash.get';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
-
-import { textFilter } from 'react-bootstrap-table2-filter';
-import get from 'lodash.get';
 
 import config from '../../config/config';
 
@@ -118,7 +121,7 @@ const formatResult = (data) => {
         const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return {
             id: d.id,
-            action: <Button bsStyle="default" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
+            action: <Button bsStyle="warning" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
             originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></a> : "",
             lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></a> : "",
             publicationAuthor: get(d, 'material.reference.literature.paperAuthor', ''),
@@ -154,7 +157,17 @@ const Cdata = (props) => {
                 </div>
                 <h2>Chromosome data</h2>
             </Grid>
-            {props.children}
+            <Grid fluid={true}>
+                <BootstrapTable hover striped condensed
+                    remote={{ filter: true, pagination: true }}
+                    keyField='id'
+                    data={formatResult(props.data)}
+                    columns={columns}
+                    filter={filterFactory()}
+                    onTableChange={props.onTableChange}
+                    pagination={paginationFactory(props.paginationOptions)}
+                />
+            </Grid>
         </div>
     )
 
