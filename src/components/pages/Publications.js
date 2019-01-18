@@ -56,7 +56,6 @@ class Publications extends Component {
     }
 
     formatResult = (data) => {
-
         return data.map(l => ({
             id: l.id,
             action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(l.id)}>Edit</Button>,

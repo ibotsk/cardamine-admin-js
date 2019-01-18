@@ -11,6 +11,27 @@ import template from 'url-template';
 
 import config from '../../config/config';
 
+const initialValues = {
+    ntype: 'A',
+    hybrid: false,
+    genus: '',
+    species: '',
+    subsp: '',
+    var: '',
+    subvar: '',
+    forma: '',
+    authors: '',
+    genusH: '',
+    speciesH: '',
+    subspH: '',
+    varH: '',
+    subvarH: '',
+    formaH: '',
+    authorsH: '',
+    publication: '',
+    tribus: ''
+};
+
 class SpeciesNameModal extends Component {
 
     ntypes = config.mappings.losType;
@@ -18,25 +39,8 @@ class SpeciesNameModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            ntype: 'A',
-            hybrid: false,
-            genus: '',
-            species: '',
-            subsp: '',
-            var: '',
-            subvar: '',
-            forma: '',
-            authors: '',
-            genusH: '',
-            speciesH: '',
-            subspH: '',
-            varH: '',
-            subvarH: '',
-            formaH: '',
-            authorsH: '',
-            publication: '',
-            tribus: ''
+        this.state = { 
+            ...initialValues 
         }
     }
 
@@ -61,24 +65,7 @@ class SpeciesNameModal extends Component {
 
     handleHide = () => {
         this.setState({
-            ntype: 'A',
-            hybrid: false,
-            genus: '',
-            species: '',
-            subsp: '',
-            var: '',
-            subvar: '',
-            forma: '',
-            authors: '',
-            genusH: '',
-            speciesH: '',
-            subspH: '',
-            varH: '',
-            subvarH: '',
-            formaH: '',
-            authorsH: '',
-            publication: '',
-            tribus: ''
+            ...initialValues
         });
         this.props.onHide();
     }

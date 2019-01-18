@@ -41,7 +41,9 @@ class PublicationModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { ...initialValues };
+        this.state = { 
+            ...initialValues 
+        };
     }
 
     onEnter = () => {
@@ -76,7 +78,7 @@ class PublicationModal extends Component {
 
     handleHide = () => {
         this.setState({
-            initialValues
+            ...initialValues
         });
         this.props.onHide();
     }
