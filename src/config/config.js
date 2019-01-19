@@ -148,7 +148,9 @@ export default {
         },
         listOfSpeciesUri: {
             baseUri: `${backendBase}/api/list-of-species`,
-            getAllWFilterUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`
+            getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
+            getByIdUri: `${backendBase}/api/list-of-species/{id}`,
+            countUri: `${backendBase}/api/list-of-species/count`
         },
         literaturesUri: {
             baseUri: `${backendBase}/api/literature`,
