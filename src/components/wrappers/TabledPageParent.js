@@ -33,7 +33,7 @@ const TabledPage = injectedProps => WrappingComponent => {
             }
         }
 
-        handleTableChange = (type, { page, sizePerPage, filters }) => {
+        handleTableChange = (type, { page = this.state.page, sizePerPage = this.state.sizePerPage, filters = {} }) => {
             const where = helper.makeWhere(filters); //TODO make function to take into account existing where
             this.handleChange(page, sizePerPage, where);
         }
