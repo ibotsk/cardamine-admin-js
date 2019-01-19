@@ -50,7 +50,6 @@ class PublicationModal extends Component {
         if (this.props.id) {
             const getByIdUri = template.parse(config.uris.literaturesUri.getByIdUri).expand({ id: this.props.id });
             axios.get(getByIdUri).then(response => {
-                console.log(response.data);
                 let data = utils.nullToEmpty(response.data);
                 this.setState({ ...data });
             });
@@ -98,7 +97,7 @@ class PublicationModal extends Component {
         return (
             <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create new publication</Modal.Title>
+                    <Modal.Title>{this.props.id ? 'Edit publication' : 'Create new publication'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
