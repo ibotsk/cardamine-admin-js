@@ -19,6 +19,7 @@ const mainColWidth = 10;
 const intCols = ['displayType'];
 
 const initialValues = {
+    id: undefined,
     displayType: 1,
     paperAuthor: '',
     paperTitle: '',
@@ -34,9 +35,9 @@ const initialValues = {
     note: ''
 };
 
-class PublicationModal extends Component {
+const displayTypes = config.mappings.displayType;
 
-    displayTypes = config.mappings.displayType;
+class PublicationModal extends Component {
 
     constructor(props) {
         super(props);
@@ -58,8 +59,8 @@ class PublicationModal extends Component {
 
     // at least one field must be non-empty - prevent accidental saving of all-empty
     getValidationState = () => {
-        const { displayType, ...state } = this.state;
-        for (const key in state) { // without displayType
+        const { id, displayType, ...state } = this.state;
+        for (const key in state) { // without id, displayType
             if (state[key].length > 0) {
                 return true; //'success'
             }
@@ -113,7 +114,7 @@ class PublicationModal extends Component {
                                     value={this.state.displayType}
                                     >
                                     {
-                                        Object.keys(this.displayTypes).map(k => <option value={k} key={k}>{this.displayTypes[k].name}</option>)
+                                        Object.keys(displayTypes).map(k => <option value={k} key={k}>{displayTypes[k].name}</option>)
                                     }
                                 </FormControl>
                             </Col>
