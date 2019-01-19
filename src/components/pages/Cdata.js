@@ -175,7 +175,5 @@ const Cdata = (props) => {
 
 export default TabledPage({
     getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
-    getCount: config.uris.chromosomeDataUri.countUri,
-    columns,
-    formatResult
+    getCount: config.uris.chromosomeDataUri.countUri
 })(Cdata);
