@@ -203,6 +203,7 @@ class SpeciesNameModal extends Component {
     }
 
     render() {
+        console.log(this.state);
         return (
             <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
@@ -321,6 +322,7 @@ class SpeciesNameModal extends Component {
                                 <Checkbox inline
                                     id="hybrid"
                                     value={this.state.hybrid}
+                                    checked={this.state.hybrid}
                                     onChange={this.handleChangeCheckbox}>Hybrid</Checkbox>
                             </Col>
                         </FormGroup>

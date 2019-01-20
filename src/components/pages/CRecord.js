@@ -469,9 +469,27 @@ class Record extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={10} smOffset={2}>
-                                    <Checkbox inline name="drawing" value={this.state.chromrecord.drawing || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Drawing</Checkbox>
-                                    <Checkbox inline name="photo" value={this.state.chromrecord.photo || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Photo</Checkbox>
-                                    <Checkbox inline name="idiogram" value={this.state.chromrecord.idiogram || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Idiogram</Checkbox>
+                                    <Checkbox inline
+                                        name="drawing"
+                                        value={this.state.chromrecord.drawing || false}
+                                        checked={this.state.chromrecord.drawing || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Drawing
+                                    </Checkbox>
+                                    <Checkbox inline
+                                        name="photo"
+                                        value={this.state.chromrecord.photo || false}
+                                        checked={this.state.chromrecord.photo || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Photo
+                                    </Checkbox>
+                                    <Checkbox inline
+                                        name="idiogram"
+                                        value={this.state.chromrecord.idiogram || false}
+                                        checked={this.state.chromrecord.idiogram || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Idiogram
+                                    </Checkbox>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="note" bsSize="sm">
