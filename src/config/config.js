@@ -54,11 +54,11 @@ export default {
             }
         },
         losType: {
-            "A": "Accepted name",
-            "PA": "Provisionally accepted",
-            "S": "Synonym",
-            "DS": "Doubtful synonym",
-            "U": "Unresolved"
+            A: "Accepted name",
+            PA: "Provisionally accepted",
+            S: "Synonym",
+            DS: "Doubtful synonym",
+            U: "Unresolved"
         }
     },
     pagination: {
@@ -150,6 +150,7 @@ export default {
             baseUri: `${backendBase}/api/list-of-species`,
             getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
             getByIdUri: `${backendBase}/api/list-of-species/{id}`,
+            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B%7D`,
             countUri: `${backendBase}/api/list-of-species/count`
         },
         literaturesUri: {
