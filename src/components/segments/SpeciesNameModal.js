@@ -109,7 +109,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Genus
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.genusH}
@@ -122,7 +122,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Species
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.speciesH}
@@ -135,7 +135,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Subsp
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.subspH}
@@ -148,7 +148,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Var
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.varH}
@@ -161,7 +161,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Subvar
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.subvarH}
@@ -174,7 +174,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Forma
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.formaH}
@@ -187,7 +187,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Hybrid Authors
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.authorsH}
@@ -214,13 +214,14 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Type
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     componentClass="select"
                                     placeholder="select"
+                                    value={this.state.ntype}
                                     onChange={this.handleChange} >
                                     {
-                                        Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t]}</option>)
+                                        Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
                                     }
                                 </FormControl>
                             </Col>
@@ -229,7 +230,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Genus
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.genus}
@@ -242,7 +243,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Species
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.species}
@@ -255,7 +256,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Subsp
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.subsp}
@@ -268,7 +269,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Var
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.var}
@@ -281,7 +282,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Subvar
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.subvar}
@@ -294,7 +295,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Forma
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.forma}
@@ -307,7 +308,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Authors
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.authors}
@@ -317,7 +318,7 @@ class SpeciesNameModal extends Component {
                             </Col>
                         </FormGroup>
                         <FormGroup controlId="hybrid">
-                            <Col xs={12}>
+                            <Col sm={12}>
                                 <Checkbox inline
                                     id="hybrid"
                                     value={this.state.hybrid}
@@ -332,7 +333,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Publication
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.publication}
@@ -345,7 +346,7 @@ class SpeciesNameModal extends Component {
                             <Col componentClass={ControlLabel} sm={titleColWidth}>
                                 Tribus
                             </Col>
-                            <Col xs={mainColWidth}>
+                            <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
                                     value={this.state.tribus}
