@@ -8,7 +8,7 @@ import {
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter, multiSelectFilter } from 'react-bootstrap-table2-filter';
 
 import { NotificationContainer } from 'react-notifications';
 import '../../utils/notifications';
@@ -32,28 +32,19 @@ const idBasionym = 'idBasionym';
 const idReplaced = 'idReplaced';
 const idNomenNovum = 'idNomenNovum';
 
-const ntypes = config.mappings.losType;
+const buildNtypesOptions = (types) => {
+    const obj = {};
+    Object.keys(ntypes).forEach(t => {
+        obj[t] = t;
+    });
+    return obj;
+}
 
-const columns = [
-    {
-        dataField: 'id',
-        text: 'ID'
-    },
-    {
-        dataField: 'type',
-        text: 'Type'
-    },
-    {
-        dataField: 'speciesName',
-        text: 'Name',
-        filter: textFilter()
-    },
-    {
-        dataField: 'extra',
-        text: '',
-        headerStyle: { width: '10px' }
-    }
-];
+const ntypeFormatter = (cell) => {
+    return (
+        <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>
+    );
+}
 
 const getLosById = async (id) => {
     const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id });
@@ -66,6 +57,37 @@ const getAllLos = async () => {
     const response = await axios.get(getAllUri);
     return response.data;
 }
+
+const ntypes = config.mappings.losType;
+const ntypesFilterOptions = buildNtypesOptions(ntypes);
+
+const columns = [
+    {
+        dataField: 'id',
+        text: 'ID',
+        sort: true
+    },
+    {
+        dataField: 'ntype',
+        text: 'Type',
+        formatter: ntypeFormatter,
+        filter: multiSelectFilter({
+            options: ntypesFilterOptions
+        }),
+        sort: true
+    },
+    {
+        dataField: 'speciesName',
+        text: 'Name',
+        filter: textFilter(),
+        sort: true
+    },
+    {
+        dataField: 'extra',
+        text: '',
+        headerStyle: { width: '10px' }
+    }
+];
 
 class Checklist extends Component {
 
@@ -127,8 +149,8 @@ class Checklist extends Component {
         return data.map(n => {
             return ({
                 id: n.id,
-                type: <span style={{ color: config.mappings.losType[n.ntype].colour }}>{n.ntype}</span>,
-                speciesName: <LosName data={n} />,
+                ntype: n.ntype,
+                speciesName: helper.listOfSpeciesString(n),
                 extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
             })
         });
@@ -166,7 +188,7 @@ class Checklist extends Component {
                 this.props.onTableChange(undefined, {});
             })
             .catch(error => {
-                notifications.error('Error saving to database');
+                notifications.error('Error saving');
                 throw error;
             });
     }
@@ -275,7 +297,6 @@ class Checklist extends Component {
                         <Col sm={6}>
                             <div className="scrollable">
                                 <BootstrapTable hover striped condensed
-                                    remote={{ filter: true }}
                                     keyField='id'
                                     data={this.formatResult(this.props.data)}
                                     columns={columns}
