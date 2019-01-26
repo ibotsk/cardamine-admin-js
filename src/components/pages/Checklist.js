@@ -68,8 +68,7 @@ class Checklist extends Component {
             modalEditId: 0, //id for modal
             listOfSpecies: [], //options for autocomplete fields
             species: { // properties for synonyms
-                id: undefined,
-                accepted: {}
+                id: undefined
             }
         }
     }
@@ -83,6 +82,9 @@ class Checklist extends Component {
 
     hideModal = () => {
         this.props.onTableChange(undefined, {});
+        if (this.state.species.id) {
+            this.populateDetailsForEdit(this.state.species.id);
+        }
         this.setState({ [MODAL_SPECIES_NAME]: false });
     }
 
@@ -121,6 +123,31 @@ class Checklist extends Component {
         }));
     }
 
+    getSelectedName = (id) => {
+        return this.state.listOfSpecies.filter(l => l.id === id);
+    }
+
+    hangeChangeTypeahead = (selected, prop) => {
+        const species = { ...this.state.species };
+        const id = selected[0] ? selected[0].id : undefined;
+        species[prop] = id;
+        this.setState({
+            species
+        });
+    }
+
+    submitForm = (e) => {
+        e.preventDefault();
+
+        const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand();
+
+        axios.put(losUri, this.state.species)
+            .catch(error => {
+                console.error(error);
+                throw error;
+            })
+    }
+
     renderDetailHeader = () => {
         if (!this.state.species.id) {
             return (
@@ -130,9 +157,11 @@ class Checklist extends Component {
             )
         }
         return (
-            <Panel onClick={() => this.showModal(this.state.species.id)} >
+            <Panel>
                 <Panel.Heading>
-                    <h5><small>Click to edit</small></h5>
+                    <Button bsStyle='warning' bsSize='xsmall' onClick={() => this.showModal(this.state.species.id)}>
+                        <Glyphicon glyph='edit' /> Edit Name
+                    </Button>
                 </Panel.Heading>
                 <Panel.Body>
                     <h4><LosName data={this.state.species} /></h4>
@@ -145,17 +174,18 @@ class Checklist extends Component {
     renderEditDetails = () => {
         if (this.state.species.id) {
             return (
-                <Form>
+                <Form onSubmit={this.submitForm}>
                     <FormGroup controlId="ntype" bsSize='sm'>
                         <ControlLabel>
                             Accepted name
                         </ControlLabel>
                         <Typeahead
                             options={this.state.listOfSpecies}
-                            selected={this.state.species.idAcceptedName}
-                            onChange={(selected) => console.log(selected)}
+                            selected={this.getSelectedName(this.state.species.idAcceptedName)}
+                            onChange={(selected) => this.hangeChangeTypeahead(selected, 'idAcceptedName')}
                             placeholder="Start by typing a species present in the database" />
                     </FormGroup>
+                    <Button bsStyle="primary" type='submit' >Save</Button>
                 </Form>
             );
         }
