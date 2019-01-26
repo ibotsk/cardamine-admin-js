@@ -7,6 +7,8 @@ import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import get from 'lodash.get';
 
+import { NotificationContainer } from 'react-notifications';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
@@ -168,6 +170,7 @@ const Cdata = (props) => {
                     pagination={paginationFactory(props.paginationOptions)}
                 />
             </Grid>
+            <NotificationContainer />
         </div>
     )
 

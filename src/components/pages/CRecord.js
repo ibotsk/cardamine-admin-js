@@ -10,11 +10,14 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 
+import { NotificationContainer } from 'react-notifications';
+
 import axios from 'axios';
 import template from 'url-template';
 
 import config from '../../config/config';
 import helper from '../../utils/helper';
+import notifications from '../../utils/notifications';
 
 import LosName from '../segments/LosName';
 import PersonModal from '../segments/PersonModal';
@@ -265,8 +268,9 @@ class Record extends Component {
                 return axios.put(referenceUri, body); //upsert reference
             }).then(() => {
                 this.context.router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
+                notifications.success('Saved');
             }).catch(e => {
-                console.log(e);
+                notifications.success('Error saving');
                 throw e;
             });
     }
@@ -712,6 +716,7 @@ class Record extends Component {
                 <PersonModal show={this.state.modals[MODAL_PERSONS]} onHide={this.hideModal} />
                 <PublicationModal show={this.state.modals[MODAL_LITERATURE]} onHide={this.hideModal} />
                 <SpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={this.hideModal} />
+                <NotificationContainer />
             </div>
         );
     }
