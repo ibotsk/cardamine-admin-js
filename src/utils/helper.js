@@ -1,5 +1,5 @@
 import config from '../config/config';
-import format from './formatter';
+import formatter from './formatter';
 
 import Mustache from 'mustache';
 
@@ -146,7 +146,7 @@ const listOfSpeciesForComponent = (name, formatString) => {
 
     const formattedNameArr = nameArr.map(t => {
         if (t.format === ff) {
-            return format(t.string, formatString);
+            return formatter.format(t.string, formatString);
         } else {
             return t.string;
         }

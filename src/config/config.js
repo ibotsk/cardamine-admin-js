@@ -54,11 +54,26 @@ export default {
             }
         },
         losType: {
-            A: "Accepted name",
-            PA: "Provisionally accepted",
-            S: "Synonym",
-            DS: "Doubtful synonym",
-            U: "Unresolved"
+            A: {
+                text: "Accepted name",
+                colour: "#57ab27"
+            },
+            PA: { 
+                text: "Provisionally accepted",
+                colour: "#ee7f00"
+            },
+            S: { 
+                text: "Synonym",
+                colour: "#008fc8"
+            },
+            DS: {
+                text: "Doubtful synonym",
+                colour: "#0089a0"
+            },
+            U: {
+                text: "Unresolved",
+                colour: "#bb9d00"
+            }
         }
     },
     pagination: {

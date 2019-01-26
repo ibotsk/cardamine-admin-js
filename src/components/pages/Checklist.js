@@ -3,13 +3,15 @@ import React, { Component } from 'react';
 import {
     Grid, Col, Row,
     Button, Glyphicon, Panel, Well,
-    Form, FormGroup, ControlLabel
+    Form, FormControl, FormGroup, ControlLabel
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
+import { NotificationContainer } from 'react-notifications';
+import '../../utils/notifications';
 
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
@@ -22,8 +24,15 @@ import helper from '../../utils/helper';
 import config from '../../config/config';
 
 import '../../styles/custom.css';
+import notifications from '../../utils/notifications';
 
 const MODAL_SPECIES_NAME = 'showModalSpecies';
+const idAcceptedName = 'idAcceptedName';
+const idBasionym = 'idBasionym';
+const idReplaced = 'idReplaced';
+const idNomenNovum = 'idNomenNovum';
+
+const ntypes = config.mappings.losType;
 
 const columns = [
     {
@@ -92,7 +101,7 @@ class Checklist extends Component {
         mode: 'radio',
         clickToSelect: true,
         hideSelectColumn: true,
-        bgColor: '#00BFFF',
+        bgColor: '#ffea77',
         onSelect: (row, isSelect, rowIndex, e) => {
             this.populateDetailsForEdit(row.id);
         },
@@ -115,12 +124,14 @@ class Checklist extends Component {
     }
 
     formatResult = (data) => {
-        return data.map(n => ({
-            id: n.id,
-            type: n.ntype,
-            speciesName: <LosName data={n} />,
-            extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
-        }));
+        return data.map(n => {
+            return ({
+                id: n.id,
+                type: <span style={{ color: config.mappings.losType[n.ntype].colour }}>{n.ntype}</span>,
+                speciesName: <LosName data={n} />,
+                extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
+            })
+        });
     }
 
     getSelectedName = (id) => {
@@ -128,9 +139,17 @@ class Checklist extends Component {
     }
 
     hangeChangeTypeahead = (selected, prop) => {
-        const species = { ...this.state.species };
         const id = selected[0] ? selected[0].id : undefined;
-        species[prop] = id;
+        this.handleChange(prop, id);
+    }
+
+    hangeChangeInput = (e) => {
+        this.handleChange(e.target.id, e.target.value);
+    }
+
+    handleChange = (prop, val) => {
+        const species = { ...this.state.species };
+        species[prop] = val;
         this.setState({
             species
         });
@@ -142,10 +161,14 @@ class Checklist extends Component {
         const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand();
 
         axios.put(losUri, this.state.species)
-            .catch(error => {
-                console.error(error);
-                throw error;
+            .then(() => {
+                notifications.success('Saved');
+                this.props.onTableChange(undefined, {});
             })
+            .catch(error => {
+                notifications.error('Error saving to database');
+                throw error;
+            });
     }
 
     renderDetailHeader = () => {
@@ -166,6 +189,21 @@ class Checklist extends Component {
                 <Panel.Body>
                     <h4><LosName data={this.state.species} /></h4>
                     <h5>{this.state.species.publication}</h5>
+                    <FormGroup controlId='ntype' bsSize='sm'>
+                        <Row>
+                            <Col xs={3}>
+                                <FormControl
+                                    componentClass="select"
+                                    placeholder="select"
+                                    value={this.state.species.ntype}
+                                    onChange={this.hangeChangeInput} >
+                                    {
+                                        Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
+                                    }
+                                </FormControl>
+                            </Col>
+                        </Row>
+                    </FormGroup>
                 </Panel.Body>
             </Panel>
         )
@@ -174,19 +212,49 @@ class Checklist extends Component {
     renderEditDetails = () => {
         if (this.state.species.id) {
             return (
-                <Form onSubmit={this.submitForm}>
-                    <FormGroup controlId="ntype" bsSize='sm'>
+                <Well>
+                    <FormGroup controlId={idAcceptedName} bsSize='sm'>
                         <ControlLabel>
                             Accepted name
                         </ControlLabel>
                         <Typeahead
                             options={this.state.listOfSpecies}
-                            selected={this.getSelectedName(this.state.species.idAcceptedName)}
-                            onChange={(selected) => this.hangeChangeTypeahead(selected, 'idAcceptedName')}
+                            selected={this.getSelectedName(this.state.species[idAcceptedName])}
+                            onChange={(selected) => this.hangeChangeTypeahead(selected, idAcceptedName)}
+                            placeholder="Start by typing a species present in the database" />
+                    </FormGroup>
+                    <FormGroup controlId={idBasionym} bsSize='sm'>
+                        <ControlLabel>
+                            Basionym
+                        </ControlLabel>
+                        <Typeahead
+                            options={this.state.listOfSpecies}
+                            selected={this.getSelectedName(this.state.species[idBasionym])}
+                            onChange={(selected) => this.hangeChangeTypeahead(selected, idBasionym)}
+                            placeholder="Start by typing a species present in the database" />
+                    </FormGroup>
+                    <FormGroup controlId={idReplaced} bsSize='sm'>
+                        <ControlLabel>
+                            Replaced Name
+                        </ControlLabel>
+                        <Typeahead
+                            options={this.state.listOfSpecies}
+                            selected={this.getSelectedName(this.state.species[idReplaced])}
+                            onChange={(selected) => this.hangeChangeTypeahead(selected, idReplaced)}
+                            placeholder="Start by typing a species present in the database" />
+                    </FormGroup>
+                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                        <ControlLabel>
+                            Nomen Novum
+                        </ControlLabel>
+                        <Typeahead
+                            options={this.state.listOfSpecies}
+                            selected={this.getSelectedName(this.state.species[idNomenNovum])}
+                            onChange={(selected) => this.hangeChangeTypeahead(selected, idNomenNovum)}
                             placeholder="Start by typing a species present in the database" />
                     </FormGroup>
                     <Button bsStyle="primary" type='submit' >Save</Button>
-                </Form>
+                </Well>
             );
         }
         return undefined;
@@ -218,14 +286,15 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6}>
-                            {this.renderDetailHeader()}
-                            <Well>
+                            <Form onSubmit={this.submitForm}>
+                                {this.renderDetailHeader()}
                                 {this.renderEditDetails()}
-                            </Well>
+                            </Form>
                         </Col>
                     </Row>
                 </Grid>
                 <SpeciesNameModal id={this.state.modalEditId} show={this.state[MODAL_SPECIES_NAME]} onHide={this.hideModal} />
+                <NotificationContainer />
             </div>
         );
     }
