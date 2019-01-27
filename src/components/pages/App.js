@@ -16,7 +16,7 @@ const Routing = () => {
       <Route path="/chromosome-data/new" component={Record} />
       <Route path="/chromosome-data/edit/:recordId" component={Record} />
       <Route exact path="/publications" component={Publications} />
-      <Route exact path="/names" component={Checklist} />
+      <Route path="/names/:id?" component={Checklist} />
     </Switch>
   );
 }

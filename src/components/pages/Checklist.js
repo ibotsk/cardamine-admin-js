@@ -100,7 +100,8 @@ class Checklist extends Component {
             listOfSpecies: [], //options for autocomplete fields
             species: { // properties for synonyms
                 id: undefined
-            }
+            },
+            tableRowsSelected: []
         }
     }
 
@@ -125,6 +126,7 @@ class Checklist extends Component {
         hideSelectColumn: true,
         bgColor: '#ffea77',
         onSelect: (row, isSelect, rowIndex, e) => {
+            this.props.history.push(`/names/${row.id}`);
             this.populateDetailsForEdit(row.id);
         },
     });
@@ -141,7 +143,8 @@ class Checklist extends Component {
             species: {
                 ...los
             },
-            listOfSpecies
+            listOfSpecies,
+            tableRowsSelected: [id]
         });
     }
 
@@ -191,6 +194,17 @@ class Checklist extends Component {
                 notifications.error('Error saving');
                 throw error;
             });
+    }
+
+    componentDidMount() {
+        const selectedId = this.props.match.params.id;
+        if (selectedId) {
+            const selectedIdInt = parseInt(selectedId);
+            this.populateDetailsForEdit(selectedIdInt);
+            this.setState({
+                tableRowsSelected: [selectedIdInt]
+            });
+        }
     }
 
     renderDetailHeader = () => {
@@ -283,7 +297,7 @@ class Checklist extends Component {
     }
 
     render() {
-        console.log(this.state);
+        const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected};
         return (
             <div id='names'>
                 <Grid>
@@ -301,7 +315,8 @@ class Checklist extends Component {
                                     data={this.formatResult(this.props.data)}
                                     columns={columns}
                                     filter={filterFactory()}
-                                    selectRow={this.selectRow()}
+                                    // selectRow={this.selectRow()}
+                                    selectRow={tableRowSelectedProps}
                                     onTableChange={this.props.onTableChange}
                                 />
                             </div>

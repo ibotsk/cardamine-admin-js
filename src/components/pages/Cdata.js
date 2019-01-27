@@ -14,7 +14,7 @@ import LosName from '../segments/LosName';
 
 import config from '../../config/config';
 
-const PAGE_DETAIL = "/checklist/detail/";
+const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
 const NEW_RECORD = "/chromosome-data/new";
 
