@@ -21,16 +21,19 @@ import axios from 'axios';
 import template from 'url-template';
 
 import helper from '../../utils/helper';
+import notifications from '../../utils/notifications';
 import config from '../../config/config';
 
 import '../../styles/custom.css';
-import notifications from '../../utils/notifications';
 
 const MODAL_SPECIES_NAME = 'showModalSpecies';
 const idAcceptedName = 'idAcceptedName';
 const idBasionym = 'idBasionym';
 const idReplaced = 'idReplaced';
 const idNomenNovum = 'idNomenNovum';
+
+const titleColWidth = 2;
+const mainColWidth = 10;
 
 const buildNtypesOptions = (types) => {
     const obj = {};
@@ -226,19 +229,17 @@ class Checklist extends Component {
                     <h4><LosName data={this.state.species} /></h4>
                     <h5>{this.state.species.publication}</h5>
                     <FormGroup controlId='ntype' bsSize='sm'>
-                        <Row>
-                            <Col xs={3}>
-                                <FormControl
-                                    componentClass="select"
-                                    placeholder="select"
-                                    value={this.state.species.ntype}
-                                    onChange={this.hangeChangeInput} >
-                                    {
-                                        Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
-                                    }
-                                </FormControl>
-                            </Col>
-                        </Row>
+                        <Col xs={3}>
+                            <FormControl
+                                componentClass="select"
+                                placeholder="select"
+                                value={this.state.species.ntype}
+                                onChange={this.hangeChangeInput} >
+                                {
+                                    Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
+                                }
+                            </FormControl>
+                        </Col>
                     </FormGroup>
                 </Panel.Body>
             </Panel>
@@ -250,45 +251,54 @@ class Checklist extends Component {
             return (
                 <Well>
                     <FormGroup controlId={idAcceptedName} bsSize='sm'>
-                        <ControlLabel>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Accepted name
-                        </ControlLabel>
-                        <Typeahead
-                            options={this.state.listOfSpecies}
-                            selected={this.getSelectedName(this.state.species[idAcceptedName])}
-                            onChange={(selected) => this.hangeChangeTypeahead(selected, idAcceptedName)}
-                            placeholder="Start by typing a species present in the database" />
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <Typeahead
+                                options={this.state.listOfSpecies}
+                                selected={this.getSelectedName(this.state.species[idAcceptedName])}
+                                onChange={(selected) => this.hangeChangeTypeahead(selected, idAcceptedName)}
+                                placeholder="Start by typing a species present in the database" />
+                        </Col>
                     </FormGroup>
                     <FormGroup controlId={idBasionym} bsSize='sm'>
-                        <ControlLabel>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Basionym
-                        </ControlLabel>
-                        <Typeahead
-                            options={this.state.listOfSpecies}
-                            selected={this.getSelectedName(this.state.species[idBasionym])}
-                            onChange={(selected) => this.hangeChangeTypeahead(selected, idBasionym)}
-                            placeholder="Start by typing a species present in the database" />
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <Typeahead
+                                options={this.state.listOfSpecies}
+                                selected={this.getSelectedName(this.state.species[idBasionym])}
+                                onChange={(selected) => this.hangeChangeTypeahead(selected, idBasionym)}
+                                placeholder="Start by typing a species present in the database" />
+                        </Col>
                     </FormGroup>
                     <FormGroup controlId={idReplaced} bsSize='sm'>
-                        <ControlLabel>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Replaced Name
-                        </ControlLabel>
-                        <Typeahead
-                            options={this.state.listOfSpecies}
-                            selected={this.getSelectedName(this.state.species[idReplaced])}
-                            onChange={(selected) => this.hangeChangeTypeahead(selected, idReplaced)}
-                            placeholder="Start by typing a species present in the database" />
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <Typeahead
+                                options={this.state.listOfSpecies}
+                                selected={this.getSelectedName(this.state.species[idReplaced])}
+                                onChange={(selected) => this.hangeChangeTypeahead(selected, idReplaced)}
+                                placeholder="Start by typing a species present in the database" />
+                        </Col>
                     </FormGroup>
                     <FormGroup controlId={idNomenNovum} bsSize='sm'>
-                        <ControlLabel>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Nomen Novum
-                        </ControlLabel>
-                        <Typeahead
-                            options={this.state.listOfSpecies}
-                            selected={this.getSelectedName(this.state.species[idNomenNovum])}
-                            onChange={(selected) => this.hangeChangeTypeahead(selected, idNomenNovum)}
-                            placeholder="Start by typing a species present in the database" />
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <Typeahead
+                                options={this.state.listOfSpecies}
+                                selected={this.getSelectedName(this.state.species[idNomenNovum])}
+                                onChange={(selected) => this.hangeChangeTypeahead(selected, idNomenNovum)}
+                                placeholder="Start by typing a species present in the database" />
+                        </Col>
                     </FormGroup>
+                    <hr />
                     <Button bsStyle="primary" type='submit' >Save</Button>
                 </Well>
             );
@@ -297,7 +307,7 @@ class Checklist extends Component {
     }
 
     render() {
-        const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected};
+        const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
         return (
             <div id='names'>
                 <Grid>
@@ -322,7 +332,7 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6}>
-                            <Form onSubmit={this.submitForm}>
+                            <Form onSubmit={this.submitForm} horizontal>
                                 {this.renderDetailHeader()}
                                 {this.renderEditDetails()}
                             </Form>
