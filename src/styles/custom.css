@@ -2,4 +2,11 @@
 .scrollable {
     overflow-y: scroll;
     height: 600px;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+.consice-list .list-group-item{
+    padding-top: 5px;
+    padding-bottom: 5px;
 }

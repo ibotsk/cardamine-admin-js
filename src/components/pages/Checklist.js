@@ -16,6 +16,7 @@ import '../../utils/notifications';
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 import SpeciesNameModal from '../segments/SpeciesNameModal';
+import AddableList from '../segments/AddableList';
 
 import axios from 'axios';
 import template from 'url-template';
@@ -104,7 +105,9 @@ class Checklist extends Component {
             species: { // properties for synonyms
                 id: undefined
             },
-            tableRowsSelected: []
+            tableRowsSelected: [],
+            nomenclatoricSynonyms: [],
+            taxonomicSynonyms: []
         }
     }
 
@@ -166,12 +169,12 @@ class Checklist extends Component {
         return this.state.listOfSpecies.filter(l => l.id === id);
     }
 
-    hangeChangeTypeahead = (selected, prop) => {
+    handleChangeTypeahead = (selected, prop) => {
         const id = selected[0] ? selected[0].id : undefined;
         this.handleChange(prop, id);
     }
 
-    hangeChangeInput = (e) => {
+    handleChangeInput = (e) => {
         this.handleChange(e.target.id, e.target.value);
     }
 
@@ -181,6 +184,44 @@ class Checklist extends Component {
         this.setState({
             species
         });
+    }
+
+    handleAddNomenclatoricSynonym = (selected) => {
+        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms;
+        if (selected[0]) {
+            if (nomenclatoricSynonyms.includes(selected[0])) {
+                notifications.warning('The item is already in the list');
+            } else {
+                nomenclatoricSynonyms.push(selected[0]);
+                nomenclatoricSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+
+                this.setState({ nomenclatoricSynonyms });
+            }
+        }
+    }
+
+    handleAddTaxonomicSynonym = (selected) => {
+        const taxonomicSynonyms = this.state.taxonomicSynonyms;
+        if (selected[0]) {
+            if (taxonomicSynonyms.includes(selected[0])) {
+                notifications.warning('The item is already in the list');
+            } else {
+                taxonomicSynonyms.push(selected[0]);
+                taxonomicSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+
+                this.setState({ taxonomicSynonyms });
+            }
+        }
+    }
+
+    handleRemoveNomenclatoricSynonym = (index) => {
+        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter((e, i) => i !== index);
+        this.setState({ nomenclatoricSynonyms });
+    }
+
+    handleRemoveTaxonomicSynonym = (index) => {
+        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter((e, i) => i !== index);
+        this.setState({ taxonomicSynonyms });
     }
 
     submitForm = (e) => {
@@ -234,7 +275,7 @@ class Checklist extends Component {
                                 componentClass="select"
                                 placeholder="select"
                                 value={this.state.species.ntype}
-                                onChange={this.hangeChangeInput} >
+                                onChange={this.handleChangeInput} >
                                 {
                                     Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
                                 }
@@ -258,7 +299,7 @@ class Checklist extends Component {
                             <Typeahead
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idAcceptedName])}
-                                onChange={(selected) => this.hangeChangeTypeahead(selected, idAcceptedName)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, idAcceptedName)}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
@@ -270,7 +311,7 @@ class Checklist extends Component {
                             <Typeahead
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idBasionym])}
-                                onChange={(selected) => this.hangeChangeTypeahead(selected, idBasionym)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, idBasionym)}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
@@ -282,7 +323,7 @@ class Checklist extends Component {
                             <Typeahead
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idReplaced])}
-                                onChange={(selected) => this.hangeChangeTypeahead(selected, idReplaced)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, idReplaced)}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
@@ -294,8 +335,37 @@ class Checklist extends Component {
                             <Typeahead
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idNomenNovum])}
-                                onChange={(selected) => this.hangeChangeTypeahead(selected, idNomenNovum)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, idNomenNovum)}
                                 placeholder="Start by typing a species present in the database" />
+                        </Col>
+                    </FormGroup>
+                    <hr />
+                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Nomenclatoric Synonyms
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <AddableList
+                                data={this.state.nomenclatoricSynonyms.map(s => `≡ ${s.label}`)}
+                                options={this.state.listOfSpecies}
+                                changeToTypeSymbol='='
+                                onAddItemToList={this.handleAddNomenclatoricSynonym}
+                                onRowDelete={this.handleRemoveNomenclatoricSynonym}
+                            />
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Taxonomic Synonyms
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <AddableList
+                                data={this.state.taxonomicSynonyms.map(s => `= ${s.label}`)}
+                                options={this.state.listOfSpecies}
+                                changeToTypeSymbol='≡'
+                                onAddItemToList={this.handleAddTaxonomicSynonym}
+                                onRowDelete={this.handleRemoveTaxonomicSynonym}
+                            />
                         </Col>
                     </FormGroup>
                     <hr />
