@@ -28,7 +28,7 @@ class AddableList extends Component {
 
     onAddItem = () => {
         if (this.state.selected) {
-            this.props.onAddItemToList(this.state.selected)
+            this.props.onAddItemToList(this.state.selected[0])
 
             this.typeahead.getInstance().clear();
             this.setState({
@@ -43,12 +43,13 @@ class AddableList extends Component {
             <div className="concise-list">
                 <ListGroup>
                     {
-                        data.map((row, index) =>
+                        // row must contain id and label
+                        data.map(({ id, label }, index) =>
                             <SynonymListItem
                                 key={index}
-                                value={row}
-                                onRowDelete={() => this.props.onRowDelete(index)}
-                                onRowChangeType={this.props.onChangeType}
+                                value={label}
+                                onRowDelete={() => this.props.onRowDelete(id)}
+                                onRowChangeType={() => this.props.onChangeType(id)}
                                 changeTypeVal={this.props.changeToTypeSymbol}
                             />
                         )

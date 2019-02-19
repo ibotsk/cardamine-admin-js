@@ -50,6 +50,13 @@ const ntypeFormatter = (cell) => {
     );
 }
 
+const synonymFormatter = (synonym, prefix) => (
+    {
+        id: synonym.id,
+        label: `${prefix} ${synonym.label}`
+    }
+);
+
 const getLosById = async (id) => {
     const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id });
     const response = await axios.get(getByIdUri);
@@ -106,8 +113,8 @@ class Checklist extends Component {
                 id: undefined
             },
             tableRowsSelected: [],
-            nomenclatoricSynonyms: [],
-            taxonomicSynonyms: []
+            nomenclatoricSynonyms: [], // contains objects {id, label}
+            taxonomicSynonyms: [] // contains objects {id, label}
         }
     }
 
@@ -188,40 +195,60 @@ class Checklist extends Component {
 
     handleAddNomenclatoricSynonym = (selected) => {
         const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms;
-        if (selected[0]) {
-            if (nomenclatoricSynonyms.includes(selected[0])) {
+        if (selected) {
+            if (nomenclatoricSynonyms.includes(selected)) {
                 notifications.warning('The item is already in the list');
             } else {
-                nomenclatoricSynonyms.push(selected[0]);
+                nomenclatoricSynonyms.push(selected);
                 nomenclatoricSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
 
-                this.setState({ nomenclatoricSynonyms });
+                this.setState({
+                    nomenclatoricSynonyms
+                });
             }
         }
     }
 
     handleAddTaxonomicSynonym = (selected) => {
         const taxonomicSynonyms = this.state.taxonomicSynonyms;
-        if (selected[0]) {
-            if (taxonomicSynonyms.includes(selected[0])) {
+        if (selected) {
+            if (taxonomicSynonyms.includes(selected)) {
                 notifications.warning('The item is already in the list');
             } else {
-                taxonomicSynonyms.push(selected[0]);
+                taxonomicSynonyms.push(selected);
                 taxonomicSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
 
-                this.setState({ taxonomicSynonyms });
+                this.setState({
+                    taxonomicSynonyms
+                });
             }
         }
     }
 
-    handleRemoveNomenclatoricSynonym = (index) => {
-        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter((e, i) => i !== index);
-        this.setState({ nomenclatoricSynonyms });
+    handleRemoveNomenclatoricSynonym = (id) => {
+        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(e => e.id !== id);
+        this.setState({
+            nomenclatoricSynonyms
+        });
     }
 
-    handleRemoveTaxonomicSynonym = (index) => {
-        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter((e, i) => i !== index);
-        this.setState({ taxonomicSynonyms });
+    handleRemoveTaxonomicSynonym = (id) => {
+        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(e => e.id !== id);
+        this.setState({
+            taxonomicSynonyms
+        });
+    }
+
+    handleChangeNomenclatoricToTaxonomic = async (id) => {
+        const selected = this.state.nomenclatoricSynonyms.find(e => e.id === id);
+        await this.handleAddTaxonomicSynonym(selected);
+        await this.handleRemoveNomenclatoricSynonym(id);
+    }
+
+    handleChangeTaxonomicToNomenclatoric = async (id) => {
+        const selected = this.state.taxonomicSynonyms.find(e => e.id === id);
+        await this.handleAddNomenclatoricSynonym(selected);
+        await this.handleRemoveTaxonomicSynonym(id);
     }
 
     submitForm = (e) => {
@@ -346,11 +373,12 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                data={this.state.nomenclatoricSynonyms.map(s => `≡ ${s.label}`)}
+                                data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, '≡'))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol='='
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
                                 onRowDelete={this.handleRemoveNomenclatoricSynonym}
+                                onChangeType={this.handleChangeNomenclatoricToTaxonomic}
                             />
                         </Col>
                     </FormGroup>
@@ -360,11 +388,12 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                data={this.state.taxonomicSynonyms.map(s => `= ${s.label}`)}
+                                data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, '='))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol='≡'
                                 onAddItemToList={this.handleAddTaxonomicSynonym}
                                 onRowDelete={this.handleRemoveTaxonomicSynonym}
+                                onChangeType={this.handleChangeTaxonomicToNomenclatoric}
                             />
                         </Col>
                     </FormGroup>
