@@ -166,6 +166,8 @@ export default {
             getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
             getByIdUri: `${backendBase}/api/list-of-species/{id}`,
             getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B%7D`,
+            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric`,
+            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic`,
             countUri: `${backendBase}/api/list-of-species/count`
         },
         literaturesUri: {

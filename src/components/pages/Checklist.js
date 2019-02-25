@@ -53,7 +53,7 @@ const ntypeFormatter = (cell) => {
 const synonymFormatter = (synonym, prefix) => (
     {
         id: synonym.id,
-        label: `${prefix} ${synonym.label}`
+        label: `${prefix} ${helper.listOfSpeciesString(synonym)}`
     }
 );
 
@@ -67,6 +67,18 @@ const getAllLos = async () => {
     const getAllUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri).expand();
     const response = await axios.get(getAllUri);
     return response.data;
+}
+
+const getSynonyms = async (id) => {
+    const getSynonymsNomenclatoricUri = template.parse(config.uris.listOfSpeciesUri.getNomenclatoricSynonymsUri).expand({ id });
+    const getSynonymsTaxonomicUri = template.parse(config.uris.listOfSpeciesUri.getTaxonomicSynonymsUri).expand({ id });
+
+    let response = await axios.get(getSynonymsNomenclatoricUri);
+    const nomenclatoricSynonyms = response.data;
+
+    response = await axios.get(getSynonymsTaxonomicUri);
+    const taxonomicSynonyms = response.data;
+    return { nomenclatoricSynonyms, taxonomicSynonyms };
 }
 
 const ntypes = config.mappings.losType;
@@ -113,8 +125,8 @@ class Checklist extends Component {
                 id: undefined
             },
             tableRowsSelected: [],
-            nomenclatoricSynonyms: [], // contains objects {id, label}
-            taxonomicSynonyms: [] // contains objects {id, label}
+            nomenclatoricSynonyms: [], // contains objects of list-of-species
+            taxonomicSynonyms: [] // contains objects of list-of-species
         }
     }
 
@@ -152,16 +164,20 @@ class Checklist extends Component {
             label: helper.listOfSpeciesString(l)
         }));
 
+        const { nomenclatoricSynonyms, taxonomicSynonyms } = await getSynonyms(id);
+
         this.setState({
             species: {
                 ...los
             },
             listOfSpecies,
-            tableRowsSelected: [id]
+            tableRowsSelected: [id],
+            nomenclatoricSynonyms,
+            taxonomicSynonyms
         });
     }
 
-    formatResult = (data) => {
+    formatTableRow = (data) => {
         return data.map(n => {
             return ({
                 id: n.id,
@@ -421,7 +437,7 @@ class Checklist extends Component {
                             <div className="scrollable">
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
-                                    data={this.formatResult(this.props.data)}
+                                    data={this.formatTableRow(this.props.data)}
                                     columns={columns}
                                     filter={filterFactory()}
                                     // selectRow={this.selectRow()}
