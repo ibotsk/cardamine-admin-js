@@ -159,6 +159,82 @@ const listOfSpeciesString = (name) => {
     return listOfSpeciesForComponent(name, 'plain').join('');
 }
 
+const listOfSpeciesSorterLex = (losA, losB) => {
+    // a > b = 1
+    if (losA.genus > losB.genus) {
+        return 1;
+    } else if (losA.genus < losB.genus) {
+        return -1;
+    }
+    if (losA.species > losB.species) {
+        return 1;
+    } else if (losA.species < losB.species) {
+        return -1;
+    }
+    if (losA.subsp > losB.subsp) {
+        return 1;
+    } else if (losA.subsp < losB.subsp) {
+        return -1;
+    }
+    if (losA.var > losB.var) {
+        return 1;
+    } else if (losA.var < losB.var) {
+        return -1;
+    }
+    if (losA.forma > losB.forma) {
+        return 1;
+    } else if (losA.forma < losB.forma) {
+        return -1;
+    }
+    if (losA.subvar > losB.subvar) {
+        return 1;
+    } else if (losA.subvar < losB.subvar) {
+        return -1;
+    }
+    if (losA.authors > losB.authors) {
+        return 1;
+    } else if (losA.authors < losB.authors) {
+        return -1;
+    }
+    // hybrid fields next
+    if (losA.genusH > losB.genusH) {
+        return 1;
+    } else if (losA.genusH < losB.genusH) {
+        return -1;
+    }
+    if (losA.speciesH > losB.speciesH) {
+        return 1;
+    } else if (losA.speciesH < losB.speciesH) {
+        return -1;
+    }
+    if (losA.subspH > losB.subspH) {
+        return 1;
+    } else if (losA.subspH < losB.subspH) {
+        return -1;
+    }
+    if (losA.varH > losB.varH) {
+        return 1;
+    } else if (losA.varH < losB.varH) {
+        return -1;
+    }
+    if (losA.formaH > losB.formaH) {
+        return 1;
+    } else if (losA.formaH < losB.formaH) {
+        return -1;
+    }
+    if (losA.subvarH > losB.subvarH) {
+        return 1;
+    } else if (losA.subvarH < losB.subvarH) {
+        return -1;
+    }
+    if (losA.authorsH > losB.authorsH) {
+        return 1;
+    } else if (losA.authorsH < losB.authorsH) {
+        return -1;
+    }
+    return 0;
+}
+
 const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
 
     const typeMapping = config.mappings.displayType[type].name;
@@ -209,4 +285,4 @@ const publicationCurateFields = (publication) => {
     return curatedPubl;
 }
 
-export default { listOfSpeciesForComponent, listOfSpeciesString, makeWhere, parsePublication, publicationCurateFields };
+export default { listOfSpeciesForComponent, listOfSpeciesString, listOfSpeciesSorterLex, makeWhere, parsePublication, publicationCurateFields };

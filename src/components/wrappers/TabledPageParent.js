@@ -15,7 +15,7 @@ const customTotal = (from, to, size) => (
 const paginationOptions = config.pagination;
 paginationOptions.paginationTotalRenderer = customTotal;
 
-const TabledPage = injectedProps => WrappingComponent => {
+const TabledPage = injectedProps => WrappedComponent => {
 
     return class extends Component {
 
@@ -75,7 +75,7 @@ const TabledPage = injectedProps => WrappingComponent => {
             const { page, sizePerPage, totalSize } = this.state;
             const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
             return (
-                <WrappingComponent
+                <WrappedComponent
                     {...this.props}
                     onTableChange={this.handleTableChange}
                     paginationOptions={allPaginationOptions}

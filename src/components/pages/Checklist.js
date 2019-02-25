@@ -53,7 +53,8 @@ const ntypeFormatter = (cell) => {
 const synonymFormatter = (synonym, prefix) => (
     {
         id: synonym.id,
-        label: `${prefix} ${helper.listOfSpeciesString(synonym)}`
+        prefix,
+        value: synonym
     }
 );
 
@@ -209,14 +210,15 @@ class Checklist extends Component {
         });
     }
 
-    handleAddNomenclatoricSynonym = (selected) => {
+    handleAddNomenclatoricSynonym = async (selected) => {
         const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms;
         if (selected) {
-            if (nomenclatoricSynonyms.includes(selected)) {
+            if (nomenclatoricSynonyms.find(s => s.id === selected.id)) {
                 notifications.warning('The item is already in the list');
             } else {
-                nomenclatoricSynonyms.push(selected);
-                nomenclatoricSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+                const synonymJson = await getLosById(selected.id);
+                nomenclatoricSynonyms.push(synonymJson);
+                nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
 
                 this.setState({
                     nomenclatoricSynonyms
@@ -225,14 +227,15 @@ class Checklist extends Component {
         }
     }
 
-    handleAddTaxonomicSynonym = (selected) => {
+    handleAddTaxonomicSynonym = async (selected) => {
         const taxonomicSynonyms = this.state.taxonomicSynonyms;
         if (selected) {
-            if (taxonomicSynonyms.includes(selected)) {
+            if (taxonomicSynonyms.find(s => s.id === selected.id)) {
                 notifications.warning('The item is already in the list');
             } else {
-                taxonomicSynonyms.push(selected);
-                taxonomicSynonyms.sort((a, b) => (a.label > b.label) ? 1 : ((b.label > a.label) ? -1 : 0));
+                const synonymJson = await getLosById(selected.id);
+                taxonomicSynonyms.push(synonymJson);
+                taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
 
                 this.setState({
                     taxonomicSynonyms
@@ -242,27 +245,27 @@ class Checklist extends Component {
     }
 
     handleRemoveNomenclatoricSynonym = (id) => {
-        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(e => e.id !== id);
+        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(s => s.id !== id);
         this.setState({
             nomenclatoricSynonyms
         });
     }
 
     handleRemoveTaxonomicSynonym = (id) => {
-        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(e => e.id !== id);
+        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(s => s.id !== id);
         this.setState({
             taxonomicSynonyms
         });
     }
 
     handleChangeNomenclatoricToTaxonomic = async (id) => {
-        const selected = this.state.nomenclatoricSynonyms.find(e => e.id === id);
+        const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
         await this.handleAddTaxonomicSynonym(selected);
         await this.handleRemoveNomenclatoricSynonym(id);
     }
 
     handleChangeTaxonomicToNomenclatoric = async (id) => {
-        const selected = this.state.taxonomicSynonyms.find(e => e.id === id);
+        const selected = this.state.taxonomicSynonyms.find(s => s.id === id);
         await this.handleAddNomenclatoricSynonym(selected);
         await this.handleRemoveTaxonomicSynonym(id);
     }

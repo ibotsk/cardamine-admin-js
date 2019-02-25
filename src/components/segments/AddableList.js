@@ -43,11 +43,11 @@ class AddableList extends Component {
             <div className="concise-list">
                 <ListGroup>
                     {
-                        // row must contain id and label
-                        data.map(({ id, label }, index) =>
+                        // row must contain id, props is the rest
+                        data.map(({ id, ...props }, index) =>
                             <SynonymListItem
                                 key={index}
-                                value={label}
+                                data={props}
                                 onRowDelete={() => this.props.onRowDelete(id)}
                                 onRowChangeType={() => this.props.onChangeType(id)}
                                 changeTypeVal={this.props.changeToTypeSymbol}
@@ -64,7 +64,7 @@ class AddableList extends Component {
                                         options={this.props.options}
                                         onChange={this.onChange}
                                         selected={this.state.selected}
-                                        placeholder="Start by typing a surname present in the database"
+                                        placeholder="Start by typing"
                                     />
                                     <InputGroup.Button>
                                         <Button
