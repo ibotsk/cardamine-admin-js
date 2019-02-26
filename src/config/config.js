@@ -168,6 +168,7 @@ export default {
             getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B%7D`,
             getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric`,
             getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic`,
+            getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
             countUri: `${backendBase}/api/list-of-species/count`
         },
         literaturesUri: {
@@ -180,6 +181,10 @@ export default {
         personsUri: {
             baseUri: `${backendBase}/api/persons`,
             getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
+        },
+        synonymsUri: {
+            baseUri: `${backendBase}/api/synonyms`,
+            synonymsByIdUri: `${backendBase}/api/synonyms/{id}`
         },
         worldl4Uri: {
             getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`

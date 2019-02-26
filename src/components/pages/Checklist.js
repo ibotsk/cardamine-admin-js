@@ -127,7 +127,7 @@ class Checklist extends Component {
             },
             tableRowsSelected: [],
             nomenclatoricSynonyms: [], // contains objects of list-of-species
-            taxonomicSynonyms: [] // contains objects of list-of-species
+            taxonomicSynonyms: [], // contains objects of list-of-species
         }
     }
 
@@ -270,12 +270,49 @@ class Checklist extends Component {
         await this.handleRemoveTaxonomicSynonym(id);
     }
 
+    saveSynonyms = async (id, synonymsList, syntype) => {
+        const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand();
+        let i = 1;
+        for (const s of synonymsList) {
+            const synonymObj = {
+                idParent: id,
+                idSynonym: s.id,
+                syntype,
+                rorder: i
+            };
+            i++;
+            await axios.post(synonymsUri, synonymObj);
+        }
+
+    }
+
+    submitSynonyms = async () => {
+        const id = this.state.species.id;
+        const losIsParentOfSynonyms = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id });
+        // get synonyms to be deleted
+        const getOriginalSynonymsResponse = await axios.get(losIsParentOfSynonyms);
+        const originalSynonyms = getOriginalSynonymsResponse.data;
+
+        // save new
+        await this.saveSynonyms(id, this.state.nomenclatoricSynonyms, 3);
+        await this.saveSynonyms(id, this.state.taxonomicSynonyms, 3);
+
+        // delete originals
+        const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri);
+        for (const syn of originalSynonyms) {
+            await axios.delete(synonymsByIdUri.expand({ id: syn.id }));
+        }
+    }
+
     submitForm = (e) => {
         e.preventDefault();
 
         const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand();
 
         axios.put(losUri, this.state.species)
+            .then(() => {
+                this.submitSynonyms();
+            })
             .then(() => {
                 notifications.success('Saved');
                 this.props.onTableChange(undefined, {});
@@ -425,6 +462,8 @@ class Checklist extends Component {
     }
 
     render() {
+        console.log(this.state);
+
         const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
         return (
             <div id='names'>
