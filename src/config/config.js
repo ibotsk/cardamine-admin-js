@@ -74,6 +74,16 @@ export default {
                 text: "Unresolved",
                 colour: "#bb9d00"
             }
+        },
+        synonym: {
+            nomenclatoric: {
+                numType: 3,
+                prefix: '≡'
+            },
+            taxonomic: {
+                numType: 2,
+                prefix: '='
+            }
         }
     },
     pagination: {
@@ -165,9 +175,9 @@ export default {
             baseUri: `${backendBase}/api/list-of-species`,
             getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
             getByIdUri: `${backendBase}/api/list-of-species/{id}`,
-            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B%7D`,
-            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric`,
-            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic`,
+            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
+            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
+            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
             getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
             countUri: `${backendBase}/api/list-of-species/count`
         },

@@ -294,8 +294,8 @@ class Checklist extends Component {
         const originalSynonyms = getOriginalSynonymsResponse.data;
 
         // save new
-        await this.saveSynonyms(id, this.state.nomenclatoricSynonyms, 3);
-        await this.saveSynonyms(id, this.state.taxonomicSynonyms, 3);
+        await this.saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType);
+        await this.saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
 
         // delete originals
         const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri);
@@ -429,7 +429,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, '≡'))}
+                                data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.nomenclatoric.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol='='
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
@@ -444,7 +444,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, '='))}
+                                data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol='≡'
                                 onAddItemToList={this.handleAddTaxonomicSynonym}

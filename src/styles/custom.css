@@ -6,7 +6,21 @@
     border-top: 1px solid #ddd;
 }
 
-.consice-list .list-group-item{
+.addable-list .form-group{
+    margin-bottom: 0px;
+}
+
+.compact-list .list-group-item {
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.synonyms-sublist {
+    color: #666;
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+.synonyms-sublist .list-group-item {
+    background-color: #f9f9f9;
 }

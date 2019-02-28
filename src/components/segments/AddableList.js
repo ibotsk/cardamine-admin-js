@@ -40,7 +40,7 @@ class AddableList extends Component {
     render() {
         const data = this.props.data || [];
         return (
-            <div className="concise-list">
+            <div className="addable-list compact-list">
                 <ListGroup>
                     {
                         // row must contain id, props is the rest
