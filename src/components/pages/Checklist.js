@@ -394,7 +394,7 @@ class Checklist extends Component {
                 </Panel.Heading>
                 <Panel.Body>
                     <h4><LosName data={this.state.species} /></h4>
-                    <h5>{this.state.species.publication}</h5>
+                    <h5>{this.state.species.publication || '-'}</h5>
                     <FormGroup controlId='ntype' bsSize='sm'>
                         <Col xs={3}>
                             <FormControl
