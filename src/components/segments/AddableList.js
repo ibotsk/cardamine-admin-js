@@ -71,7 +71,7 @@ class AddableList extends Component {
                                             bsStyle='success'
                                             onClick={this.onAddItem}
                                             disabled={!(!!this.state.selected && this.state.selected.length > 0)}> {/* disabled when selected is undefined or empty array */}
-                                            <Glyphicon glyph='plus' />
+                                            <Glyphicon glyph='plus' /> Add 
                                         </Button>
                                     </InputGroup.Button>
                                 </InputGroup>

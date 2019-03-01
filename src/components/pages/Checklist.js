@@ -73,13 +73,46 @@ const getAllLos = async () => {
 const getSynonyms = async (id) => {
     const getSynonymsNomenclatoricUri = template.parse(config.uris.listOfSpeciesUri.getNomenclatoricSynonymsUri).expand({ id });
     const getSynonymsTaxonomicUri = template.parse(config.uris.listOfSpeciesUri.getTaxonomicSynonymsUri).expand({ id });
+    const getInvalidDesignationsUri = template.parse(config.uris.listOfSpeciesUri.getInvalidSynonymsUri).expand({ id });
 
     let response = await axios.get(getSynonymsNomenclatoricUri);
     const nomenclatoricSynonyms = response.data;
 
     response = await axios.get(getSynonymsTaxonomicUri);
     const taxonomicSynonyms = response.data;
-    return { nomenclatoricSynonyms, taxonomicSynonyms };
+
+    response = await axios.get(getInvalidDesignationsUri);
+    const invalidDesignations = response.data;
+    return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
+}
+
+const addSynonymToList = async (selected, synonyms) => {
+    if (!selected) {
+        return null;
+    }
+    if (synonyms.find(s => s.id === selected.id)) {
+        notifications.warning('The item is already in the list');
+        return null;
+    }
+    const synonymJson = await getLosById(selected.id);
+    synonyms.push(synonymJson);
+    synonyms.sort(helper.listOfSpeciesSorterLex);
+    return synonyms;
+}
+
+const saveSynonyms = async (id, synonymsList, syntype) => {
+    const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand();
+    let i = 1;
+    for (const s of synonymsList) {
+        const synonymObj = {
+            idParent: id,
+            idSynonym: s.id,
+            syntype,
+            rorder: i
+        };
+        i++;
+        await axios.post(synonymsUri, synonymObj);
+    }
 }
 
 const ntypes = config.mappings.losType;
@@ -128,6 +161,10 @@ class Checklist extends Component {
             tableRowsSelected: [],
             nomenclatoricSynonyms: [], // contains objects of list-of-species
             taxonomicSynonyms: [], // contains objects of list-of-species
+            invalidDesignations: [],
+            isNomenclatoricSynonymsChanged: false,
+            isTaxonomicSynonymsChanged: false,
+            isInvalidDesignationsChanged: false,
         }
     }
 
@@ -165,7 +202,7 @@ class Checklist extends Component {
             label: helper.listOfSpeciesString(l)
         }));
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms } = await getSynonyms(id);
+        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations } = await getSynonyms(id);
 
         this.setState({
             species: {
@@ -174,7 +211,8 @@ class Checklist extends Component {
             listOfSpecies,
             tableRowsSelected: [id],
             nomenclatoricSynonyms,
-            taxonomicSynonyms
+            taxonomicSynonyms,
+            invalidDesignations
         });
     }
 
@@ -211,79 +249,63 @@ class Checklist extends Component {
     }
 
     handleAddNomenclatoricSynonym = async (selected) => {
-        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms;
-        if (selected) {
-            if (nomenclatoricSynonyms.find(s => s.id === selected.id)) {
-                notifications.warning('The item is already in the list');
-            } else {
-                const synonymJson = await getLosById(selected.id);
-                nomenclatoricSynonyms.push(synonymJson);
-                nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
-
-                this.setState({
-                    nomenclatoricSynonyms
-                });
-            }
-        }
+        const nomenclatoricSynonyms = await addSynonymToList(selected, [...this.state.nomenclatoricSynonyms]);
+        this.setState({
+            nomenclatoricSynonyms,
+            isNomenclatoricSynonymsChanged: true
+        });
     }
 
     handleAddTaxonomicSynonym = async (selected) => {
-        const taxonomicSynonyms = this.state.taxonomicSynonyms;
-        if (selected) {
-            if (taxonomicSynonyms.find(s => s.id === selected.id)) {
-                notifications.warning('The item is already in the list');
-            } else {
-                const synonymJson = await getLosById(selected.id);
-                taxonomicSynonyms.push(synonymJson);
-                taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
+        const taxonomicSynonyms = await addSynonymToList(selected, [...this.state.taxonomicSynonyms]);
+        this.setState({
+            taxonomicSynonyms,
+            isTaxonomicSynonymsChanged: true
+        });
+    }
 
-                this.setState({
-                    taxonomicSynonyms
-                });
-            }
-        }
+    handleAddInvalidDesignation = async (selected) => {
+        const invalidDesignations = await addSynonymToList(selected, [...this.state.invalidDesignations]);
+        this.setState({
+            invalidDesignations,
+            isInvalidDesignationsChanged: true
+        });
     }
 
     handleRemoveNomenclatoricSynonym = (id) => {
         const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(s => s.id !== id);
         this.setState({
-            nomenclatoricSynonyms
+            nomenclatoricSynonyms,
+            isNomenclatoricSynonymsChanged: true
         });
     }
 
     handleRemoveTaxonomicSynonym = (id) => {
         const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(s => s.id !== id);
         this.setState({
-            taxonomicSynonyms
+            taxonomicSynonyms,
+            isTaxonomicSynonymsChanged: true
         });
     }
 
-    handleChangeNomenclatoricToTaxonomic = async (id) => {
+    handleRemoveInvalidDesignation = (id) => {
+        const invalidDesignations = this.state.invalidDesignations.filter(s => s.id !== id);
+        this.setState({
+            invalidDesignations,
+            isInvalidDesignationsChanged: true
+        });
+    }
+
+    handleChangeToTaxonomic = async (id) => {
         const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
         await this.handleAddTaxonomicSynonym(selected);
         await this.handleRemoveNomenclatoricSynonym(id);
     }
 
-    handleChangeTaxonomicToNomenclatoric = async (id) => {
+    handleChangeToNomenclatoric = async (id) => {
         const selected = this.state.taxonomicSynonyms.find(s => s.id === id);
         await this.handleAddNomenclatoricSynonym(selected);
         await this.handleRemoveTaxonomicSynonym(id);
-    }
-
-    saveSynonyms = async (id, synonymsList, syntype) => {
-        const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand();
-        let i = 1;
-        for (const s of synonymsList) {
-            const synonymObj = {
-                idParent: id,
-                idSynonym: s.id,
-                syntype,
-                rorder: i
-            };
-            i++;
-            await axios.post(synonymsUri, synonymObj);
-        }
-
     }
 
     submitSynonyms = async () => {
@@ -294,14 +316,26 @@ class Checklist extends Component {
         const originalSynonyms = getOriginalSynonymsResponse.data;
 
         // save new
-        await this.saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType);
-        await this.saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
+        if (this.state.isNomenclatoricSynonymsChanged) {
+            await saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType);
+        }
+        if (this.state.isTaxonomicSynonymsChanged) {
+            await saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
+        }
+        if (this.state.isInvalidDesignationsChanged) {
+            await saveSynonyms(id, this.state.invalidDesignations, config.mappings.synonym.invalid.numType);
+        }
 
         // delete originals
         const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri);
         for (const syn of originalSynonyms) {
             await axios.delete(synonymsByIdUri.expand({ id: syn.id }));
         }
+        this.setState({
+            isNomenclatoricSynonymsChanged: false,
+            isTaxonomicSynonymsChanged: false,
+            isInvalidDesignationsChanged: false
+        })
     }
 
     submitForm = (e) => {
@@ -434,7 +468,7 @@ class Checklist extends Component {
                                 changeToTypeSymbol='='
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
                                 onRowDelete={this.handleRemoveNomenclatoricSynonym}
-                                onChangeType={this.handleChangeNomenclatoricToTaxonomic}
+                                onChangeType={this.handleChangeToTaxonomic}
                             />
                         </Col>
                     </FormGroup>
@@ -449,7 +483,22 @@ class Checklist extends Component {
                                 changeToTypeSymbol='≡'
                                 onAddItemToList={this.handleAddTaxonomicSynonym}
                                 onRowDelete={this.handleRemoveTaxonomicSynonym}
-                                onChangeType={this.handleChangeTaxonomicToNomenclatoric}
+                                onChangeType={this.handleChangeToNomenclatoric}
+                            />
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Invalid Designations
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <AddableList
+                                data={this.state.invalidDesignations.map(s => synonymFormatter(s, config.mappings.synonym.invalid.prefix))}
+                                options={this.state.listOfSpecies}
+                                changeToTypeSymbol='≡'
+                                onAddItemToList={this.handleAddInvalidDesignation}
+                                onRowDelete={this.handleRemoveInvalidDesignation}
+                                onChangeType={this.handleChangeToNomenclatoric}
                             />
                         </Col>
                     </FormGroup>
@@ -462,8 +511,6 @@ class Checklist extends Component {
     }
 
     render() {
-        console.log(this.state);
-
         const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
         return (
             <div id='names'>

@@ -83,6 +83,10 @@ export default {
             taxonomic: {
                 numType: 2,
                 prefix: '='
+            },
+            invalid: {
+                numType: 1,
+                prefix: '–'
             }
         }
     },
@@ -178,6 +182,7 @@ export default {
             getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
             getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
             getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
+            getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid`,
             getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
             countUri: `${backendBase}/api/list-of-species/count`
         },
