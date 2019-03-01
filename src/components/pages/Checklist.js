@@ -77,12 +77,16 @@ const getSynonyms = async (id) => {
 
     let response = await axios.get(getSynonymsNomenclatoricUri);
     const nomenclatoricSynonyms = response.data;
+    nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
 
     response = await axios.get(getSynonymsTaxonomicUri);
     const taxonomicSynonyms = response.data;
+    taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
 
     response = await axios.get(getInvalidDesignationsUri);
     const invalidDesignations = response.data;
+    invalidDesignations.sort(helper.listOfSpeciesSorterLex);
+
     return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
 }
 
@@ -470,7 +474,7 @@ class Checklist extends Component {
                             <AddableList
                                 data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.nomenclatoric.prefix))}
                                 options={this.state.listOfSpecies}
-                                changeToTypeSymbol='='
+                                changeToTypeSymbol={config.mappings.synonym.taxonomic.prefix}
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
                                 onRowDelete={this.handleRemoveNomenclatoricSynonym}
                                 onChangeType={this.handleChangeToTaxonomic}
@@ -485,7 +489,7 @@ class Checklist extends Component {
                             <AddableList
                                 data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
                                 options={this.state.listOfSpecies}
-                                changeToTypeSymbol='≡'
+                                changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                                 onAddItemToList={this.handleAddTaxonomicSynonym}
                                 onRowDelete={this.handleRemoveTaxonomicSynonym}
                                 onChangeType={this.handleChangeToNomenclatoric}
@@ -500,7 +504,7 @@ class Checklist extends Component {
                             <AddableList
                                 data={this.state.invalidDesignations.map(s => synonymFormatter(s, config.mappings.synonym.invalid.prefix))}
                                 options={this.state.listOfSpecies}
-                                changeToTypeSymbol='≡'
+                                changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                                 onAddItemToList={this.handleAddInvalidDesignation}
                                 onRowDelete={this.handleRemoveInvalidDesignation}
                                 onChangeType={this.handleChangeToNomenclatoric}
@@ -516,6 +520,8 @@ class Checklist extends Component {
     }
 
     render() {
+        console.log(this.state);
+        
         const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
         return (
             <div id='names'>
