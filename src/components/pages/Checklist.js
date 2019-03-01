@@ -310,25 +310,30 @@ class Checklist extends Component {
 
     submitSynonyms = async () => {
         const id = this.state.species.id;
-        const losIsParentOfSynonyms = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id });
         // get synonyms to be deleted
+        const losIsParentOfSynonyms = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id });
         const getOriginalSynonymsResponse = await axios.get(losIsParentOfSynonyms);
         const originalSynonyms = getOriginalSynonymsResponse.data;
 
+        const toBeDeleted = [];
+
         // save new
         if (this.state.isNomenclatoricSynonymsChanged) {
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.nomenclatoric));
             await saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType);
         }
         if (this.state.isTaxonomicSynonymsChanged) {
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.taxonomic));
             await saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
         }
         if (this.state.isInvalidDesignationsChanged) {
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalidDesignations));
             await saveSynonyms(id, this.state.invalidDesignations, config.mappings.synonym.invalid.numType);
         }
 
         // delete originals
         const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri);
-        for (const syn of originalSynonyms) {
+        for (const syn of toBeDeleted) {
             await axios.delete(synonymsByIdUri.expand({ id: syn.id }));
         }
         this.setState({
