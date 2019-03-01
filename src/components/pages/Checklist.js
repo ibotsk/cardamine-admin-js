@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
     Grid, Col, Row,
     Button, Glyphicon, Panel, Well,
+    ListGroup, ListGroupItem,
     Form, FormControl, FormGroup, ControlLabel
 } from 'react-bootstrap';
 
@@ -32,6 +33,12 @@ const idAcceptedName = 'idAcceptedName';
 const idBasionym = 'idBasionym';
 const idReplaced = 'idReplaced';
 const idNomenNovum = 'idNomenNovum';
+const idNomenclatoricSynonyms = 'idNomenclatoricSynonyms';
+const idTaxonomicSynonyms = 'idTaxonomicSynonyms';
+const idInvalidDesignations = 'idInvalidDesignations';
+const idBasionymFor = 'idBasionymFor';
+const idReplacedFor = 'idReplacedFor';
+const idNomenNovumFor = 'idNomenNovumFor';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
@@ -88,6 +95,24 @@ const getSynonyms = async (id) => {
     invalidDesignations.sort(helper.listOfSpeciesSorterLex);
 
     return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
+}
+
+const getBasionymFor = async (id) => {
+    const getBasionymForUri = template.parse(config.uris.listOfSpeciesUri.getBasionymForUri).expand({ id });
+    const response = await axios.get(getBasionymForUri);
+    return response.data;
+}
+
+const getReplacedFor = async (id) => {
+    const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id });
+    const response = await axios.get(getReplacedForUri);
+    return response.data;
+}
+
+const getNomenNovumFor = async (id) => {
+    const getNomenNovumForUri = template.parse(config.uris.listOfSpeciesUri.getNomenNovumForUri).expand({ id });
+    const response = await axios.get(getNomenNovumForUri);
+    return response.data;
 }
 
 const addSynonymToList = async (selected, synonyms) => {
@@ -169,6 +194,10 @@ class Checklist extends Component {
             isNomenclatoricSynonymsChanged: false,
             isTaxonomicSynonymsChanged: false,
             isInvalidDesignationsChanged: false,
+
+            basionymFor: [],
+            replacedFor: [],
+            nomenNovumFor: [],
         }
     }
 
@@ -207,6 +236,9 @@ class Checklist extends Component {
         }));
 
         const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations } = await getSynonyms(id);
+        const basionymFor = await getBasionymFor(id);
+        const replacedFor = await getReplacedFor(id);
+        const nomenNovumFor = await getNomenNovumFor(id);
 
         this.setState({
             species: {
@@ -216,7 +248,10 @@ class Checklist extends Component {
             tableRowsSelected: [id],
             nomenclatoricSynonyms,
             taxonomicSynonyms,
-            invalidDesignations
+            invalidDesignations,
+            basionymFor,
+            replacedFor,
+            nomenNovumFor
         });
     }
 
@@ -377,6 +412,20 @@ class Checklist extends Component {
         }
     }
 
+    renderPlainListOfSpeciesNames = (list) => {
+        if (!list || list.length === 0) {
+            return <ListGroupItem />
+        }
+        return (
+            <ListGroup>
+                {list.map(b =>
+                    <ListGroupItem key={b.id}>
+                        <LosName data={b} />
+                    </ListGroupItem>)}
+            </ListGroup>
+        )
+    }
+
     renderDetailHeader = () => {
         if (!this.state.species.id) {
             return (
@@ -466,7 +515,7 @@ class Checklist extends Component {
                         </Col>
                     </FormGroup>
                     <hr />
-                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                    <FormGroup controlId={idNomenclatoricSynonyms} bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Nomenclatoric Synonyms
                         </Col>
@@ -481,7 +530,7 @@ class Checklist extends Component {
                             />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                    <FormGroup controlId={idTaxonomicSynonyms} bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Taxonomic Synonyms
                         </Col>
@@ -496,7 +545,7 @@ class Checklist extends Component {
                             />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                    <FormGroup controlId={idInvalidDesignations} bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Invalid Designations
                         </Col>
@@ -512,6 +561,31 @@ class Checklist extends Component {
                         </Col>
                     </FormGroup>
                     <hr />
+                    <FormGroup controlId={idBasionymFor}>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Basionym For
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            {this.renderPlainListOfSpeciesNames(this.state.basionymFor)}
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId={idReplacedFor}>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Replaced For
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            {this.renderPlainListOfSpeciesNames(this.state.replacedFor)}
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId={idNomenNovumFor}>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Nomen Novum For
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            {this.renderPlainListOfSpeciesNames(this.state.nomenNovumFor)}
+                        </Col>
+                    </FormGroup>
+                    <hr />
                     <Button bsStyle="primary" type='submit' >Save</Button>
                 </Well>
             );
@@ -520,8 +594,6 @@ class Checklist extends Component {
     }
 
     render() {
-        console.log(this.state);
-        
         const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
         return (
             <div id='names'>

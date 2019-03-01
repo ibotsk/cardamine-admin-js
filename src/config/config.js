@@ -183,6 +183,9 @@ export default {
             getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
             getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
             getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid`,
+            getBasionymForUri: `${backendBase}/api/list-of-species/{id}/basionym-for`,
+            getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for`,
+            getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for`,
             getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
             countUri: `${backendBase}/api/list-of-species/count`
         },
