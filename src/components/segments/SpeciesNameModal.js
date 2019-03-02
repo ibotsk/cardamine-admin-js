@@ -206,7 +206,7 @@ class SpeciesNameModal extends Component {
         return (
             <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create new name</Modal.Title>
+                    <Modal.Title>{this.props.id ? 'Edit name' : 'Create new name'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
