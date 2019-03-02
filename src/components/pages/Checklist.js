@@ -358,15 +358,15 @@ class Checklist extends Component {
 
         // save new
         if (this.state.isNomenclatoricSynonymsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.nomenclatoric));
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.nomenclatoric.numType));
             await saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType);
         }
         if (this.state.isTaxonomicSynonymsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.taxonomic));
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.taxonomic.numType));
             await saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
         }
         if (this.state.isInvalidDesignationsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalidDesignations));
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalidDesignations.numType));
             await saveSynonyms(id, this.state.invalidDesignations, config.mappings.synonym.invalid.numType);
         }
 
