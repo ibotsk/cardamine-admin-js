@@ -20,6 +20,7 @@ const CNavbar = (props) => {
                         <NavDropdown eventKey={1} title="Chromosome data" id="basic-nav-dropdown">
                             <MenuItem eventKey={1.1} href="/chromosome-data">All data</MenuItem>
                             <MenuItem eventKey={1.2} href="/publications">Publications</MenuItem>
+                            <MenuItem eventKey={1.3} href="/persons">Persons</MenuItem>
                         </NavDropdown>
                         <NavItem eventKey={2} href="/names">Names</NavItem>
                     </Nav>

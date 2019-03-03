@@ -59,7 +59,7 @@ class Record extends Component {
         this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getByIdUri);
         this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllWOrderUri);
         this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri);
-        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllWFilterUri);
+        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllWOrderUri);
         this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWFilterUri);
 
         this.state = {

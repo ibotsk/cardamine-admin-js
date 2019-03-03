@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { 
+import {
     Button, Modal,
     Form, FormGroup, FormControl
 } from 'react-bootstrap';
@@ -9,6 +9,15 @@ import axios from 'axios';
 import template from 'url-template';
 
 import config from '../../config/config';
+import utils from '../../utils/utils';
+
+const VALIDATION_STATE_SUCCESS = 'success';
+const VALIDATION_STATE_ERROR = 'error';
+
+const initialValues = {
+    id: undefined,
+    persName: ''
+};
 
 class PersonModal extends Component {
 
@@ -16,15 +25,25 @@ class PersonModal extends Component {
         super(props);
 
         this.state = {
-            persName: ''
+            ...initialValues
+        }
+    }
+
+    onEnter = () => {
+        if (this.props.id) {
+            const getByIdUri = template.parse(config.uris.personsUri.getByIdUri).expand({ id: this.props.id });
+            axios.get(getByIdUri).then(response => {
+                let data = utils.nullToEmpty(response.data);
+                this.setState({ ...data });
+            });
         }
     }
 
     getValidationState = () => {
         if (this.state.persName.length > 0) {
-            return 'success';
+            return VALIDATION_STATE_SUCCESS;
         }
-        return 'error';
+        return VALIDATION_STATE_ERROR;
     }
 
     handleChange = (e) => {
@@ -32,20 +51,26 @@ class PersonModal extends Component {
     }
 
     handleHide = () => {
-        this.setState({ persName: ''});
+        this.setState({
+            ...initialValues
+        });
         this.props.onHide();
     }
 
     handleSave = () => {
-        const personsUri = template.parse(config.uris.personsUri.baseUri).expand();
-        axios.post(personsUri, {
-            persName: this.state.persName
-        }).then(() => this.handleHide());
+        if (this.getValidationState() === VALIDATION_STATE_SUCCESS) {
+            const personsUri = template.parse(config.uris.personsUri.baseUri).expand();
+            axios.put(personsUri, {
+                ...this.state
+            }).then(() => this.handleHide());
+        } else {
+            alert('Person name must not be empty!');
+        }
     }
 
     render() {
         return (
-            <Modal show={this.props.show} onHide={this.handleHide}>
+            <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.id ? 'Edit person(s)' : 'Create new person(s)'}</Modal.Title>
                 </Modal.Header>
@@ -67,7 +92,7 @@ class PersonModal extends Component {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={ this.handleHide}>Close</Button>
+                    <Button onClick={this.handleHide}>Close</Button>
                     <Button bsStyle="primary" onClick={this.handleSave}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
