@@ -7,6 +7,7 @@ import Footer from '../segments/Footer';
 import Cdata from './Cdata';
 import Record from './CRecord';
 import Publications from './Publications';
+import Persons from './Persons';
 import Checklist from './Checklist';
 
 const Routing = () => {
@@ -16,6 +17,7 @@ const Routing = () => {
       <Route path="/chromosome-data/new" component={Record} />
       <Route path="/chromosome-data/edit/:recordId" component={Record} />
       <Route exact path="/publications" component={Publications} />
+      <Route exact path="/persons" component={Persons} />
       <Route path="/names/:id?" component={Checklist} />
     </Switch>
   );

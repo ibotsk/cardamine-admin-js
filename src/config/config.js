@@ -198,7 +198,10 @@ export default {
         },
         personsUri: {
             baseUri: `${backendBase}/api/persons`,
-            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`
+            getByIdUri: `${backendBase}/api/persons/{id}`,
+            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D`,
+            getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`,
+            countUri: `${backendBase}/api/persons/count`
         },
         synonymsUri: {
             baseUri: `${backendBase}/api/synonyms`,
