@@ -47,7 +47,7 @@ class PersonModal extends Component {
         return (
             <Modal show={this.props.show} onHide={this.handleHide}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create new person(s)</Modal.Title>
+                    <Modal.Title>{this.props.id ? 'Edit person(s)' : 'Create new person(s)'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>

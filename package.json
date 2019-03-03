@@ -15,6 +15,7 @@
     "react-bootstrap-table2-toolkit": "^1.1.1",
     "react-bootstrap-typeahead": "^3.2.4",
     "react-dom": "^16.6.3",
+    "react-notifications": "^1.4.3",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",

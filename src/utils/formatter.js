@@ -11,4 +11,6 @@ const format = (subject, format) => {
     }
 }
 
-export default format;
+
+
+export default { format };

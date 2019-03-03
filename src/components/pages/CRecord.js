@@ -10,11 +10,14 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 
+import { NotificationContainer } from 'react-notifications';
+
 import axios from 'axios';
 import template from 'url-template';
 
 import config from '../../config/config';
 import helper from '../../utils/helper';
+import notifications from '../../utils/notifications';
 
 import LosName from '../segments/LosName';
 import PersonModal from '../segments/PersonModal';
@@ -55,7 +58,7 @@ class Record extends Component {
 
         this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getByIdUri);
         this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllWOrderUri);
-        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWFilterUri);
+        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri);
         this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllWFilterUri);
         this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWFilterUri);
 
@@ -265,8 +268,9 @@ class Record extends Component {
                 return axios.put(referenceUri, body); //upsert reference
             }).then(() => {
                 this.context.router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
+                notifications.success('Saved');
             }).catch(e => {
-                console.log(e);
+                notifications.success('Error saving');
                 throw e;
             });
     }
@@ -469,9 +473,27 @@ class Record extends Component {
                             </FormGroup>
                             <FormGroup>
                                 <Col sm={10} smOffset={2}>
-                                    <Checkbox inline name="drawing" value={this.state.chromrecord.drawing || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Drawing</Checkbox>
-                                    <Checkbox inline name="photo" value={this.state.chromrecord.photo || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Photo</Checkbox>
-                                    <Checkbox inline name="idiogram" value={this.state.chromrecord.idiogram || false} onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>Idiogram</Checkbox>
+                                    <Checkbox inline
+                                        name="drawing"
+                                        value={this.state.chromrecord.drawing || false}
+                                        checked={this.state.chromrecord.drawing || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Drawing
+                                    </Checkbox>
+                                    <Checkbox inline
+                                        name="photo"
+                                        value={this.state.chromrecord.photo || false}
+                                        checked={this.state.chromrecord.photo || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Photo
+                                    </Checkbox>
+                                    <Checkbox inline
+                                        name="idiogram"
+                                        value={this.state.chromrecord.idiogram || false}
+                                        checked={this.state.chromrecord.idiogram || false}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromrecord')}>
+                                        Idiogram
+                                    </Checkbox>
                                 </Col>
                             </FormGroup>
                             <FormGroup controlId="note" bsSize="sm">
@@ -694,6 +716,7 @@ class Record extends Component {
                 <PersonModal show={this.state.modals[MODAL_PERSONS]} onHide={this.hideModal} />
                 <PublicationModal show={this.state.modals[MODAL_LITERATURE]} onHide={this.hideModal} />
                 <SpeciesNameModal show={this.state.modals[MODAL_SPECIES]} onHide={this.hideModal} />
+                <NotificationContainer />
             </div>
         );
     }

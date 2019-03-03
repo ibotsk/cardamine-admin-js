@@ -1,5 +1,5 @@
 import config from '../config/config';
-import format from './formatter';
+import formatter from './formatter';
 
 import Mustache from 'mustache';
 
@@ -113,15 +113,15 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
     if (nomenclature.hybrid) {
         let h = {
-            genus: nomenclature.genus_h,
-            species: nomenclature.species_h,
-            subsp: nomenclature.subsp_h,
-            var: nomenclature.var_h,
-            subvar: nomenclature.subvar_h,
-            forma: nomenclature.forma_h,
-            nothosubsp: nomenclature.nothosubsp_h,
-            nothoforma: nomenclature.nothoforma_h,
-            authors: nomenclature.authors_h,
+            genus: nomenclature.genusH,
+            species: nomenclature.speciesH,
+            subsp: nomenclature.subspH,
+            var: nomenclature.varH,
+            subvar: nomenclature.subvarH,
+            forma: nomenclature.formaH,
+            nothosubsp: nomenclature.nothosubspH,
+            nothoforma: nomenclature.nothoformaH,
+            authors: nomenclature.authorsH,
         }
         name.push(Plain(config_name.hybrid));
         name = name.concat(listOfSpeciesFormat(h));
@@ -146,7 +146,7 @@ const listOfSpeciesForComponent = (name, formatString) => {
 
     const formattedNameArr = nameArr.map(t => {
         if (t.format === ff) {
-            return format(t.string, formatString);
+            return formatter.format(t.string, formatString);
         } else {
             return t.string;
         }
@@ -157,6 +157,82 @@ const listOfSpeciesForComponent = (name, formatString) => {
 
 const listOfSpeciesString = (name) => {
     return listOfSpeciesForComponent(name, 'plain').join('');
+}
+
+const listOfSpeciesSorterLex = (losA, losB) => {
+    // a > b = 1
+    if (losA.genus > losB.genus) {
+        return 1;
+    } else if (losA.genus < losB.genus) {
+        return -1;
+    }
+    if (losA.species > losB.species) {
+        return 1;
+    } else if (losA.species < losB.species) {
+        return -1;
+    }
+    if (losA.subsp > losB.subsp) {
+        return 1;
+    } else if (losA.subsp < losB.subsp) {
+        return -1;
+    }
+    if (losA.var > losB.var) {
+        return 1;
+    } else if (losA.var < losB.var) {
+        return -1;
+    }
+    if (losA.forma > losB.forma) {
+        return 1;
+    } else if (losA.forma < losB.forma) {
+        return -1;
+    }
+    if (losA.subvar > losB.subvar) {
+        return 1;
+    } else if (losA.subvar < losB.subvar) {
+        return -1;
+    }
+    if (losA.authors > losB.authors) {
+        return 1;
+    } else if (losA.authors < losB.authors) {
+        return -1;
+    }
+    // hybrid fields next
+    if (losA.genusH > losB.genusH) {
+        return 1;
+    } else if (losA.genusH < losB.genusH) {
+        return -1;
+    }
+    if (losA.speciesH > losB.speciesH) {
+        return 1;
+    } else if (losA.speciesH < losB.speciesH) {
+        return -1;
+    }
+    if (losA.subspH > losB.subspH) {
+        return 1;
+    } else if (losA.subspH < losB.subspH) {
+        return -1;
+    }
+    if (losA.varH > losB.varH) {
+        return 1;
+    } else if (losA.varH < losB.varH) {
+        return -1;
+    }
+    if (losA.formaH > losB.formaH) {
+        return 1;
+    } else if (losA.formaH < losB.formaH) {
+        return -1;
+    }
+    if (losA.subvarH > losB.subvarH) {
+        return 1;
+    } else if (losA.subvarH < losB.subvarH) {
+        return -1;
+    }
+    if (losA.authorsH > losB.authorsH) {
+        return 1;
+    } else if (losA.authorsH < losB.authorsH) {
+        return -1;
+    }
+    return 0;
 }
 
 const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
@@ -209,4 +285,4 @@ const publicationCurateFields = (publication) => {
     return curatedPubl;
 }
 
-export default { listOfSpeciesForComponent, listOfSpeciesString, makeWhere, parsePublication, publicationCurateFields };
+export default { listOfSpeciesForComponent, listOfSpeciesString, listOfSpeciesSorterLex, makeWhere, parsePublication, publicationCurateFields };

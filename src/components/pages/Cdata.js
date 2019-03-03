@@ -7,12 +7,14 @@ import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import get from 'lodash.get';
 
+import { NotificationContainer } from 'react-notifications';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import config from '../../config/config';
 
-const PAGE_DETAIL = "/checklist/detail/";
+const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
 const NEW_RECORD = "/chromosome-data/new";
 
@@ -168,6 +170,7 @@ const Cdata = (props) => {
                     pagination={paginationFactory(props.paginationOptions)}
                 />
             </Grid>
+            <NotificationContainer />
         </div>
     )
 
@@ -175,7 +178,5 @@ const Cdata = (props) => {
 
 export default TabledPage({
     getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
-    getCount: config.uris.chromosomeDataUri.countUri,
-    columns,
-    formatResult
+    getCount: config.uris.chromosomeDataUri.countUri
 })(Cdata);
