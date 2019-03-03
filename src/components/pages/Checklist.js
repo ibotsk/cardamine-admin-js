@@ -355,7 +355,7 @@ class Checklist extends Component {
 
     handleChangeToInvalid = async (id, fromList) => {
         const selected = fromList.find(s => s.id === id);
-        await this.NomenclatoricSynonymListItem.handleAddInvalidDesignation(selected);
+        await this.handleAddInvalidDesignation(selected);
         //remove from all others
         await this.handleRemoveNomenclatoricSynonym(id);
         await this.handleRemoveTaxonomicSynonym(id);
@@ -380,7 +380,7 @@ class Checklist extends Component {
             await saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType);
         }
         if (this.state.isInvalidDesignationsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalidDesignations.numType));
+            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalid.numType));
             await saveSynonyms(id, this.state.invalidDesignations, config.mappings.synonym.invalid.numType);
         }
 
@@ -444,9 +444,9 @@ class Checklist extends Component {
         const fromList = this.state.nomenclatoricSynonyms;
         const Additions = p => (
             <React.Fragment>
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)} title="Change to taxonomic synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
                 &nbsp;
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)} title="Change to invalid designation"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
             </React.Fragment>
         );
         return (
@@ -458,9 +458,9 @@ class Checklist extends Component {
         const fromList = this.state.taxonomicSynonyms;
         const Additions = p => (
             <React.Fragment>
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
                 &nbsp;
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)} title="Change to invalid designation"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
             </React.Fragment>
         );
         return (
@@ -472,9 +472,9 @@ class Checklist extends Component {
         const fromList = this.state.invalidDesignations;
         const Additions = p => (
             <React.Fragment>
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
                 &nbsp;
-                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)} title="Change to taxonomic synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
             </React.Fragment>
         );
         return (

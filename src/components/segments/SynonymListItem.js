@@ -35,7 +35,7 @@ const SynonymListItem = ({ rowId, data: { prefix, value: losObject }, additions:
                             <Additions rowId={rowId} {...props} />
                         }
                         <span className="remove-list-item">
-                            <Button bsStyle="danger" bsSize="xsmall" onClick={() => props.onRowDelete(rowId)}><Glyphicon glyph="remove" /></Button>
+                            <Button bsStyle="danger" bsSize="xsmall" onClick={() => props.onRowDelete(rowId)} title="Remove from this list"><Glyphicon glyph="remove" /></Button>
                         </span>
                     </span>
                 </Col>
