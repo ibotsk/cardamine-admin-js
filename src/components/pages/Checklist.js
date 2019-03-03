@@ -18,6 +18,7 @@ import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 import SpeciesNameModal from '../segments/SpeciesNameModal';
 import AddableList from '../segments/AddableList';
+import SynonymListItem from '../segments/SynonymListItem';
 
 import axios from 'axios';
 import template from 'url-template';
@@ -335,15 +336,28 @@ class Checklist extends Component {
         });
     }
 
-    handleChangeToTaxonomic = async (id) => {
-        const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
+    handleChangeToTaxonomic = async (id, fromList) => {
+        // const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
+        const selected = fromList.find(s => s.id === id);
         await this.handleAddTaxonomicSynonym(selected);
+        // remove from all others
         await this.handleRemoveNomenclatoricSynonym(id);
+        await this.handleRemoveInvalidDesignation(id);
     }
 
-    handleChangeToNomenclatoric = async (id) => {
-        const selected = this.state.taxonomicSynonyms.find(s => s.id === id);
+    handleChangeToNomenclatoric = async (id, fromList) => {
+        const selected = fromList.find(s => s.id === id);
         await this.handleAddNomenclatoricSynonym(selected);
+        // remove from all others
+        await this.handleRemoveTaxonomicSynonym(id);
+        await this.handleRemoveInvalidDesignation(id);
+    }
+
+    handleChangeToInvalid = async (id, fromList) => {
+        const selected = fromList.find(s => s.id === id);
+        await this.NomenclatoricSynonymListItem.handleAddInvalidDesignation(selected);
+        //remove from all others
+        await this.handleRemoveNomenclatoricSynonym(id);
         await this.handleRemoveTaxonomicSynonym(id);
     }
 
@@ -424,6 +438,48 @@ class Checklist extends Component {
                     </ListGroupItem>)}
             </ListGroup>
         )
+    }
+
+    NomenclatoricSynonymListItem = ({ rowId, ...props }) => {
+        const fromList = this.state.nomenclatoricSynonyms;
+        const Additions = p => (
+            <React.Fragment>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
+                &nbsp;
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
+            </React.Fragment>
+        );
+        return (
+            <SynonymListItem {...props} additions={Additions} />
+        );
+    }
+
+    TaxonomicSynonymListItem = ({ rowId, ...props }) => {
+        const fromList = this.state.taxonomicSynonyms;
+        const Additions = p => (
+            <React.Fragment>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
+                &nbsp;
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToInvalid(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}</Button>
+            </React.Fragment>
+        );
+        return (
+            <SynonymListItem {...props} additions={Additions} />
+        );
+    }
+
+    InvalidSynonymListItem = ({ rowId, ...props }) => {
+        const fromList = this.state.invalidDesignations;
+        const Additions = p => (
+            <React.Fragment>
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
+                &nbsp;
+                <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)}><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
+            </React.Fragment>
+        );
+        return (
+            <SynonymListItem {...props} additions={Additions} />
+        );
     }
 
     renderDetailHeader = () => {
@@ -527,6 +583,7 @@ class Checklist extends Component {
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
                                 onRowDelete={this.handleRemoveNomenclatoricSynonym}
                                 onChangeType={this.handleChangeToTaxonomic}
+                                itemComponent={this.NomenclatoricSynonymListItem}
                             />
                         </Col>
                     </FormGroup>
@@ -542,6 +599,7 @@ class Checklist extends Component {
                                 onAddItemToList={this.handleAddTaxonomicSynonym}
                                 onRowDelete={this.handleRemoveTaxonomicSynonym}
                                 onChangeType={this.handleChangeToNomenclatoric}
+                                itemComponent={this.TaxonomicSynonymListItem}
                             />
                         </Col>
                     </FormGroup>
@@ -557,6 +615,7 @@ class Checklist extends Component {
                                 onAddItemToList={this.handleAddInvalidDesignation}
                                 onRowDelete={this.handleRemoveInvalidDesignation}
                                 onChangeType={this.handleChangeToNomenclatoric}
+                                itemComponent={this.NomenclatoricSynonymListItem}
                             />
                         </Col>
                     </FormGroup>

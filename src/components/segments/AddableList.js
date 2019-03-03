@@ -8,7 +8,7 @@ import {
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
-import SynonymListItem from './SynonymListItem';
+// import SynonymListItem from './SynonymListItem';
 
 class AddableList extends Component {
 
@@ -39,19 +39,19 @@ class AddableList extends Component {
 
     render() {
         const data = this.props.data || [];
+        const { itemComponent: ListRow } = this.props;
         return (
             <div className="addable-list compact-list">
                 <ListGroup>
                     {
                         // row must contain id, props is the rest
+                        // ListRow is an injected component that will be rendered as item
                         data.map(({ id, ...props }, index) =>
-                            <SynonymListItem
+                            <ListRow
+                                rowId={id}
                                 key={index}
                                 data={props}
-                                onRowDelete={() => this.props.onRowDelete(id)}
-                                onRowChangeType={() => this.props.onChangeType(id)}
-                                changeTypeVal={this.props.changeToTypeSymbol}
-                            />
+                                onRowDelete={() => this.props.onRowDelete(id)} />
                         )
                     }
                     <ListGroupItem>
@@ -71,7 +71,7 @@ class AddableList extends Component {
                                             bsStyle='success'
                                             onClick={this.onAddItem}
                                             disabled={!(!!this.state.selected && this.state.selected.length > 0)}> {/* disabled when selected is undefined or empty array */}
-                                            <Glyphicon glyph='plus' /> Add 
+                                            <Glyphicon glyph='plus' /> Add
                                         </Button>
                                     </InputGroup.Button>
                                 </InputGroup>
