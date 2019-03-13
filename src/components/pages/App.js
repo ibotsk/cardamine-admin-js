@@ -12,11 +12,7 @@ class App extends Component {
                 <Switch>
                     <Route exact path="/login" component={Login} />
                     <PrivateRoute component={HomePage} />
-                    {/* <Route component={HomePage} /> */}
                 </Switch>
-                {/* {fakeAuth.isAuthenticated && <CNavbar />}
-                <Routing />
-                <Footer /> */}
             </React.Fragment>
         );
     }

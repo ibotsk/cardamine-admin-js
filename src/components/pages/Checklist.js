@@ -12,7 +12,6 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter, multiSelectFilter } from 'react-bootstrap-table2-filter';
 
 import { NotificationContainer } from 'react-notifications';
-import '../../utils/notifications';
 
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
