@@ -1,38 +1,25 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import CNavbar from '../segments/Navbar';
-import Footer from '../segments/Footer';
-
-import Cdata from './Cdata';
-import Record from './CRecord';
-import Publications from './Publications';
-import Persons from './Persons';
-import Checklist from './Checklist';
-
-const Routing = () => {
-  return (
-    <Switch>
-      <Route exact path="/chromosome-data" component={Cdata} />
-      <Route path="/chromosome-data/new" component={Record} />
-      <Route path="/chromosome-data/edit/:recordId" component={Record} />
-      <Route exact path="/publications" component={Publications} />
-      <Route exact path="/persons" component={Persons} />
-      <Route path="/names/:id?" component={Checklist} />
-    </Switch>
-  );
-}
+import Login from './Login';
+import HomePage from './HomePage';
+import PrivateRoute from '../wrappers/PrivateRoute';
 
 class App extends Component {
-  render() {
-    return (
-      <React.Fragment>
-        <CNavbar />
-        <Routing />
-        <Footer />
-      </React.Fragment>
-    );
-  }
+    render() {
+        return (
+            <React.Fragment>
+                <Switch>
+                    <Route exact path="/login" component={Login} />
+                    <PrivateRoute component={HomePage} />
+                    {/* <Route component={HomePage} /> */}
+                </Switch>
+                {/* {fakeAuth.isAuthenticated && <CNavbar />}
+                <Routing />
+                <Footer /> */}
+            </React.Fragment>
+        );
+    }
 }
 
 export default App;
