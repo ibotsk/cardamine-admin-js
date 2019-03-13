@@ -9,7 +9,7 @@ import {
     Form, FormGroup, FormControl, ControlLabel
 } from 'react-bootstrap';
 
-import fakeAuth from '../../services/fake-auth';
+import userService from '../../services/user-service';
 
 class Login extends Component {
 
@@ -33,17 +33,17 @@ class Login extends Component {
         });
     }
 
-    login = async () => {
-        fakeAuth.authenticate(() => {
-            this.setState({
-                redirectToReferrer: true
-            })
-        });
-    }
-
     handleSubmit = async e => {
         e.preventDefault();
-        await this.login();
+        const { username, password } = this.state;
+
+        // stop here if form is invalid
+        if (!(username && password)) {
+            return;
+        }
+        await userService.login(username, password, () => {
+            this.setState({ redirectToReferrer: true });
+        });
     }
 
     render() {
