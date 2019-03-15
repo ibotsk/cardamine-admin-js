@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import axios from 'axios';
 import template from 'url-template';
 
@@ -21,7 +22,7 @@ const TabledPage = injectedProps => WrappedComponent => {
 
         constructor(props) {
             super(props);
-
+            
             this.getAllUri = template.parse(injectedProps.getAll);
             this.getCountUri = template.parse(injectedProps.getCount);
             this.state = {
@@ -55,13 +56,15 @@ const TabledPage = injectedProps => WrappedComponent => {
         }
 
         fetchRecords = (where, offset, limit) => {
-            const uri = this.getAllUri.expand({ offset: offset, where: JSON.stringify(where), limit: limit });
+            const accessToken = this.props.accessToken;
+            const uri = this.getAllUri.expand({ offset, where: JSON.stringify(where), limit, accessToken });
             return axios.get(uri);
         }
 
         fetchCount = (where) => {
+            const accessToken = this.props.accessToken;
             const whereString = JSON.stringify(where);
-            const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString: whereString });
+            const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString, accessToken });
             return axios.get(uri).then(response => this.setState({
                 totalSize: response.data.count
             }));

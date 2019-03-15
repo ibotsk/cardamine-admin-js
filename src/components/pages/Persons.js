@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
@@ -85,7 +86,13 @@ class Persons extends Component {
     }
 }
 
-export default TabledPage({
-    getAll: config.uris.personsUri.getAllWFilterUri,
-    getCount: config.uris.personsUri.countUri
-})(Persons);
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(
+    TabledPage({
+        getAll: config.uris.personsUri.getAllWFilterUri,
+        getCount: config.uris.personsUri.countUri
+    })(Persons)
+);

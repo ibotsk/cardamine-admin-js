@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
     Col, Grid, Row,
     InputGroup,
     Button, Checkbox, ControlLabel, Form, FormControl, FormGroup
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';
@@ -80,9 +82,10 @@ class Record extends Component {
     }
 
     getChromosomeRecord = async () => {
+        const accessToken = this.props.accessToken;
         const recordId = this.props.match.params.recordId;
         if (recordId) {
-            const getCdataByIdUri = this.getByIdUri.expand({ id: recordId });
+            const getCdataByIdUri = this.getByIdUri.expand({ id: recordId, accessToken });
             const response = await axios.get(getCdataByIdUri); // get chromosome record
 
             const cdata = response.data;
@@ -104,7 +107,8 @@ class Record extends Component {
     }
 
     getPersons = async () => {
-        const response = await axios.get(this.getAllPersonsUri.expand());  // get all persons
+        const accessToken = this.props.accessToken;
+        const response = await axios.get(this.getAllPersonsUri.expand({ accessToken }));  // get all persons
 
         const persons = response.data.map(p => ({ id: p.id, label: p.persName, countedByText: p.persName, collectedByText: p.persName }));
         const countedByInitial = persons.find(p => p.id === this.state.chromrecord.countedBy);
@@ -122,7 +126,8 @@ class Record extends Component {
     }
 
     getWorld4s = async () => {
-        const response = await axios.get(this.getAllWorld4sUri.expand()); // get all world4s
+        const accessToken = this.props.accessToken;
+        const response = await axios.get(this.getAllWorld4sUri.expand({ accessToken })); // get all world4s
 
         const world4s = response.data.map(w => ({ id: w.id, label: w.description, idWorld3: w.idParent }));
         const world4Initial = world4s.find(w => w.id === this.state.material.idWorld4);
@@ -134,7 +139,8 @@ class Record extends Component {
     }
 
     getLiteratures = async () => {
-        const response = await axios.get(this.getAllLiteraturesUri.expand()); // get all publications
+        const accessToken = this.props.accessToken;
+        const response = await axios.get(this.getAllLiteraturesUri.expand({ accessToken })); // get all publications
 
         const literatures = response.data.map(l => ({
             id: l.id,
@@ -161,7 +167,8 @@ class Record extends Component {
     }
 
     getSpecies = async () => {
-        const response = await axios.get(this.getAllListOfSpeciesUri.expand());
+        const accessToken = this.props.accessToken;
+        const response = await axios.get(this.getAllListOfSpeciesUri.expand({ accessToken }));
 
         const listOfSpecies = response.data.map(l => ({
             id: l.id,
@@ -254,10 +261,11 @@ class Record extends Component {
 
     submitForm = (e) => {
         e.preventDefault();
+        const accessToken = this.props.accessToken;
 
-        const cdataUri = template.parse(config.uris.chromosomeDataUri.baseUri).expand();
-        const materialUri = template.parse(config.uris.materialUri.baseUri).expand();
-        const referenceUri = template.parse(config.uris.referenceUri.baseUri).expand();
+        const cdataUri = template.parse(config.uris.chromosomeDataUri.baseUri).expand({ accessToken });
+        const materialUri = template.parse(config.uris.materialUri.baseUri).expand({ accessToken });
+        const referenceUri = template.parse(config.uris.referenceUri.baseUri).expand({ accessToken });
 
         axios.put(cdataUri, this.state.chromrecord) //upsert cdata
             .then(response => {
@@ -705,7 +713,9 @@ class Record extends Component {
                         </div>
                         <Row>
                             <Col sm={5} smOffset={2}>
-                                <Button bsStyle="default" href={CHROM_DATA_LIST_URI} >Cancel</Button>
+                                <LinkContainer to={CHROM_DATA_LIST_URI}>
+                                    <Button bsStyle="default" >Cancel</Button>
+                                </LinkContainer>
                             </Col>
                             <Col sm={5}>
                                 <Button bsStyle="primary" type='submit' >Save</Button>
@@ -723,4 +733,8 @@ class Record extends Component {
 
 }
 
-export default Record;
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(Record);

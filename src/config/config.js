@@ -120,10 +120,14 @@ export default {
             }] // A numeric array is also available. the purpose of above example is custom the text
     },
     uris: {
+        usersUri: {
+            loginUri: `${backendBase}/api/cardamine-users/login`,
+            logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={accessToken}`
+        },
         chromosomeDataUri: {
             baseUri: `${backendBase}/api/cdata/`,
-            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
-            getAllWFilterUri: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
+            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D&access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",
                     "scope":%7B
@@ -167,48 +171,48 @@ export default {
                     %7D
                 %7D
             ]%7D`,
-            countUri: `${backendBase}/api/cdata/count?where={whereString}`
+            countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
         materialUri: {
-            baseUri: `${backendBase}/api/materials`
+            baseUri: `${backendBase}/api/materials?access_token={accessToken}`
         },
         referenceUri: {
-            baseUri: `${backendBase}/api/references`
+            baseUri: `${backendBase}/api/references?access_token={accessToken}`
         },
         listOfSpeciesUri: {
-            baseUri: `${backendBase}/api/list-of-species`,
-            getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
-            getByIdUri: `${backendBase}/api/list-of-species/{id}`,
-            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid`,
-            getBasionymForUri: `${backendBase}/api/list-of-species/{id}/basionym-for`,
-            getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for`,
-            getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for`,
-            getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
-            countUri: `${backendBase}/api/list-of-species/count`
+            baseUri: `${backendBase}/api/list-of-species?access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D&access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/list-of-species/{id}?access_token={accessToken}`,
+            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid?access_token={accessToken}`,
+            getBasionymForUri: `${backendBase}/api/list-of-species/{id}/basionym-for?access_token={accessToken}`,
+            getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for?access_token={accessToken}`,
+            getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for?access_token={accessToken}`,
+            getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms?access_token={accessToken}`,
+            countUri: `${backendBase}/api/list-of-species/count?access_token={accessToken}`
         },
         literaturesUri: {
-            baseUri: `${backendBase}/api/literature`,
-            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D`,
-            getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`,
-            getByIdUri: `${backendBase}/api/literature/{id}`,
-            countUri: `${backendBase}/api/literature/count`
+            baseUri: `${backendBase}/api/literature?access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D&access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D&access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/literature/{id}?access_token={accessToken}`,
+            countUri: `${backendBase}/api/literature/count?access_token={accessToken}`
         },
         personsUri: {
-            baseUri: `${backendBase}/api/persons`,
-            getByIdUri: `${backendBase}/api/persons/{id}`,
-            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D`,
-            getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`,
-            countUri: `${backendBase}/api/persons/count`
+            baseUri: `${backendBase}/api/persons?access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/persons/{id}?access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D&access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D&access_token={accessToken}`,
+            countUri: `${backendBase}/api/persons/count?access_token={accessToken}`
         },
         synonymsUri: {
-            baseUri: `${backendBase}/api/synonyms`,
-            synonymsByIdUri: `${backendBase}/api/synonyms/{id}`
+            baseUri: `${backendBase}/api/synonyms?access_token={accessToken}`,
+            synonymsByIdUri: `${backendBase}/api/synonyms/{id}?access_token={accessToken}`
         },
         worldl4Uri: {
-            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
+            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D&access_token={accessToken}`
         },
     },
 
