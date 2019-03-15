@@ -1,6 +1,6 @@
 import { SET_AUTHENTICATED, UNSET_AUTHENTICATED } from '../actions/action-types';
 
-const initialState = { accessToken: 'abcd', isAuthenticated: false };
+const initialState = { accessToken: '', isAuthenticated: false };
 
 const authentication = (state = initialState, action) => {
     switch (action.type) {
