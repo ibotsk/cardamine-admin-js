@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Login from './Login';
 import HomePage from './HomePage';
@@ -11,11 +12,16 @@ class App extends Component {
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/login" component={Login} />
-                    <PrivateRoute component={HomePage} />
+                    <PrivateRoute component={HomePage} isAuthenticated={this.props.isAuthenticated} />
                 </Switch>
             </BrowserRouter>
         );
     }
 }
 
-export default App;
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken,
+    isAuthenticated: !!state.authentication.isAuthenticated
+});
+
+export default connect(mapStateToProps)(App);

@@ -2,13 +2,11 @@ import React from 'react';
 import {
     Route,
     Redirect
-} from 'react-router-dom'
+} from 'react-router-dom';
 
-import fakeAuth from '../../services/fake-auth';
-
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route {...rest} render={props =>
-        fakeAuth.isAuthenticated === true ? (
+const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
+    <Route {...rest} render={props => (
+        isAuthenticated === true ? (
             <Component {...props} />
         ) : (
                 <Redirect
@@ -18,7 +16,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
                     }}
                 />
             )
-    } />
+    )} />
 );
 
 export default PrivateRoute;

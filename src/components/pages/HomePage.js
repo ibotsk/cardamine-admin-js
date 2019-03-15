@@ -1,6 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-import { Switch } from 'react-router-dom';
+import { Link, Switch } from 'react-router-dom';
 
 import CNavbar from '../segments/Navbar';
 import Footer from '../segments/Footer';
@@ -12,23 +13,28 @@ import Persons from './Persons';
 import Checklist from './Checklist';
 import PrivateRoute from '../wrappers/PrivateRoute';
 
-const Routing = () => (
+const Routing = ({ auth }) => (
     <Switch>
-        <PrivateRoute exact path="/chromosome-data" component={Cdata} />
-        <PrivateRoute exact path="/chromosome-data/new" component={Record} />
-        <PrivateRoute path="/chromosome-data/edit/:recordId" component={Record} />
-        <PrivateRoute exact path="/publications" component={Publications} />
-        <PrivateRoute exact path="/persons" component={Persons} />
-        <PrivateRoute path='/names/:id?' component={Checklist} />
+        <PrivateRoute exact path="/chromosome-data" component={Cdata} isAuthenticated={auth} />
+        <PrivateRoute exact path="/chromosome-data/new" component={Record} isAuthenticated={auth} />
+        <PrivateRoute path="/chromosome-data/edit/:recordId" component={Record} isAuthenticated={auth} />
+        <PrivateRoute exact path="/publications" component={Publications} isAuthenticated={auth} />
+        <PrivateRoute exact path="/persons" component={Persons} isAuthenticated={auth} />
+        <PrivateRoute path='/names/:id?' component={Checklist} isAuthenticated={auth} />
     </Switch>
 );
 
-const HomePage = () => (
+const HomePage = ({ isAuthenticated }) => (
     <React.Fragment>
         <CNavbar />
-        <Routing />
+        <Link to="/names">Names</Link>
+        <Routing auth={isAuthenticated} />
         <Footer />
     </React.Fragment>
 );
 
-export default HomePage;
+const mapStateToProps = state => ({
+    isAuthenticated: !!state.authentication.isAuthenticated
+});
+
+export default connect(mapStateToProps)(HomePage);

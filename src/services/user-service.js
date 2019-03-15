@@ -1,11 +1,21 @@
+import axios from 'axios';
+import template from 'url-template';
 
-import fakeAuth from './fake-auth';
+import config from '../config/config';
 
-const login = async (username, password, cb) => {
-    
-    console.log(username, password);
-    
-    fakeAuth.authenticate(cb);
+const login = async (username, password) => {
+    const loginUri = template.parse(config.uris.usersUri.loginUri).expand();
+
+    const response = await axios.post(loginUri, {
+        username,
+        password
+    });
+    return response.data;
 }
 
-export default { login };
+const logout = async (authToken) => {
+    const logoutUri = template.parse(config.uris.usersUri.logoutUri).expand({ access_token: authToken });
+    await axios.post(logoutUri);
+}
+
+export default { login, logout };

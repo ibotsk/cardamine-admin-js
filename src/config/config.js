@@ -120,6 +120,10 @@ export default {
             }] // A numeric array is also available. the purpose of above example is custom the text
     },
     uris: {
+        usersUri: {
+            loginUri: `${backendBase}/api/cardamine-users/login`,
+            logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={access_token}`
+        },
         chromosomeDataUri: {
             baseUri: `${backendBase}/api/cdata/`,
             getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
@@ -176,18 +180,18 @@ export default {
             baseUri: `${backendBase}/api/references`
         },
         listOfSpeciesUri: {
-            baseUri: `${backendBase}/api/list-of-species`,
-            getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D`,
-            getByIdUri: `${backendBase}/api/list-of-species/{id}`,
-            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D`,
-            getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid`,
-            getBasionymForUri: `${backendBase}/api/list-of-species/{id}/basionym-for`,
-            getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for`,
-            getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for`,
-            getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms`,
-            countUri: `${backendBase}/api/list-of-species/count`
+            baseUri: `${backendBase}/api/list-of-species?access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D&access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/list-of-species/{id}?access_token={accessToken}`,
+            getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getTaxonomicSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-taxonomic?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
+            getInvalidSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-invalid?access_token={accessToken}`,
+            getBasionymForUri: `${backendBase}/api/list-of-species/{id}/basionym-for?access_token={accessToken}`,
+            getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for?access_token={accessToken}`,
+            getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for?access_token={accessToken}`,
+            getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms?access_token={accessToken}`,
+            countUri: `${backendBase}/api/list-of-species/count?access_token={accessToken}`
         },
         literaturesUri: {
             baseUri: `${backendBase}/api/literature`,

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
     Redirect
 } from 'react-router-dom';
@@ -10,6 +11,7 @@ import {
 } from 'react-bootstrap';
 
 import userService from '../../services/user-service';
+import { setAuthenticated } from '../../actions';
 
 class Login extends Component {
 
@@ -41,9 +43,15 @@ class Login extends Component {
         if (!(username && password)) {
             return;
         }
-        await userService.login(username, password, () => {
-            this.setState({ redirectToReferrer: true });
-        });
+        // call login endpoint
+        const responseData = await userService.login(username, password);
+        if (!responseData.id) {
+            return;
+        }
+        console.log("setting authenticated with token:", responseData.id);
+        
+        this.props.setAuthenticated(responseData.id);
+        this.setState({ redirectToReferrer: true });
     }
 
     render() {
@@ -86,4 +94,9 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default connect(
+    null,
+    { 
+        setAuthenticated
+    }
+)(Login);
