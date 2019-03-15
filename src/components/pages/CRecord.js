@@ -5,6 +5,7 @@ import {
     InputGroup,
     Button, Checkbox, ControlLabel, Form, FormControl, FormGroup
 } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';
@@ -705,7 +706,9 @@ class Record extends Component {
                         </div>
                         <Row>
                             <Col sm={5} smOffset={2}>
-                                <Button bsStyle="default" href={CHROM_DATA_LIST_URI} >Cancel</Button>
+                                <LinkContainer to={CHROM_DATA_LIST_URI}>
+                                    <Button bsStyle="default" >Cancel</Button>
+                                </LinkContainer>
                             </Col>
                             <Col sm={5}>
                                 <Button bsStyle="primary" type='submit' >Save</Button>

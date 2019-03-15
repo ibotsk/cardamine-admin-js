@@ -27,7 +27,6 @@ const Routing = ({ auth }) => (
 const HomePage = ({ isAuthenticated }) => (
     <React.Fragment>
         <CNavbar />
-        <Link to="/names">Names</Link>
         <Routing auth={isAuthenticated} />
         <Footer />
     </React.Fragment>

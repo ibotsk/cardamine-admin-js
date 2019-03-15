@@ -48,8 +48,6 @@ class Login extends Component {
         if (!responseData.id) {
             return;
         }
-        console.log("setting authenticated with token:", responseData.id);
-        
         this.props.setAuthenticated(responseData.id);
         this.setState({ redirectToReferrer: true });
     }

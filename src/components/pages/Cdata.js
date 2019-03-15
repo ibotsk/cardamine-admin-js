@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button, Glyphicon, Grid } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Link } from 'react-router-dom';
 
 import { textFilter } from 'react-bootstrap-table2-filter';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -123,9 +125,13 @@ const formatResult = (data) => {
         const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return {
             id: d.id,
-            action: <Button bsStyle="warning" bsSize="xsmall" href={`${EDIT_RECORD}${d.id}`}>Edit</Button>,
-            originalIdentification: origIdentification ? <a href={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></a> : "",
-            lastRevision: latestRevision ? <a href={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></a> : "",
+            action: (
+                <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
+                    <Button bsStyle="warning" bsSize="xsmall">Edit</Button>
+                </LinkContainer>
+            ),
+            originalIdentification: origIdentification ? <Link to={`${PAGE_DETAIL}${origIdentification.id}`} ><LosName key={origIdentification.id} data={origIdentification} format='plain' /></Link> : "",
+            lastRevision: latestRevision ? <Link to={`${PAGE_DETAIL}${latestRevision["list-of-species"].id}`} ><LosName key={latestRevision["list-of-species"].id} data={latestRevision["list-of-species"]} format='plain' /></Link> : "",
             publicationAuthor: get(d, 'material.reference.literature.paperAuthor', ''),
             year: get(d, 'material.reference.literature.year', ''),
             n: d.n,
@@ -155,7 +161,9 @@ const Cdata = (props) => {
         <div id='chromosome-data'>
             <Grid id="functions">
                 <div id="functions">
-                    <Button bsStyle="success" href={NEW_RECORD}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                    <LinkContainer to={NEW_RECORD}>
+                        <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                    </LinkContainer>
                 </div>
                 <h2>Chromosome data</h2>
             </Grid>
