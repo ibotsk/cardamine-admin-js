@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
     Route,
     Redirect
@@ -19,4 +20,8 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...rest }) => (
     )} />
 );
 
-export default PrivateRoute;
+const mapStateToProps = state => ({
+    isAuthenticated: !!state.authentication.isAuthenticated
+});
+
+export default connect(mapStateToProps)(PrivateRoute);
