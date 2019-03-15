@@ -1,7 +1,9 @@
 
+const KEY_STATE = 'state';
+
 export const loadState = () => {
     try {
-        const serializedState = localStorage.getItem('state');
+        const serializedState = localStorage.getItem(KEY_STATE);
         if (serializedState === null) {
             return undefined;
         }
@@ -11,11 +13,19 @@ export const loadState = () => {
     }
 };
 
-export const saveState = (state) => {
+export const saveState = state => {
     try {
         const serializedState = JSON.stringify(state);
-        localStorage.setItem('state', serializedState);
+        localStorage.setItem(KEY_STATE, serializedState);
     } catch {
         // ignore write errors
+    }
+};
+
+export const removeState = () => {
+    try {
+        localStorage.removeItem(KEY_STATE);
+    } catch {
+        // ignore
     }
 };

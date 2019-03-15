@@ -13,8 +13,8 @@ const login = async (username, password) => {
     return response.data;
 }
 
-const logout = async (authToken) => {
-    const logoutUri = template.parse(config.uris.usersUri.logoutUri).expand({ access_token: authToken });
+const logout = async accessToken => {
+    const logoutUri = template.parse(config.uris.usersUri.logoutUri).expand({ accessToken });
     await axios.post(logoutUri);
 }
 

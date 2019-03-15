@@ -39,9 +39,11 @@ const CNavbar = (props) => {
                         <NavItem eventKey={1} href="#">
                             Users
                         </NavItem>
-                        <NavItem eventKey={2} href="#">
-                            <Glyphicon glyph="log-out" /> Logout
-                        </NavItem>
+                        <LinkContainer to="/logout">
+                            <NavItem eventKey={2}>
+                                <Glyphicon glyph="log-out" /> Logout
+                            </NavItem>
+                        </LinkContainer>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

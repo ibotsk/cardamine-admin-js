@@ -10,6 +10,7 @@ import Publications from './Publications';
 import Persons from './Persons';
 import Checklist from './Checklist';
 import PrivateRoute from '../wrappers/PrivateRoute';
+import Logout from '../segments/Logout';
 
 const Routing = () => (
     <Switch>
@@ -19,6 +20,7 @@ const Routing = () => (
         <PrivateRoute exact path="/publications" component={Publications} />
         <PrivateRoute exact path="/persons" component={Persons} />
         <PrivateRoute path='/names/:id?' component={Checklist} />
+        <PrivateRoute exact path='/logout' component={Logout} />
     </Switch>
 );
 

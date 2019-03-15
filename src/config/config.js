@@ -122,7 +122,7 @@ export default {
     uris: {
         usersUri: {
             loginUri: `${backendBase}/api/cardamine-users/login`,
-            logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={access_token}`
+            logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={accessToken}`
         },
         chromosomeDataUri: {
             baseUri: `${backendBase}/api/cdata/`,
