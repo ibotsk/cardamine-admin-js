@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
     Button, Modal,
@@ -31,7 +32,8 @@ class PersonModal extends Component {
 
     onEnter = () => {
         if (this.props.id) {
-            const getByIdUri = template.parse(config.uris.personsUri.getByIdUri).expand({ id: this.props.id });
+            const accessToken = this.props.accessToken;
+            const getByIdUri = template.parse(config.uris.personsUri.getByIdUri).expand({ id: this.props.id, accessToken });
             axios.get(getByIdUri).then(response => {
                 let data = utils.nullToEmpty(response.data);
                 this.setState({ ...data });
@@ -59,7 +61,8 @@ class PersonModal extends Component {
 
     handleSave = () => {
         if (this.getValidationState() === VALIDATION_STATE_SUCCESS) {
-            const personsUri = template.parse(config.uris.personsUri.baseUri).expand();
+            const accessToken = this.props.accessToken;
+            const personsUri = template.parse(config.uris.personsUri.baseUri).expand({ accessToken });
             axios.put(personsUri, {
                 ...this.state
             }).then(() => this.handleHide());
@@ -98,8 +101,10 @@ class PersonModal extends Component {
             </Modal>
         )
     }
-
-
 }
 
-export default PersonModal;
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(PersonModal);

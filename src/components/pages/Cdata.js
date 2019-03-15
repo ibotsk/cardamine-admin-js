@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import { Button, Glyphicon, Grid } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
@@ -184,7 +186,13 @@ const Cdata = (props) => {
 
 }
 
-export default TabledPage({
-    getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
-    getCount: config.uris.chromosomeDataUri.countUri
-})(Cdata);
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(
+    TabledPage({
+        getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
+        getCount: config.uris.chromosomeDataUri.countUri
+    })(Cdata)
+);

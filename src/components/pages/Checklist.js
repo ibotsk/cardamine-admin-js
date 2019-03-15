@@ -697,8 +697,7 @@ class Checklist extends Component {
 }
 
 const mapStateToProps = state => ({
-    accessToken: state.authentication.accessToken,
-    isAuthenticated: state.authentication.isAuthenticated
+    accessToken: state.authentication.accessToken
 });
 
 export default connect(mapStateToProps)(

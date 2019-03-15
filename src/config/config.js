@@ -126,8 +126,8 @@ export default {
         },
         chromosomeDataUri: {
             baseUri: `${backendBase}/api/cdata/`,
-            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D`,
-            getAllWFilterUri: `${backendBase}/api/cdata?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
+            getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D&access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B
                     "relation":"counted-by",
                     "scope":%7B
@@ -171,13 +171,13 @@ export default {
                     %7D
                 %7D
             ]%7D`,
-            countUri: `${backendBase}/api/cdata/count?where={whereString}`
+            countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
         materialUri: {
-            baseUri: `${backendBase}/api/materials`
+            baseUri: `${backendBase}/api/materials?access_token={accessToken}`
         },
         referenceUri: {
-            baseUri: `${backendBase}/api/references`
+            baseUri: `${backendBase}/api/references?access_token={accessToken}`
         },
         listOfSpeciesUri: {
             baseUri: `${backendBase}/api/list-of-species?access_token={accessToken}`,
@@ -194,25 +194,25 @@ export default {
             countUri: `${backendBase}/api/list-of-species/count?access_token={accessToken}`
         },
         literaturesUri: {
-            baseUri: `${backendBase}/api/literature`,
-            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D`,
-            getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D`,
-            getByIdUri: `${backendBase}/api/literature/{id}`,
-            countUri: `${backendBase}/api/literature/count`
+            baseUri: `${backendBase}/api/literature?access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D&access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D&access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/literature/{id}?access_token={accessToken}`,
+            countUri: `${backendBase}/api/literature/count?access_token={accessToken}`
         },
         personsUri: {
-            baseUri: `${backendBase}/api/persons`,
-            getByIdUri: `${backendBase}/api/persons/{id}`,
-            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D`,
-            getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D`,
-            countUri: `${backendBase}/api/persons/count`
+            baseUri: `${backendBase}/api/persons?access_token={accessToken}`,
+            getByIdUri: `${backendBase}/api/persons/{id}?access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D&access_token={accessToken}`,
+            getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D&access_token={accessToken}`,
+            countUri: `${backendBase}/api/persons/count?access_token={accessToken}`
         },
         synonymsUri: {
-            baseUri: `${backendBase}/api/synonyms`,
-            synonymsByIdUri: `${backendBase}/api/synonyms/{id}`
+            baseUri: `${backendBase}/api/synonyms?access_token={accessToken}`,
+            synonymsByIdUri: `${backendBase}/api/synonyms/{id}?access_token={accessToken}`
         },
         worldl4Uri: {
-            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D`
+            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D&access_token={accessToken}`
         },
     },
 

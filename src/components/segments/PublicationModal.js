@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
     Col,
@@ -49,7 +50,8 @@ class PublicationModal extends Component {
 
     onEnter = () => {
         if (this.props.id) {
-            const getByIdUri = template.parse(config.uris.literaturesUri.getByIdUri).expand({ id: this.props.id });
+            const accessToken = this.props.accessToken;
+            const getByIdUri = template.parse(config.uris.literaturesUri.getByIdUri).expand({ id: this.props.id, accessToken });
             axios.get(getByIdUri).then(response => {
                 let data = utils.nullToEmpty(response.data);
                 this.setState({ ...data });
@@ -85,7 +87,8 @@ class PublicationModal extends Component {
 
     handleSave = () => {
         if (this.getValidationState()) {
-            const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand();
+            const accessToken = this.props.accessToken;
+            const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand({ accessToken });
             const publicationToBeSaved = helper.publicationCurateFields(this.state);
             axios.put(literaturesUri, publicationToBeSaved).then(() => this.handleHide());
         } else {
@@ -289,4 +292,8 @@ class PublicationModal extends Component {
     }
 }
 
-export default PublicationModal;
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(PublicationModal);

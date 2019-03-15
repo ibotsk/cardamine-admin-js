@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
     Col,
@@ -51,7 +52,8 @@ class SpeciesNameModal extends Component {
 
     onEnter = () => {
         if (this.props.id) {
-            const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id: this.props.id });
+            const accessToken = this.props.accessToken;
+            const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id: this.props.id, accessToken });
             axios.get(getByIdUri).then(response => {
                 const data = response.data;
                 const relevantProperties = { id: this.props.id };
@@ -91,7 +93,8 @@ class SpeciesNameModal extends Component {
 
     handleSave = () => {
         if (this.getValidationState()) {
-            const listOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand();
+            const accessToken = this.props.accessToken;
+            const listOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
             axios.put(listOfSpeciesUri, {
                 ...this.state
             }).then(() => this.handleHide());
@@ -366,4 +369,8 @@ class SpeciesNameModal extends Component {
     }
 }
 
-export default SpeciesNameModal;
+const mapStateToProps = state => ({
+    accessToken: state.authentication.accessToken
+});
+
+export default connect(mapStateToProps)(SpeciesNameModal);
