@@ -117,7 +117,7 @@ const columns = [
     }
 ];
 
-const formatResult = (data) => {
+const formatResult = data => {
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
@@ -157,7 +157,7 @@ const formatResult = (data) => {
     });
 }
 
-const Cdata = (props) => {
+const Cdata = ({ data, paginationOptions, onTableChange }) => {
 
     return (
         <div id='chromosome-data'>
@@ -173,11 +173,11 @@ const Cdata = (props) => {
                 <BootstrapTable hover striped condensed
                     remote={{ filter: true, pagination: true }}
                     keyField='id'
-                    data={formatResult(props.data)}
+                    data={formatResult(data)}
                     columns={columns}
                     filter={filterFactory()}
-                    onTableChange={props.onTableChange}
-                    pagination={paginationFactory(props.paginationOptions)}
+                    onTableChange={onTableChange}
+                    pagination={paginationFactory(paginationOptions)}
                 />
             </Grid>
             <NotificationContainer />

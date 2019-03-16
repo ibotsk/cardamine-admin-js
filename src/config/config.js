@@ -125,7 +125,7 @@ export default {
             logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={accessToken}`
         },
         chromosomeDataUri: {
-            baseUri: `${backendBase}/api/cdata/`,
+            baseUri: `${backendBase}/api/cdata?access_token={accessToken}`,
             getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":[%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D&access_token={accessToken}`,
             getAllWFilterUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
                 %7B

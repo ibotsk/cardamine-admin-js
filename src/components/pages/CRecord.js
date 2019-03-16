@@ -14,12 +14,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import { NotificationContainer } from 'react-notifications';
 
-import axios from 'axios';
-import template from 'url-template';
-
-import config from '../../config/config';
-import helper from '../../utils/helper';
 import notifications from '../../utils/notifications';
+
+import cRecordFacade from '../../facades/crecord';
 
 import LosName from '../segments/LosName';
 import PersonModal from '../segments/PersonModal';
@@ -43,7 +40,7 @@ const revisionsColumns = [
 ]
 
 const CHROM_DATA_LIST_URI = '/chromosome-data';
-const SELECTED = (prop) => `${prop}Selected`;
+const SELECTED = prop => `${prop}Selected`;
 
 const MODAL_PERSONS = 'showModalPerson';
 const MODAL_LITERATURE = 'showModalLiterature';
@@ -57,12 +54,6 @@ class Record extends Component {
 
     constructor(props) {
         super(props);
-
-        this.getByIdUri = template.parse(config.uris.chromosomeDataUri.getByIdUri);
-        this.getAllLiteraturesUri = template.parse(config.uris.literaturesUri.getAllWOrderUri);
-        this.getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri);
-        this.getAllPersonsUri = template.parse(config.uris.personsUri.getAllWOrderUri);
-        this.getAllWorld4sUri = template.parse(config.uris.worldl4Uri.getAllWFilterUri);
 
         this.state = {
             chromrecord: {}, //to save
@@ -84,134 +75,76 @@ class Record extends Component {
     getChromosomeRecord = async () => {
         const accessToken = this.props.accessToken;
         const recordId = this.props.match.params.recordId;
-        if (recordId) {
-            const getCdataByIdUri = this.getByIdUri.expand({ id: recordId, accessToken });
-            const response = await axios.get(getCdataByIdUri); // get chromosome record
 
-            const cdata = response.data;
-            const mat = cdata.material;
-            const ref = mat.reference;
-            const hist = cdata.histories;
-
-            delete cdata.material;
-            delete cdata.histories;
-            delete mat.reference;
-
-            this.setState({
-                chromrecord: cdata,
-                material: mat,
-                reference: ref,
-                histories: hist
-            });
-        }
-    }
-
-    getPersons = async () => {
-        const accessToken = this.props.accessToken;
-        const response = await axios.get(this.getAllPersonsUri.expand({ accessToken }));  // get all persons
-
-        const persons = response.data.map(p => ({ id: p.id, label: p.persName, countedByText: p.persName, collectedByText: p.persName }));
-        const countedByInitial = persons.find(p => p.id === this.state.chromrecord.countedBy);
-        const collectedByInitial = persons.find(p => p.id === this.state.material.collectedBy);
-        const identifiedByInitial = persons.find(p => p.id === this.state.material.identifiedBy);
-        const checkedByInitial = persons.find(p => p.id === this.state.material.checkedBy);
+        const {
+            chromrecord,
+            material,
+            reference,
+            histories
+        } = await cRecordFacade.getChromosomeRecord(accessToken, recordId);
 
         this.setState({
-            persons,
-            countedBySelected: countedByInitial ? [countedByInitial] : null,
-            collectedBySelected: collectedByInitial ? [collectedByInitial] : null,
-            identifiedBySelected: identifiedByInitial ? [identifiedByInitial] : null,
-            checkedBySelected: checkedByInitial ? [checkedByInitial] : null
-        });
-    }
-
-    getWorld4s = async () => {
-        const accessToken = this.props.accessToken;
-        const response = await axios.get(this.getAllWorld4sUri.expand({ accessToken })); // get all world4s
-
-        const world4s = response.data.map(w => ({ id: w.id, label: w.description, idWorld3: w.idParent }));
-        const world4Initial = world4s.find(w => w.id === this.state.material.idWorld4);
-
-        this.setState({
-            world4s,
-            idWorld4Selected: world4Initial ? [world4Initial] : null
-        });
-    }
-
-    getLiteratures = async () => {
-        const accessToken = this.props.accessToken;
-        const response = await axios.get(this.getAllLiteraturesUri.expand({ accessToken })); // get all publications
-
-        const literatures = response.data.map(l => ({
-            id: l.id,
-            label: helper.parsePublication({
-                type: l.displayType,
-                authors: l.paperAuthor,
-                title: l.paperTitle,
-                series: l.seriesSource,
-                volume: l.volume,
-                issue: l.issue,
-                publisher: l.publisher,
-                editor: l.editor,
-                year: l.year,
-                pages: l.pages,
-                journal: l.journalName
-            })
-        }));
-        const literatureInitial = literatures.find(l => l.id === this.state.reference.idLiterature);
-
-        this.setState({
-            literatures,
-            idLiteratureSelected: literatureInitial ? [literatureInitial] : null
-        });
-    }
-
-    getSpecies = async () => {
-        const accessToken = this.props.accessToken;
-        const response = await axios.get(this.getAllListOfSpeciesUri.expand({ accessToken }));
-
-        const listOfSpecies = response.data.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
-
-        const originalIdentificationInitial = listOfSpecies.find(l => l.id === this.state.reference.idStandardisedName);
-
-        this.setState({
-            listOfSpecies,
-            idStandardisedNameSelected: originalIdentificationInitial ? [originalIdentificationInitial] : null
+            chromrecord,
+            material,
+            reference,
+            histories
         });
     }
 
     getLists = async () => {
-        await this.getPersons();
-        await this.getWorld4s();
-        await this.getLiteratures();
-        await this.getSpecies();
+        const accessToken = this.props.accessToken;
+
+        const { listOfSpecies, idStandardisedNameSelected } = await cRecordFacade.getSpecies(accessToken, this.state.reference.idStandardisedName);
+
+        const { persons, countedBySelected, collectedBySelected, identifiedBySelected, checkedBySelected } = await cRecordFacade.getPersons(accessToken, {
+            countedBy: this.state.chromrecord.countedBy,
+            collectedBy: this.state.material.collectedBy,
+            identifiedBy: this.state.material.identifiedBy,
+            checkedBy: this.state.material.checkedBy
+        });
+
+        const { world4s, idWorld4Selected } = await cRecordFacade.getWorld4s(accessToken, this.state.material.idWorld4);
+
+        const { literatures, idLiteratureSelected } = await cRecordFacade.getLiteratures(accessToken, this.state.reference.idLiterature);
+
+        this.setState({
+            listOfSpecies,
+            literatures,
+            persons,
+            world4s,
+            idStandardisedNameSelected,
+            idLiteratureSelected,
+            countedBySelected,
+            collectedBySelected,
+            identifiedBySelected,
+            checkedBySelected,
+            idWorld4Selected
+        });
     }
 
-    showModal = (prop) => {
+    showModal = prop => {
         const modals = this.state.modals;
         modals[prop] = true;
         this.setState({ modals });
     }
 
-    hideModal = () => {
+    hideModal = async () => {
         const modals = this.state.modals;
         for (const m in modals) {
             modals[m] = false;
         }
+        await this.getLists();
         this.setState({ modals });
-        this.getLists();
     }
 
-    componentDidMount() {
-        this.getChromosomeRecord()
-            .then(this.getLists())
-            .catch(e => {
-                console.error(e)
-                throw e;
-            });
+    async componentDidMount() {
+        try {
+            await this.getChromosomeRecord();
+            await this.getLists();
+        } catch (e) {
+            console.error(e)
+            throw e;
+        }
     }
 
     onChangeTextInput = (e, objName) => {
@@ -259,28 +192,22 @@ class Record extends Component {
         });
     }
 
-    submitForm = (e) => {
+    submitForm = async e => {
         e.preventDefault();
         const accessToken = this.props.accessToken;
 
-        const cdataUri = template.parse(config.uris.chromosomeDataUri.baseUri).expand({ accessToken });
-        const materialUri = template.parse(config.uris.materialUri.baseUri).expand({ accessToken });
-        const referenceUri = template.parse(config.uris.referenceUri.baseUri).expand({ accessToken });
-
-        axios.put(cdataUri, this.state.chromrecord) //upsert cdata
-            .then(response => {
-                const body = { ...this.state.material, idCdata: response.data.id };
-                return axios.put(materialUri, body); //upsert material
-            }).then(response => {
-                const body = { ...this.state.reference, idMaterial: response.data.id };
-                return axios.put(referenceUri, body); //upsert reference
-            }).then(() => {
-                this.context.router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
-                notifications.success('Saved');
-            }).catch(e => {
-                notifications.success('Error saving');
-                throw e;
-            });
+        try {
+            await cRecordFacade.saveUpdateChromrecordWithAll({
+                chromrecord: this.state.chromrecord,
+                material: this.state.material,
+                reference: this.state.reference
+            }, accessToken);
+            this.context.router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
+            notifications.success('Saved');
+        } catch (e) {
+            notifications.error('Error saving');
+            throw e;
+        }
     }
 
     render() {
