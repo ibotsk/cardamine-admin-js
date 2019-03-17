@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 
-import axios from 'axios';
-import template from 'url-template';
-
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+
+import tablesService from '../../services/tables';
 
 import helper from '../../utils/helper';
 import config from '../../config/config';
@@ -22,9 +21,7 @@ const TabledPage = injectedProps => WrappedComponent => {
 
         constructor(props) {
             super(props);
-            
-            this.getAllUri = template.parse(injectedProps.getAll);
-            this.getCountUri = template.parse(injectedProps.getCount);
+
             this.state = {
                 records: [],
                 totalSize: 0,
@@ -39,35 +36,30 @@ const TabledPage = injectedProps => WrappedComponent => {
             this.handleChange(page, sizePerPage, where);
         }
 
-        handleChange = (page, sizePerPage, where) => {
-            return this.fetchCount(where).then(() => {
-                const offset = (page - 1) * sizePerPage;
-                return this.fetchRecords(where, offset, sizePerPage);
-            }).then(response => {
-                // const records = injectedProps.formatResult(response.data);
-                const records = response.data;
-                this.setState({
-                    records,
-                    sizePerPage,
-                    page,
-                    where
-                });
-            }).catch(e => console.error(e));
+        handleChange = async (page, sizePerPage, where) => {
+            await this.fetchCount(where);
+            const offset = (page - 1) * sizePerPage;
+            const records = await this.fetchRecords(where, offset, sizePerPage);
+            this.setState({
+                records,
+                sizePerPage,
+                page,
+                where
+            });
         }
 
-        fetchRecords = (where, offset, limit) => {
+        fetchRecords = async (where, offset, limit) => {
             const accessToken = this.props.accessToken;
-            const uri = this.getAllUri.expand({ offset, where: JSON.stringify(where), limit, accessToken });
-            return axios.get(uri);
+            return await tablesService.getAll(injectedProps.getAll, offset, where, limit, accessToken);
         }
 
-        fetchCount = (where) => {
+        fetchCount = async where => {
             const accessToken = this.props.accessToken;
             const whereString = JSON.stringify(where);
-            const uri = this.getCountUri.expand({ base: config.uris.backendBase, whereString, accessToken });
-            return axios.get(uri).then(response => this.setState({
-                totalSize: response.data.count
-            }));
+            const countResponse = await tablesService.getCount(injectedProps.getCount, whereString, accessToken);
+            this.setState({
+                totalSize: countResponse.count
+            });
         }
 
         componentDidMount() {
