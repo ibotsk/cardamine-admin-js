@@ -31,9 +31,9 @@ const TabledPage = injectedProps => WrappedComponent => {
             }
         }
 
-        handleTableChange = (type, { page = this.state.page, sizePerPage = this.state.sizePerPage, filters = {} }) => {
+        handleTableChange = async (type, { page = this.state.page, sizePerPage = this.state.sizePerPage, filters = {} }) => {
             const where = helper.makeWhere(filters); //TODO make function to take into account existing where
-            this.handleChange(page, sizePerPage, where);
+            await this.handleChange(page, sizePerPage, where);
         }
 
         handleChange = async (page, sizePerPage, where) => {

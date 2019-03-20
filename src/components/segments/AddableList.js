@@ -20,7 +20,7 @@ class AddableList extends Component {
         }
     }
 
-    onChange = (selected) => {
+    onChange = selected => {
         this.setState({
             selected
         });

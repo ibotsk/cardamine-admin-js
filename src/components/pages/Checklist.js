@@ -20,8 +20,7 @@ import SpeciesNameModal from '../segments/SpeciesNameModal';
 import AddableList from '../segments/AddableList';
 import SynonymListItem from '../segments/SynonymListItem';
 
-import axios from 'axios';
-import template from 'url-template';
+import checklistFacade from '../../facades/checklist';
 
 import helper from '../../utils/helper';
 import notifications from '../../utils/notifications';
@@ -44,7 +43,7 @@ const idNomenNovumFor = 'idNomenNovumFor';
 const titleColWidth = 2;
 const mainColWidth = 10;
 
-const buildNtypesOptions = (types) => {
+const buildNtypesOptions = ntypes => {
     const obj = {};
     Object.keys(ntypes).forEach(t => {
         obj[t] = t;
@@ -52,7 +51,7 @@ const buildNtypesOptions = (types) => {
     return obj;
 }
 
-const ntypeFormatter = (cell) => {
+const ntypeFormatter = cell => {
     return (
         <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>
     );
@@ -66,56 +65,6 @@ const synonymFormatter = (synonym, prefix) => (
     }
 );
 
-const getLosById = async (id, accessToken) => {
-    const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id, accessToken });
-    const response = await axios.get(getByIdUri);
-    return response.data;
-}
-
-const getAllLos = async (accessToken) => {
-    const getAllUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri).expand({ accessToken });
-    const response = await axios.get(getAllUri);
-    return response.data;
-}
-
-const getSynonyms = async (id, accessToken) => {
-    const getSynonymsNomenclatoricUri = template.parse(config.uris.listOfSpeciesUri.getNomenclatoricSynonymsUri).expand({ id, accessToken });
-    const getSynonymsTaxonomicUri = template.parse(config.uris.listOfSpeciesUri.getTaxonomicSynonymsUri).expand({ id, accessToken });
-    const getInvalidDesignationsUri = template.parse(config.uris.listOfSpeciesUri.getInvalidSynonymsUri).expand({ id, accessToken });
-
-    let response = await axios.get(getSynonymsNomenclatoricUri);
-    const nomenclatoricSynonyms = response.data;
-    nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
-
-    response = await axios.get(getSynonymsTaxonomicUri);
-    const taxonomicSynonyms = response.data;
-    taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
-
-    response = await axios.get(getInvalidDesignationsUri);
-    const invalidDesignations = response.data;
-    invalidDesignations.sort(helper.listOfSpeciesSorterLex);
-
-    return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
-}
-
-const getBasionymFor = async (id, accessToken) => {
-    const getBasionymForUri = template.parse(config.uris.listOfSpeciesUri.getBasionymForUri).expand({ id, accessToken });
-    const response = await axios.get(getBasionymForUri);
-    return response.data;
-}
-
-const getReplacedFor = async (id, accessToken) => {
-    const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id, accessToken });
-    const response = await axios.get(getReplacedForUri);
-    return response.data;
-}
-
-const getNomenNovumFor = async (id, accessToken) => {
-    const getNomenNovumForUri = template.parse(config.uris.listOfSpeciesUri.getNomenNovumForUri).expand({ id, accessToken });
-    const response = await axios.get(getNomenNovumForUri);
-    return response.data;
-}
-
 const addSynonymToList = async (selected, synonyms, accessToken) => {
     if (!selected) {
         return null;
@@ -124,25 +73,10 @@ const addSynonymToList = async (selected, synonyms, accessToken) => {
         notifications.warning('The item is already in the list');
         return null;
     }
-    const synonymJson = await getLosById(selected.id, accessToken);
+    const synonymJson = await checklistFacade.getSpeciesById(selected.id, accessToken);
     synonyms.push(synonymJson);
     synonyms.sort(helper.listOfSpeciesSorterLex);
     return synonyms;
-}
-
-const saveSynonyms = async (id, synonymsList, syntype, accessToken) => {
-    const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
-    let i = 1;
-    for (const s of synonymsList) {
-        const synonymObj = {
-            idParent: id,
-            idSynonym: s.id,
-            syntype,
-            rorder: i
-        };
-        i++;
-        await axios.post(synonymsUri, synonymObj);
-    }
 }
 
 const ntypes = config.mappings.losType;
@@ -202,17 +136,17 @@ class Checklist extends Component {
         }
     }
 
-    showModal = (id) => {
+    showModal = id => {
         this.setState({
             [MODAL_SPECIES_NAME]: true,
             modalEditId: id
         });
     }
 
-    hideModal = () => {
-        this.props.onTableChange(undefined, {});
+    hideModal = async () => {
+        await this.props.onTableChange(undefined, {});
         if (this.state.species.id) {
-            this.populateDetailsForEdit(this.state.species.id);
+            await this.populateDetailsForEdit(this.state.species.id);
         }
         this.setState({ [MODAL_SPECIES_NAME]: false });
     }
@@ -228,19 +162,18 @@ class Checklist extends Component {
         },
     });
 
-    populateDetailsForEdit = async (id) => {
+    populateDetailsForEdit = async id => {
         const accessToken = this.props.accessToken;
-        const los = await getLosById(id, accessToken);
-        const speciesListRaw = await getAllLos(accessToken);
+
+        const los = await checklistFacade.getSpeciesById(id, accessToken);
+        const speciesListRaw = await checklistFacade.getAllSpecies(accessToken);
         const listOfSpecies = speciesListRaw.map(l => ({
             id: l.id,
             label: helper.listOfSpeciesString(l)
         }));
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations } = await getSynonyms(id, accessToken);
-        const basionymFor = await getBasionymFor(id, accessToken);
-        const replacedFor = await getReplacedFor(id, accessToken);
-        const nomenNovumFor = await getNomenNovumFor(id, accessToken);
+        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations } = await checklistFacade.getSynonyms(id, accessToken);
+        const { basionymFor, replacedFor, nomenNovumFor } = await checklistFacade.getBasionymsFor(id, accessToken);
 
         this.setState({
             species: {
@@ -257,7 +190,7 @@ class Checklist extends Component {
         });
     }
 
-    formatTableRow = (data) => {
+    formatTableRow = data => {
         return data.map(n => {
             return ({
                 id: n.id,
@@ -268,7 +201,7 @@ class Checklist extends Component {
         });
     }
 
-    getSelectedName = (id) => {
+    getSelectedName = id => {
         return this.state.listOfSpecies.filter(l => l.id === id);
     }
 
@@ -277,7 +210,7 @@ class Checklist extends Component {
         this.handleChange(prop, id);
     }
 
-    handleChangeInput = (e) => {
+    handleChangeInput = e => {
         this.handleChange(e.target.id, e.target.value);
     }
 
@@ -289,7 +222,7 @@ class Checklist extends Component {
         });
     }
 
-    handleAddNomenclatoricSynonym = async (selected) => {
+    handleAddNomenclatoricSynonym = async selected => {
         const accessToken = this.props.accessToken;
         const nomenclatoricSynonyms = await addSynonymToList(selected, [...this.state.nomenclatoricSynonyms], accessToken);
         this.setState({
@@ -298,7 +231,7 @@ class Checklist extends Component {
         });
     }
 
-    handleAddTaxonomicSynonym = async (selected) => {
+    handleAddTaxonomicSynonym = async selected => {
         const accessToken = this.props.accessToken;
         const taxonomicSynonyms = await addSynonymToList(selected, [...this.state.taxonomicSynonyms], accessToken);
         this.setState({
@@ -307,7 +240,7 @@ class Checklist extends Component {
         });
     }
 
-    handleAddInvalidDesignation = async (selected) => {
+    handleAddInvalidDesignation = async selected => {
         const accessToken = this.props.accessToken;
         const invalidDesignations = await addSynonymToList(selected, [...this.state.invalidDesignations], accessToken);
         this.setState({
@@ -316,7 +249,7 @@ class Checklist extends Component {
         });
     }
 
-    handleRemoveNomenclatoricSynonym = (id) => {
+    handleRemoveNomenclatoricSynonym = id => {
         const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(s => s.id !== id);
         this.setState({
             nomenclatoricSynonyms,
@@ -324,7 +257,7 @@ class Checklist extends Component {
         });
     }
 
-    handleRemoveTaxonomicSynonym = (id) => {
+    handleRemoveTaxonomicSynonym = id => {
         const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(s => s.id !== id);
         this.setState({
             taxonomicSynonyms,
@@ -332,7 +265,7 @@ class Checklist extends Component {
         });
     }
 
-    handleRemoveInvalidDesignation = (id) => {
+    handleRemoveInvalidDesignation = id => {
         const invalidDesignations = this.state.invalidDesignations.filter(s => s.id !== id);
         this.setState({
             invalidDesignations,
@@ -365,48 +298,24 @@ class Checklist extends Component {
         await this.handleRemoveTaxonomicSynonym(id);
     }
 
-    submitSynonyms = async (id, accessToken) => {
-        // get synonyms to be deleted
-        const losIsParentOfSynonyms = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id, accessToken });
-        const getOriginalSynonymsResponse = await axios.get(losIsParentOfSynonyms);
-        const originalSynonyms = getOriginalSynonymsResponse.data;
-
-        const toBeDeleted = [];
-
-        // save new
-        if (this.state.isNomenclatoricSynonymsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.nomenclatoric.numType));
-            await saveSynonyms(id, this.state.nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType, accessToken);
-        }
-        if (this.state.isTaxonomicSynonymsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.taxonomic.numType));
-            await saveSynonyms(id, this.state.taxonomicSynonyms, config.mappings.synonym.taxonomic.numType, accessToken);
-        }
-        if (this.state.isInvalidDesignationsChanged) {
-            toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalid.numType));
-            await saveSynonyms(id, this.state.invalidDesignations, config.mappings.synonym.invalid.numType, accessToken);
-        }
-
-        // delete originals
-        const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri);
-        for (const syn of toBeDeleted) {
-            await axios.delete(synonymsByIdUri.expand({ id: syn.id, accessToken }));
-        }
-    }
-
-    submitForm = async (e) => {
+    submitForm = async e => {
         e.preventDefault();
         const accessToken = this.props.accessToken;
-        const id = this.state.species.id;
-        const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
         try {
-            await axios.put(losUri, this.state.species);
+            await checklistFacade.saveSpecies({
+                species: this.state.species,
+                accessToken,
+                nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,
+                taxonomicSynonyms: this.state.taxonomicSynonyms,
+                invalidDesignations: this.state.invalidDesignations,
+                isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
+                isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
+                isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged
+            });
 
-            await this.submitSynonyms(id, accessToken);
-            
             notifications.success('Saved');
-            this.props.onTableChange(undefined, {});
-            
+            await this.props.onTableChange(undefined, {});
+
             this.setState({
                 isNomenclatoricSynonymsChanged: false,
                 isTaxonomicSynonymsChanged: false,
@@ -418,18 +327,18 @@ class Checklist extends Component {
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         const selectedId = this.props.match.params.id;
         if (selectedId) {
             const selectedIdInt = parseInt(selectedId);
-            this.populateDetailsForEdit(selectedIdInt);
+            await this.populateDetailsForEdit(selectedIdInt);
             this.setState({
                 tableRowsSelected: [selectedIdInt]
             });
         }
     }
 
-    renderPlainListOfSpeciesNames = (list) => {
+    renderPlainListOfSpeciesNames = list => {
         if (!list || list.length === 0) {
             return <ListGroupItem />
         }
@@ -445,7 +354,7 @@ class Checklist extends Component {
 
     NomenclatoricSynonymListItem = ({ rowId, ...props }) => {
         const fromList = this.state.nomenclatoricSynonyms;
-        const Additions = p => (
+        const Additions = () => (
             <React.Fragment>
                 <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId, fromList)} title="Change to taxonomic synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
                 &nbsp;

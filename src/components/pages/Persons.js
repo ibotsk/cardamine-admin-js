@@ -40,19 +40,19 @@ class Persons extends Component {
         }
     }
 
-    showModal = (id) => {
+    showModal = id => {
         this.setState({
             [MODAL_PERSONS]: true,
             editId: id
         });
     }
 
-    hideModal = () => {
-        this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
+    hideModal = async () => {
+        await this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
         this.setState({ [MODAL_PERSONS]: false });
     }
 
-    formatResult = (data) => {
+    formatResult = data => {
         return data.map(p => ({
             id: p.id,
             action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(p.id)}>Edit</Button>,

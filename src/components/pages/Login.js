@@ -11,13 +11,14 @@ import {
 } from 'react-bootstrap';
 
 import userService from '../../services/user-service';
-import { setAuthenticated } from '../../actions';
+import { setAuthenticated, unsetAuthenticated } from '../../actions';
 
 class Login extends Component {
 
     constructor(props) {
         super(props);
 
+        this.props.unsetAuthenticated();
         this.state = {
             username: "",
             password: "",
@@ -95,6 +96,7 @@ class Login extends Component {
 export default connect(
     null,
     {
-        setAuthenticated
+        setAuthenticated,
+        unsetAuthenticated
     }
 )(Login);

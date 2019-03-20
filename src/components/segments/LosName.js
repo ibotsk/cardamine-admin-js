@@ -1,7 +1,7 @@
 
 import helper from '../../utils/helper';
 
-const LosName = (props) => {
+const LosName = props => {
 
     const name = props.data;
     if (!name) {

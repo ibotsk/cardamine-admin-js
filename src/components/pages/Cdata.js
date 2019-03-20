@@ -125,7 +125,7 @@ const formatResult = data => {
         const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
         const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
         const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
-        return {
+        return ({
             id: d.id,
             action: (
                 <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
@@ -153,7 +153,7 @@ const formatResult = data => {
             latitude: coordinatesLatGeoref ? `${coordinatesLatGeoref} (gr)` : (coordinatesLatOrig ? `${coordinatesLatOrig} (orig)` : ''),
             longitude: coordinatesLonGeoref ? `${coordinatesLonGeoref} (gr)` : (coordinatesLonOrig ? `${coordinatesLonOrig} (orig)` : ''),
             localityDescription: get(d, 'material.description')
-        }
+        });
     });
 }
 
