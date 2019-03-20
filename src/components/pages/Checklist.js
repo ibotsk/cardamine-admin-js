@@ -143,10 +143,10 @@ class Checklist extends Component {
         });
     }
 
-    hideModal = async () => {
-        await this.props.onTableChange(undefined, {});
+    hideModal = () => {
+        this.props.onTableChange(undefined, {});
         if (this.state.species.id) {
-            await this.populateDetailsForEdit(this.state.species.id);
+            this.populateDetailsForEdit(this.state.species.id);
         }
         this.setState({ [MODAL_SPECIES_NAME]: false });
     }
@@ -314,7 +314,7 @@ class Checklist extends Component {
             });
 
             notifications.success('Saved');
-            await this.props.onTableChange(undefined, {});
+            this.props.onTableChange(undefined, {});
 
             this.setState({
                 isNomenclatoricSynonymsChanged: false,
