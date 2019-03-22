@@ -1,8 +1,6 @@
 import axios from 'axios';
 import template from 'url-template';
 
-import { handleResponse } from './parent/response-handler';
-
 import config from '../config/config';
 
 /**
@@ -15,7 +13,7 @@ const getChromosomeRecordById = async (id, accessToken) => {
     const getCdataByIdUri = template.parse(config.uris.chromosomeDataUri.getByIdUri).expand({ id, accessToken });
     const response = await axios.get(getCdataByIdUri); // get chromosome record
 
-    return handleResponse(response.data);
+    return response.data;
 }
 
 /**
