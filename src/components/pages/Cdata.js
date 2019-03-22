@@ -16,6 +16,7 @@ import { NotificationContainer } from 'react-notifications';
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
+import formatter from '../../utils/formatter';
 import config from '../../config/config';
 
 const PAGE_DETAIL = "/names/";
@@ -118,8 +119,6 @@ const columns = [
 ];
 
 const formatResult = data => {
-    console.log(data);
-    
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
@@ -147,7 +146,7 @@ const formatResult = data => {
             countedDate: d.countedDate,
             nOfPlants: d.numberOfAnalysedPlants,
             note: d.note,
-            eda: '',
+            eda: formatter.eda({ ambiguous: d.ambiguousRecord, doubtful: d.doubtfulRecord, erroneous: d.erroneousRecord }),
             duplicate: d.duplicateData,
             depositedIn: d.depositedIn,
             w4: get(d, ['material', 'world-l4', 'description'], ''),
