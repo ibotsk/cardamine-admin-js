@@ -118,6 +118,8 @@ const columns = [
 ];
 
 const formatResult = data => {
+    console.log(data);
+    
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
@@ -148,7 +150,7 @@ const formatResult = data => {
             eda: '',
             duplicate: d.duplicateData,
             depositedIn: d.depositedIn,
-            w4: get(d, ['material', 'world-l4', 'name'], ''),
+            w4: get(d, ['material', 'world-l4', 'description'], ''),
             country: get(d, 'material.country', ''),
             latitude: coordinatesLatGeoref ? `${coordinatesLatGeoref} (gr)` : (coordinatesLatOrig ? `${coordinatesLatOrig} (orig)` : ''),
             longitude: coordinatesLonGeoref ? `${coordinatesLonGeoref} (gr)` : (coordinatesLonOrig ? `${coordinatesLonOrig} (orig)` : ''),
