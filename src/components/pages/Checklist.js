@@ -527,7 +527,7 @@ class Checklist extends Component {
                                 onAddItemToList={this.handleAddInvalidDesignation}
                                 onRowDelete={this.handleRemoveInvalidDesignation}
                                 onChangeType={this.handleChangeToNomenclatoric}
-                                itemComponent={this.NomenclatoricSynonymListItem}
+                                itemComponent={this.InvalidSynonymListItem}
                             />
                         </Col>
                     </FormGroup>
