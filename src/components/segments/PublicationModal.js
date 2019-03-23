@@ -7,12 +7,9 @@ import {
     Form, FormGroup, FormControl, ControlLabel
 } from 'react-bootstrap';
 
-import axios from 'axios';
-import template from 'url-template';
+import publicationsFacade from '../../facades/publications';
 
 import config from '../../config/config';
-import utils from '../../utils/utils';
-import helper from '../../utils/helper';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
@@ -43,19 +40,16 @@ class PublicationModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { 
-            ...initialValues 
+        this.state = {
+            ...initialValues
         };
     }
 
-    onEnter = () => {
+    onEnter = async () => {
         if (this.props.id) {
             const accessToken = this.props.accessToken;
-            const getByIdUri = template.parse(config.uris.literaturesUri.getByIdUri).expand({ id: this.props.id, accessToken });
-            axios.get(getByIdUri).then(response => {
-                let data = utils.nullToEmpty(response.data);
-                this.setState({ ...data });
-            });
+            const data = await publicationsFacade.getPublicationByIdCurated({ id: this.props.id, accessToken });
+            this.setState({ ...data });
         }
     }
 
@@ -70,7 +64,7 @@ class PublicationModal extends Component {
         return false; // 'error'
     }
 
-    handleChange = (e) => {
+    handleChange = e => {
         let val = e.target.value;
         if (intCols.includes(e.target.id)) {
             val = parseInt(e.target.value);
@@ -85,12 +79,12 @@ class PublicationModal extends Component {
         this.props.onHide();
     }
 
-    handleSave = () => {
+    handleSave = async () => {
         if (this.getValidationState()) {
             const accessToken = this.props.accessToken;
-            const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand({ accessToken });
-            const publicationToBeSaved = helper.publicationCurateFields(this.state);
-            axios.put(literaturesUri, publicationToBeSaved).then(() => this.handleHide());
+            const data = { ...this.state };
+            await publicationsFacade.savePublicationCurated({ data, accessToken });
+            this.handleHide();
         } else {
             alert('At least one field must not be empty!');
         }
@@ -113,9 +107,9 @@ class PublicationModal extends Component {
                                 <FormControl
                                     componentClass="select"
                                     placeholder="select"
-                                    onChange={this.handleChange} 
+                                    onChange={this.handleChange}
                                     value={this.state.displayType}
-                                    >
+                                >
                                     {
                                         Object.keys(displayTypes).map(k => <option value={k} key={k}>{displayTypes[k].name}</option>)
                                     }
