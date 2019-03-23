@@ -17,22 +17,22 @@ const getSpeciesById = async ({ id, accessToken }) => {
 
 const getSynonyms = async (id, accessToken) => {
 
-    const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf(id, accessToken);
+    const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf({ id, accessToken });
     nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
 
-    const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf(id, accessToken);
+    const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({ id, accessToken });
     taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
 
-    const invalidDesignations = await checklistService.getInvalidDesignationsOf(id, accessToken);
+    const invalidDesignations = await checklistService.getInvalidDesignationsOf({ id, accessToken });
     invalidDesignations.sort(helper.listOfSpeciesSorterLex);
 
     return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
 }
 
 const getBasionymsFor = async (id, accessToken) => {
-    const basionymFor = await checklistService.getBasionymFor(id, accessToken);
-    const replacedFor = await checklistService.getReplacedFor(id, accessToken);
-    const nomenNovumFor = await checklistService.getNomenNovumFor(id, accessToken);
+    const basionymFor = await checklistService.getBasionymFor({ id, accessToken });
+    const replacedFor = await checklistService.getReplacedFor({ id, accessToken });
+    const nomenNovumFor = await checklistService.getNomenNovumFor({ id, accessToken });
     return {
         basionymFor,
         replacedFor,
@@ -47,14 +47,14 @@ const saveSpecies = async ({ data, accessToken }) => {
 const saveSynonyms = async ({ id, list, syntype, accessToken }) => {
     let i = 1;
     for (const s of list) {
-        const synonymObj = {
+        const data = {
             idParent: id,
             idSynonym: s.id,
             syntype,
             rorder: i
         };
         i++;
-        await checklistService.postSynonym(synonymObj, accessToken);
+        await checklistService.postSynonym({ data, accessToken });
     }
 }
 
@@ -68,7 +68,7 @@ const submitSynonyms = async ({
     isInvalidDesignationsChanged, 
     accessToken }) => {
     // get synonyms to be deleted
-    const originalSynonyms = await checklistService.getAllSynonymsOf(id, accessToken);
+    const originalSynonyms = await checklistService.getAllSynonymsOf({ id, accessToken });
 
     const toBeDeleted = [];
 
@@ -104,7 +104,7 @@ const submitSynonyms = async ({
     // delete originals
     for (const syn of toBeDeleted) {
         // await axios.delete(synonymsByIdUri.expand({ id: syn.id, accessToken }));
-        await checklistService.deleteSynonym(syn.id, accessToken);
+        await checklistService.deleteSynonym({ id: syn.id, accessToken });
     }
 }
 
