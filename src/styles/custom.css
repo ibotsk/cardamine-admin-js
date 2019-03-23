@@ -6,6 +6,10 @@
     border-top: 1px solid #ddd;
 }
 
+.as-pointer {
+    cursor: pointer;
+}
+
 .addable-list .form-group{
     margin-bottom: 0px;
 }
@@ -29,4 +33,9 @@
     border-left: 1px solid #e3e3e3;
     margin-left: 7px;
     padding-left: 7px;
+}
+
+/* Fix for typeahead menu in horizontal form */
+.form-horizontal .input-group .rbt-input-hint-container {
+    display: flex;
 }

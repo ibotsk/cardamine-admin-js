@@ -11,6 +11,19 @@ const format = (subject, format) => {
     }
 }
 
+//erroneous, doubtful, ambiguous
+const eda = ({ ambiguous = false, doubtful = false, erroneous = false }) => {
+    let result = [];
+    if (ambiguous) {
+        result.push('A');
+    }
+    if (doubtful) {
+        result.push('D');
+    }
+    if (erroneous) {
+        result.push('E');
+    }
+    return result.join('/');
+}
 
-
-export default { format };
+export default { format, eda };

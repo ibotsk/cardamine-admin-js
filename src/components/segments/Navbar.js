@@ -7,7 +7,7 @@ import {
 
 import { LinkContainer } from 'react-router-bootstrap';
 
-const CNavbar = (props) => {
+const CNavbar = props => {
 
     return (
         <div id="navigation">

@@ -45,15 +45,15 @@ class Publications extends Component {
         }
     }
 
-    showModal = (id) => {
+    showModal = id => {
         this.setState({
             [MODAL_LITERATURE]: true,
             editId: id
         });
     }
 
-    hideModal = () => {
-        this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
+    hideModal = async () => {
+        await this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
         this.setState({ [MODAL_LITERATURE]: false });
     }
 

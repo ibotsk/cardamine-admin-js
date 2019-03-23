@@ -40,7 +40,7 @@ class Persons extends Component {
         }
     }
 
-    showModal = (id) => {
+    showModal = id => {
         this.setState({
             [MODAL_PERSONS]: true,
             editId: id
@@ -52,7 +52,7 @@ class Persons extends Component {
         this.setState({ [MODAL_PERSONS]: false });
     }
 
-    formatResult = (data) => {
+    formatResult = data => {
         return data.map(p => ({
             id: p.id,
             action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(p.id)}>Edit</Button>,
