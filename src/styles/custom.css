@@ -30,3 +30,8 @@
     margin-left: 7px;
     padding-left: 7px;
 }
+
+/* Fix for typeahead menu in horizontal form */
+.form-horizontal .input-group .rbt-input-hint-container {
+    display: flex;
+}
