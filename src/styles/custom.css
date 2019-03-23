@@ -6,6 +6,10 @@
     border-top: 1px solid #ddd;
 }
 
+.as-pointer {
+    cursor: pointer;
+}
+
 .addable-list .form-group{
     margin-bottom: 0px;
 }

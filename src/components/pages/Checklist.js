@@ -151,7 +151,7 @@ class Checklist extends Component {
         this.setState({ [MODAL_SPECIES_NAME]: false });
     }
 
-    selectRow = () => ({
+    selectRow = {
         mode: 'radio',
         clickToSelect: true,
         hideSelectColumn: true,
@@ -160,7 +160,7 @@ class Checklist extends Component {
             this.props.history.push(`/names/${row.id}`);
             this.populateDetailsForEdit(row.id);
         },
-    });
+    };
 
     populateDetailsForEdit = async id => {
         const accessToken = this.props.accessToken;
@@ -572,7 +572,7 @@ class Checklist extends Component {
     }
 
     render() {
-        const tableRowSelectedProps = { ...this.selectRow(), selected: this.state.tableRowsSelected };
+        const tableRowSelectedProps = { ...this.selectRow, selected: this.state.tableRowsSelected };
         return (
             <div id='names'>
                 <Grid>
@@ -587,10 +587,10 @@ class Checklist extends Component {
                             <div className="scrollable">
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
+                                    rowClasses='as-pointer'
                                     data={this.formatTableRow(this.props.data)}
                                     columns={columns}
                                     filter={filterFactory()}
-                                    // selectRow={this.selectRow()}
                                     selectRow={tableRowSelectedProps}
                                     onTableChange={this.props.onTableChange}
                                 />
