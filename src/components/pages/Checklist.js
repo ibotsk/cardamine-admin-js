@@ -327,11 +327,11 @@ class Checklist extends Component {
         }
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         const selectedId = this.props.match.params.id;
         if (selectedId) {
             const selectedIdInt = parseInt(selectedId);
-            await this.populateDetailsForEdit(selectedIdInt);
+            this.populateDetailsForEdit(selectedIdInt);
             this.setState({
                 tableRowsSelected: [selectedIdInt]
             });

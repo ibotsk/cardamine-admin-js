@@ -243,7 +243,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_SPECIES)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
@@ -280,7 +280,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_LITERATURE)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
@@ -360,7 +360,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_PERSONS)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
@@ -533,7 +533,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_PERSONS)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
@@ -562,7 +562,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_PERSONS)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
@@ -599,7 +599,7 @@ class Record extends Component {
                                             <Button
                                                 bsStyle='info'
                                                 onClick={() => this.showModal(MODAL_PERSONS)}>
-                                                Add new
+                                                Create new
                                             </Button>
                                         </InputGroup.Button>
                                     </InputGroup>
