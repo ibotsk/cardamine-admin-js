@@ -6,11 +6,7 @@ import {
     Form, FormGroup, FormControl
 } from 'react-bootstrap';
 
-import axios from 'axios';
-import template from 'url-template';
-
-import config from '../../config/config';
-import utils from '../../utils/utils';
+import personsFacade from '../../facades/persons';
 
 const VALIDATION_STATE_SUCCESS = 'success';
 const VALIDATION_STATE_ERROR = 'error';
@@ -30,14 +26,11 @@ class PersonModal extends Component {
         }
     }
 
-    onEnter = () => {
+    onEnter = async () => {
         if (this.props.id) {
             const accessToken = this.props.accessToken;
-            const getByIdUri = template.parse(config.uris.personsUri.getByIdUri).expand({ id: this.props.id, accessToken });
-            axios.get(getByIdUri).then(response => {
-                let data = utils.nullToEmpty(response.data);
-                this.setState({ ...data });
-            });
+            const data = await personsFacade.getPersonsByIdCurated({ id: this.props.id, accessToken });
+            this.setState({ ...data });
         }
     }
 
@@ -48,7 +41,7 @@ class PersonModal extends Component {
         return VALIDATION_STATE_ERROR;
     }
 
-    handleChange = (e) => {
+    handleChange = e => {
         this.setState({ persName: e.target.value });
     }
 
@@ -59,15 +52,14 @@ class PersonModal extends Component {
         this.props.onHide();
     }
 
-    handleSave = () => {
+    handleSave = async () => {
         if (this.getValidationState() === VALIDATION_STATE_SUCCESS) {
             const accessToken = this.props.accessToken;
-            const personsUri = template.parse(config.uris.personsUri.baseUri).expand({ accessToken });
-            axios.put(personsUri, {
-                ...this.state
-            }).then(() => this.handleHide());
+            const data = { ...this.state };
+            await personsFacade.savePerson({ data, accessToken });
+            this.handleHide();
         } else {
-            alert('Person name must not be empty!');
+            alert("Person's name must not be empty!");
         }
     }
 

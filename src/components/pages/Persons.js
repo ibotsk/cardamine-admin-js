@@ -47,8 +47,8 @@ class Persons extends Component {
         });
     }
 
-    hideModal = async () => {
-        await this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
+    hideModal = () => {
+        this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
         this.setState({ [MODAL_PERSONS]: false });
     }
 
