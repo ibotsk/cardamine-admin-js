@@ -59,6 +59,7 @@ class AddableList extends Component {
                             <Col sm={12}>
                                 <InputGroup bsSize='sm'>
                                     <Typeahead
+                                        id={this.props.id}
                                         bsSize='sm'
                                         ref={(typeahead) => this.typeahead = typeahead}
                                         options={this.props.options}

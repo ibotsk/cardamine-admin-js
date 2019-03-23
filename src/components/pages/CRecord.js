@@ -235,6 +235,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="original-identification-autocomplete"
                                             options={this.state.listOfSpecies}
                                             selected={this.state.idStandardisedNameSelected}
                                             onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idStandardisedName')}
@@ -272,6 +273,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="publication-autocomplete"
                                             options={this.state.literatures}
                                             selected={this.state.idLiteratureSelected}
                                             onChange={(selected) => this.onChangeTypeahead(selected, 'reference', 'idLiterature')}
@@ -352,6 +354,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="counted-by-autocomplete"
                                             options={this.state.persons}
                                             selected={this.state.countedBySelected}
                                             onChange={(selected) => this.onChangeTypeaheadChromrecord(selected, 'countedBy')}
@@ -456,6 +459,7 @@ class Record extends Component {
                                 </Col>
                                 <Col sm={10}>
                                     <Typeahead
+                                        id="world4-autocomplete"
                                         options={this.state.world4s}
                                         selected={this.state.idWorld4Selected}
                                         onChange={(selected) => this.onChangeTypeahead(selected, 'material', 'idWorld4')}
@@ -525,6 +529,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="collected-by-autocomplete"
                                             options={this.state.persons}
                                             selected={this.state.collectedBySelected}
                                             onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'collectedBy')}
@@ -554,6 +559,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="identified-by-autocomplete"
                                             options={this.state.persons}
                                             selected={this.state.identifiedBySelected}
                                             onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'identifiedBy')}
@@ -591,6 +597,7 @@ class Record extends Component {
                                 <Col sm={10}>
                                     <InputGroup bsSize='sm'>
                                         <Typeahead
+                                            id="checked-by-autocomplete"
                                             options={this.state.persons}
                                             selected={this.state.checkedBySelected}
                                             onChange={(selected) => this.onChangeTypeaheadMaterial(selected, 'checkedBy')}

@@ -440,6 +440,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
+                                id={`${idAcceptedName}-autocomplete`}
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idAcceptedName])}
                                 onChange={(selected) => this.handleChangeTypeahead(selected, idAcceptedName)}
@@ -452,6 +453,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
+                                id={`${idBasionym}-autocomplete`}
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idBasionym])}
                                 onChange={(selected) => this.handleChangeTypeahead(selected, idBasionym)}
@@ -464,6 +466,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
+                                id={`${idReplaced}-autocomplete`}
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idReplaced])}
                                 onChange={(selected) => this.handleChangeTypeahead(selected, idReplaced)}
@@ -476,6 +479,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
+                                id={`${idNomenNovum}-autocomplete`}
                                 options={this.state.listOfSpecies}
                                 selected={this.getSelectedName(this.state.species[idNomenNovum])}
                                 onChange={(selected) => this.handleChangeTypeahead(selected, idNomenNovum)}
@@ -489,6 +493,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
+                                id={`${idNomenclatoricSynonyms}-autocomplete`}
                                 data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.nomenclatoric.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.taxonomic.prefix}
@@ -505,6 +510,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
+                                id={`${idTaxonomicSynonyms}-autocomplete`}
                                 data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
@@ -521,6 +527,7 @@ class Checklist extends Component {
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
+                                id={`${idInvalidDesignations}-autocomplete`}
                                 data={this.state.invalidDesignations.map(s => synonymFormatter(s, config.mappings.synonym.invalid.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
