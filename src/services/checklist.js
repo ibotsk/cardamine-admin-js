@@ -15,8 +15,14 @@ const getAllSpecies = async (accessToken, format) => {
     return listOfSpeciess.map(format);
 }
 
-const getSpeciesById = async (id, accessToken) => {
+const getSpeciesByIdWithFilter = async ({ id, accessToken }) => {
     const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id, accessToken });
+    const response = await axios.get(getByIdUri);
+    return response.data;
+}
+
+const getSpeciesById = async ({ id, accessToken }) => {
+    const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
     const response = await axios.get(getByIdUri);
     return response.data;
 }
@@ -80,7 +86,7 @@ const deleteSynonym = async (id, accessToken) => {
     await axios.delete(synonymsByIdUri);
 }
 
-const putSpecies = async (data, accessToken) => {
+const putSpecies = async ({ data, accessToken }) => {
     const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
     await axios.put(losUri, data);
 }
@@ -88,6 +94,7 @@ const putSpecies = async (data, accessToken) => {
 export default {
     getAllSpecies,
     getSpeciesById,
+    getSpeciesByIdWithFilter,
     getBasionymFor,
     getReplacedFor,
     getNomenNovumFor,

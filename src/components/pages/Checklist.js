@@ -73,7 +73,7 @@ const addSynonymToList = async (selected, synonyms, accessToken) => {
         notifications.warning('The item is already in the list');
         return null;
     }
-    const synonymJson = await checklistFacade.getSpeciesById(selected.id, accessToken);
+    const synonymJson = await checklistFacade.getSpeciesByIdWithFilter(selected.id, accessToken);
     synonyms.push(synonymJson);
     synonyms.sort(helper.listOfSpeciesSorterLex);
     return synonyms;
@@ -165,7 +165,7 @@ class Checklist extends Component {
     populateDetailsForEdit = async id => {
         const accessToken = this.props.accessToken;
 
-        const los = await checklistFacade.getSpeciesById(id, accessToken);
+        const los = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
         const speciesListRaw = await checklistFacade.getAllSpecies(accessToken);
         const listOfSpecies = speciesListRaw.map(l => ({
             id: l.id,
@@ -302,7 +302,7 @@ class Checklist extends Component {
         e.preventDefault();
         const accessToken = this.props.accessToken;
         try {
-            await checklistFacade.saveSpecies({
+            await checklistFacade.saveSpeciesAndSynonyms({
                 species: this.state.species,
                 accessToken,
                 nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,

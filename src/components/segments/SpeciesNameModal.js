@@ -8,8 +8,7 @@ import {
     Form, FormGroup, FormControl, ControlLabel
 } from 'react-bootstrap';
 
-import axios from 'axios';
-import template from 'url-template';
+import checklistFacade from '../../facades/checklist';
 
 import config from '../../config/config';
 
@@ -50,18 +49,12 @@ class SpeciesNameModal extends Component {
         };
     }
 
-    onEnter = () => {
+    onEnter = async () => {
         if (this.props.id) {
             const accessToken = this.props.accessToken;
-            const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id: this.props.id, accessToken });
-            axios.get(getByIdUri).then(response => {
-                const data = response.data;
-                const relevantProperties = { id: this.props.id };
-                for (const k of Object.keys(initialValues)) {
-                    relevantProperties[k] = data[k];
-                }
-                this.setState({ ...relevantProperties });
-            });
+            const data = await checklistFacade.getSpeciesById({ id: this.props.id, accessToken });
+
+            this.setState({ ...data });
         }
     }
 
@@ -91,13 +84,12 @@ class SpeciesNameModal extends Component {
         this.props.onHide();
     }
 
-    handleSave = () => {
+    handleSave = async () => {
         if (this.getValidationState()) {
             const accessToken = this.props.accessToken;
-            const listOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
-            axios.put(listOfSpeciesUri, {
-                ...this.state
-            }).then(() => this.handleHide());
+            const data = { ...this.state };
+            await checklistFacade.saveSpecies({ data, accessToken });
+            this.handleHide();
         } else {
             alert('At least one field must not be empty!');
         }

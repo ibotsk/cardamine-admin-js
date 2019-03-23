@@ -7,8 +7,12 @@ const getAllSpecies = async accessToken => {
     return await checklistService.getAllSpecies(accessToken);
 }
 
-const getSpeciesById = async (id, accessToken) => {
-    return await checklistService.getSpeciesById(id, accessToken);
+const getSpeciesByIdWithFilter = async (id, accessToken) => {
+    return await checklistService.getSpeciesByIdWithFilter({ id, accessToken });
+}
+
+const getSpeciesById = async ({ id, accessToken }) => {
+    return await checklistService.getSpeciesById({ id, accessToken });
 }
 
 const getSynonyms = async (id, accessToken) => {
@@ -34,6 +38,10 @@ const getBasionymsFor = async (id, accessToken) => {
         replacedFor,
         nomenNovumFor
     }
+}
+
+const saveSpecies = async ({ data, accessToken }) => {
+    await checklistService.putSpecies({ data, accessToken });
 }
 
 const saveSynonyms = async ({ id, list, syntype, accessToken }) => {
@@ -100,7 +108,7 @@ const submitSynonyms = async ({
     }
 }
 
-const saveSpecies = async ({
+const saveSpeciesAndSynonyms = async ({
     species,
     accessToken,
     nomenclatoricSynonyms,
@@ -110,7 +118,7 @@ const saveSpecies = async ({
     isTaxonomicSynonymsChanged = true,
     isInvalidDesignationsChanged = true }) => {
 
-    await checklistService.putSpecies(species, accessToken);
+    await checklistService.putSpecies({ data: species, accessToken });
     await submitSynonyms({
         id: species.id,
         accessToken,
@@ -126,8 +134,10 @@ const saveSpecies = async ({
 export default {
     getAllSpecies,
     getSpeciesById,
+    getSpeciesByIdWithFilter,
     getSynonyms,
     getBasionymsFor,
+    saveSpecies,
     saveSynonyms,
-    saveSpecies
+    saveSpeciesAndSynonyms
 }
