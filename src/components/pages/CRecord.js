@@ -68,7 +68,14 @@ class Record extends Component {
                 [MODAL_PERSONS]: false,
                 [MODAL_LITERATURE]: false,
                 [MODAL_SPECIES]: false
-            }
+            },
+            idStandardisedNameSelected: undefined,
+            idLiteratureSelected: undefined,
+            countedBySelected: undefined,
+            idWorld4Selected: undefined,
+            collectedBySelected: undefined,
+            identifiedBySelected: undefined,
+            checkedBySelected: undefined
         };
     }
 

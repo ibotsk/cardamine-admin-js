@@ -53,9 +53,7 @@ const getLiteratures = async (accessToken, idLiterature) => {
 const getPersons = async (accessToken, { countedBy, collectedBy, identifiedBy, checkedBy }) => {
     const persons = await chromDataService.getAllPersons(accessToken, p => ({
         id: p.id,
-        label: p.persName,
-        countedByText: p.persName,
-        collectedByText: p.persName
+        label: `${p.persName}`
     }));
     const countedByInitial = persons.find(p => p.id === countedBy);
     const collectedByInitial = persons.find(p => p.id === collectedBy);
