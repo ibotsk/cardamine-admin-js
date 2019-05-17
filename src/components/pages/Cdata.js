@@ -1,15 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import get from 'lodash.get';
+
 import { Button, Glyphicon, Grid } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 
-import { textFilter } from 'react-bootstrap-table2-filter';
 import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import get from 'lodash.get';
+import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit';
 
 import { NotificationContainer } from 'react-notifications';
 
@@ -23,6 +24,7 @@ const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
 const NEW_RECORD = "/chromosome-data/new";
 
+const { ToggleList } = ColumnToggle;
 const columns = [
     {
         dataField: 'id',
@@ -50,7 +52,8 @@ const columns = [
     },
     {
         dataField: "n",
-        text: "n"
+        text: "n",
+        hidden: true
     },
     {
         dataField: "dn",
@@ -58,43 +61,53 @@ const columns = [
     },
     {
         dataField: "ploidy",
-        text: "Ploidy"
+        text: "Ploidy",
+        hidden: true
     },
     {
         dataField: "ploidyRevised",
-        text: "Ploidy revised"
+        text: "Ploidy revised",
+        hidden: true
     },
     {
         dataField: "xRevised",
-        text: "x revised"
+        text: "x revised",
+        hidden: true
     },
     {
         dataField: "countedBy",
-        text: "Counted by"
+        text: "Counted by",
+        hidden: true
     },
     {
         dataField: "countedDate",
-        text: "Counted date"
+        text: "Counted date",
+        hidden: true
     },
     {
         dataField: "nOfPlants",
-        text: "N. of plants"
+        text: "N. of plants",
+        hidden: true
     },
     {
         dataField: "note",
-        text: "Note"
+        text: "Note",
+        hidden: true
     },
     {
         dataField: "eda",
-        text: "E/D/A"
+        text: "E/D/A",
+        hidden: true
     },
     {
         dataField: "duplicate",
-        text: "Duplicate"
+        text: "Duplicate",
+        hidden: true
     },
     {
         dataField: "depositedIn",
-        text: "Deposited in"
+        text: "Deposited in",
+        hidden: true
     },
     {
         dataField: "w4",
@@ -171,15 +184,28 @@ const Cdata = ({ data, paginationOptions, onTableChange }) => {
                 <h2>Chromosome data</h2>
             </Grid>
             <Grid fluid={true}>
-                <BootstrapTable hover striped condensed
-                    remote={{ filter: true, pagination: true }}
-                    keyField='id'
+                <ToolkitProvider
+                    columnToggle
+                    keyField="id"
                     data={formatResult(data)}
                     columns={columns}
-                    filter={filterFactory()}
-                    onTableChange={onTableChange}
-                    pagination={paginationFactory(paginationOptions)}
-                />
+                >
+                    {
+                        props => (
+                            <div>
+                                <ToggleList {...props.columnToggleProps} />
+                                <hr />
+                                <BootstrapTable hover striped condensed
+                                    {...props.baseProps}
+                                    remote={{ filter: true, pagination: true }}
+                                    filter={filterFactory()}
+                                    onTableChange={onTableChange}
+                                    pagination={paginationFactory(paginationOptions)}
+                                />
+                            </div>
+                        )
+                    }
+                </ToolkitProvider>
             </Grid>
             <NotificationContainer />
         </div>
