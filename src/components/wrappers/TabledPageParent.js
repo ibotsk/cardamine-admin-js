@@ -21,7 +21,7 @@ const TabledPage = injectedProps => WrappedComponent => {
 
         constructor(props) {
             super(props);
-
+         
             this.state = {
                 records: [],
                 totalSize: 0,
@@ -31,7 +31,7 @@ const TabledPage = injectedProps => WrappedComponent => {
             }
         }
 
-        handleTableChange = async (type, { page = this.state.page, sizePerPage = this.state.sizePerPage, filters = {} }) => {
+        handleTableChange = async (type, { page, sizePerPage, filters = {} }) => {
             const where = helper.makeWhere(filters); //TODO make function to take into account existing where
             await this.handleChange(page, sizePerPage, where);
         }
@@ -63,10 +63,17 @@ const TabledPage = injectedProps => WrappedComponent => {
         }
 
         componentDidMount() {
-            this.handleChange(this.state.page, paginationOptions.sizePerPageList[0].value, this.state.where);
+            let { page, sizePerPage } = this.state;
+            if (this.props.page && this.props.pageSize) {
+                page = this.props.page;
+                sizePerPage = this.props.pageSize;
+            }
+            this.handleChange(page, sizePerPage, this.state.where);
         }
 
         render() {
+            console.log(this.props);
+            
             const { page, sizePerPage, totalSize } = this.state;
             const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
             return (

@@ -12,7 +12,8 @@ const store = createStore(
 
 store.subscribe(() => {
     saveState({
-        authentication: store.getState().authentication
+        authentication: store.getState().authentication,
+        pagination: store.getState().pagination
     });
 });
 

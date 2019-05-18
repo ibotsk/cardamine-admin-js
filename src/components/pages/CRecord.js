@@ -222,7 +222,7 @@ class Record extends Component {
             <div id="chromosome-record">
                 <Grid>
                     <h2>Chromosome record <small>{this.state.chromrecord.id ? this.state.chromrecord.id : 'new'}</small></h2>
-                    <Form horizontal onSubmit={(e) => this.submitForm(e)} action={CHROM_DATA_LIST_URI}>
+                    <Form horizontal onSubmit={(e) => this.submitForm(e)}>
                         <div id="identification">
                             <h3>Identification</h3>
                             <FormGroup controlId="nameAsPublished" bsSize="sm">
@@ -654,9 +654,7 @@ class Record extends Component {
                         </div>
                         <Row>
                             <Col sm={5} smOffset={2}>
-                                <LinkContainer to={CHROM_DATA_LIST_URI}>
-                                    <Button bsStyle="default" >Cancel</Button>
-                                </LinkContainer>
+                                <Button bsStyle="default" onClick={this.props.history.goBack} >Cancel</Button>
                             </Col>
                             <Col sm={5}>
                                 <Button bsStyle="primary" type='submit' >Save</Button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { setPagination } from '../../actions';
 
 import get from 'lodash.get';
 
@@ -171,7 +172,12 @@ const formatResult = data => {
     });
 }
 
-const Cdata = ({ data, paginationOptions, onTableChange }) => {
+const Cdata = ({ data, paginationOptions, onTableChange, ...props }) => {
+
+    const onTableChangeWithDispatch = (type, newState) => {
+        props.onChangePage(newState.page, newState.sizePerPage);
+        onTableChange(type, newState);
+    }
 
     return (
         <div id='chromosome-data'>
@@ -191,15 +197,15 @@ const Cdata = ({ data, paginationOptions, onTableChange }) => {
                     columns={columns}
                 >
                     {
-                        props => (
+                        tkProps => (
                             <div>
-                                <ToggleList {...props.columnToggleProps} />
+                                <ToggleList {...tkProps.columnToggleProps} />
                                 <hr />
                                 <BootstrapTable hover striped condensed
-                                    {...props.baseProps}
+                                    {...tkProps.baseProps}
                                     remote={{ filter: true, pagination: true }}
                                     filter={filterFactory()}
-                                    onTableChange={onTableChange}
+                                    onTableChange={onTableChangeWithDispatch}
                                     pagination={paginationFactory(paginationOptions)}
                                 />
                             </div>
@@ -214,10 +220,25 @@ const Cdata = ({ data, paginationOptions, onTableChange }) => {
 }
 
 const mapStateToProps = state => ({
-    accessToken: state.authentication.accessToken
+    accessToken: state.authentication.accessToken,
+    page: state.pagination.page,
+    pageSize: state.pagination.pageSize
 });
 
-export default connect(mapStateToProps)(
+const mapDispatchToProps = dispatch => {
+    return {
+        onChangePage: (page, pageSize) => {
+            console.log(page, pageSize);
+            
+            dispatch(setPagination({ page, pageSize }));
+        }
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+    )(
     TabledPage({
         getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
         getCount: config.uris.chromosomeDataUri.countUri
