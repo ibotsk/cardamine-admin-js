@@ -6,7 +6,6 @@ import {
     InputGroup,
     Button, Checkbox, ControlLabel, Form, FormControl, FormGroup
 } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
 import PropTypes from 'prop-types';

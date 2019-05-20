@@ -1,4 +1,9 @@
-import { SET_AUTHENTICATED, UNSET_AUTHENTICATED, SET_PAGINATION, RESET_PAGINATION } from './action-types';
+import {
+    SET_AUTHENTICATED,
+    UNSET_AUTHENTICATED,
+    SET_PAGINATION,
+    RESET_PAGINATION
+} from './action-types';
 
 export const setAuthenticated = token => ({
     type: SET_AUTHENTICATED,

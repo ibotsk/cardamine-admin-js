@@ -132,6 +132,14 @@ const columns = [
     }
 ];
 
+const getInitialToggles = (columns) => {
+    return columns.reduce((obj, el) => {
+        const key = el.dataField;
+        obj[key] = !!!el.hidden;
+        return obj;
+    }, {});
+}
+
 const formatResult = data => {
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
@@ -172,51 +180,71 @@ const formatResult = data => {
     });
 }
 
-const Cdata = ({ data, paginationOptions, onTableChange, ...props }) => {
+class Cdata extends React.Component {
 
-    const onTableChangeWithDispatch = (type, newState) => {
-        props.onChangePage(newState.page, newState.sizePerPage);
-        onTableChange(type, newState);
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            toggles: getInitialToggles(columns)
+        };
     }
 
-    return (
-        <div id='chromosome-data'>
-            <Grid id="functions">
-                <div id="functions">
-                    <LinkContainer to={NEW_RECORD}>
-                        <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
-                    </LinkContainer>
-                </div>
-                <h2>Chromosome data</h2>
-            </Grid>
-            <Grid fluid={true}>
-                <ToolkitProvider
-                    columnToggle
-                    keyField="id"
-                    data={formatResult(data)}
-                    columns={columns}
-                >
-                    {
-                        tkProps => (
-                            <div>
-                                <ToggleList {...tkProps.columnToggleProps} />
-                                <hr />
-                                <BootstrapTable hover striped condensed
-                                    {...tkProps.baseProps}
-                                    remote={{ filter: true, pagination: true }}
-                                    filter={filterFactory()}
-                                    onTableChange={onTableChangeWithDispatch}
-                                    pagination={paginationFactory(paginationOptions)}
-                                />
-                            </div>
-                        )
-                    }
-                </ToolkitProvider>
-            </Grid>
-            <NotificationContainer />
-        </div>
-    )
+    onTableChangeWithDispatch = (type, newState) => {
+        this.props.onChangePage(newState.page, newState.sizePerPage);
+        this.props.onTableChange(type, newState);
+    }
 
+    onColumnToggleWithDispatch = (tkProps, param) => {
+        tkProps.columnToggleProps.onColumnToggle(param);
+        this.setState({
+            toggles: tkProps.columnToggleProps.toggles
+        });
+    }
+
+    render() {
+        return (
+            <div id='chromosome-data'>
+                <Grid id="functions">
+                    <div id="functions">
+                        <LinkContainer to={NEW_RECORD}>
+                            <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                        </LinkContainer>
+                    </div>
+                    <h2>Chromosome data</h2>
+                </Grid>
+                <Grid fluid={true}>
+                    <ToolkitProvider
+                        columnToggle
+                        keyField="id"
+                        data={formatResult(this.props.data)}
+                        columns={columns}
+                    >
+                        {
+                            tkProps => (
+                                <div>
+                                    <ToggleList
+                                        {...tkProps.columnToggleProps}
+                                        toggles={this.state.toggles || tkProps.columnToggleProps.toggles}
+                                        onColumnToggle={(p) => this.onColumnToggleWithDispatch(tkProps, p)}
+                                    />
+                                    <hr />
+                                    <BootstrapTable hover striped condensed
+                                        {...tkProps.baseProps}
+                                        remote={{ filter: true, pagination: true }}
+                                        filter={filterFactory()}
+                                        onTableChange={this.onTableChangeWithDispatch}
+                                        pagination={paginationFactory(this.props.paginationOptions)}
+                                    />
+                                </div>
+                            )
+                        }
+                    </ToolkitProvider>
+                </Grid>
+                <NotificationContainer />
+            </div>
+        )
+    }
 }
 
 const mapStateToProps = state => ({
@@ -228,8 +256,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
     return {
         onChangePage: (page, pageSize) => {
-            console.log(page, pageSize);
-            
             dispatch(setPagination({ page, pageSize }));
         }
     }
@@ -238,7 +264,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-    )(
+)(
     TabledPage({
         getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
         getCount: config.uris.chromosomeDataUri.countUri

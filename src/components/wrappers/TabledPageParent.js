@@ -72,8 +72,6 @@ const TabledPage = injectedProps => WrappedComponent => {
         }
 
         render() {
-            console.log(this.props);
-            
             const { page, sizePerPage, totalSize } = this.state;
             const allPaginationOptions = { ...paginationOptions, page, sizePerPage, totalSize };
             return (
