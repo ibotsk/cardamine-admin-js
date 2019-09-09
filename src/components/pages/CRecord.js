@@ -208,6 +208,7 @@ class Record extends Component {
         try {
             await cRecordFacade.saveUpdateChromrecordWithAll({
                 chromrecord: this.state.chromrecord,
+                dna: this.state.dna,
                 material: this.state.material,
                 reference: this.state.reference
             }, accessToken);
@@ -451,6 +452,84 @@ class Record extends Component {
                                 </Col>
                                 <Col sm={10}>
                                     <FormControl componentClass="textarea" value={this.state.chromrecord.note || ''} onChange={e => this.onChangeTextInput(e, 'chromrecord')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                        </div>
+                        <div id="dna">
+                            <h3>DNA data</h3>
+                            <FormGroup controlId="method" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Method:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.method || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="chCount" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Chromosome count:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.chCount || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Genome size:
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl id="sizeC" type="text" value={this.state.dna.sizeC || 'Cx'} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl id="sizeFrom" type="text" value={this.state.dna.sizeFrom || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="Size from" description="Size from" />
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl id="sizeTo" type="text" value={this.state.dna.sizeTo || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="Size to" description="Size to" />
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl id="sizeUnits" type="text" value={this.state.dna.sizeUnits || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="Size units" description="Size units" />
+                                </Col>
+                            </FormGroup>
+
+                            <FormGroup controlId="ploidy" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Ploidy:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.ploidy || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="ploidyRevised" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Ploidy revised:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.ploidyRevised || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="plantsAnalysed" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Number of analysed plants:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.plantsAnalysed || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="numberAnalyses" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Number of analyses:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl type="text" value={this.state.dna.numberAnalyses || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
+                                </Col>
+                            </FormGroup>
+                            <FormGroup controlId="note" bsSize="sm">
+                                <Col componentClass={ControlLabel} sm={2}>
+                                    Note:
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl componentClass="textarea" value={this.state.dna.note || ''} onChange={e => this.onChangeTextInput(e, 'dna')} placeholder="" />
                                 </Col>
                             </FormGroup>
                         </div>

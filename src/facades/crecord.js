@@ -8,10 +8,10 @@ const getChromosomeRecord = async (accessToken, idRecord) => {
     if (idRecord) {
         chromrecord = await chromDataService.getChromosomeRecordById(idRecord, accessToken);
 
-        material = chromrecord.material;
-        dna = chromrecord.dna;
-        reference = material.reference;
-        histories = chromrecord.histories;
+        material = chromrecord.material || {};
+        dna = chromrecord.dna || {};
+        reference = material.reference || {};
+        histories = chromrecord.histories || [];
 
         delete chromrecord.dna;
         delete chromrecord.material;
@@ -101,11 +101,12 @@ const getWorld4s = async (accessToken, idWorld4) => {
     });
 }
 
-const saveUpdateChromrecordWithAll = async ({ chromrecord, material, reference }, accessToken) => {
+const saveUpdateChromrecordWithAll = async ({ chromrecord, dna, material, reference }, accessToken) => {
 
-    let response = await chromDataService.saveUpdateChromrecord(chromrecord, accessToken);
-    response = await chromDataService.saveUpdateMaterial({ ...material, idCdata: response.data.id }, accessToken);
-    await chromDataService.saveUpdateReference({ ...reference, idMaterial: response.data.id }, accessToken);
+    const responseChrom = await chromDataService.saveUpdateChromrecord(chromrecord, accessToken);
+    const responseMat = await chromDataService.saveUpdateMaterial({ ...material, idCdata: responseChrom.data.id }, accessToken);
+    await chromDataService.saveUpdateReference({ ...reference, idMaterial: responseMat.data.id }, accessToken);
+    await chromDataService.saveUpdateDna({ ...dna, idCdata: responseChrom.data.id }, accessToken);
 }
 
 export default {

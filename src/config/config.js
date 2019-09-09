@@ -173,6 +173,9 @@ export default {
             ]%7D`,
             countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
+        dnaUri: {
+            baseUri: `${backendBase}/api/dnas?access_token={accessToken}`
+        },
         materialUri: {
             baseUri: `${backendBase}/api/materials?access_token={accessToken}`
         },
