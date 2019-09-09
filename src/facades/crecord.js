@@ -4,14 +4,16 @@ import helper from '../utils/helper';
 
 const getChromosomeRecord = async (accessToken, idRecord) => {
 
-    let chromrecord = {}, material = {}, reference = {}, histories = [];
+    let chromrecord = {}, material = {}, reference = {}, dna = {}, histories = [];
     if (idRecord) {
         chromrecord = await chromDataService.getChromosomeRecordById(idRecord, accessToken);
 
         material = chromrecord.material;
+        dna = chromrecord.dna;
         reference = material.reference;
         histories = chromrecord.histories;
 
+        delete chromrecord.dna;
         delete chromrecord.material;
         delete chromrecord.histories;
         delete material.reference;
@@ -19,6 +21,7 @@ const getChromosomeRecord = async (accessToken, idRecord) => {
 
     return ({
         chromrecord,
+        dna,
         material,
         reference,
         histories

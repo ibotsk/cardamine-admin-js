@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
     Col, Grid, Row,
     InputGroup,
-    Button, Checkbox, ControlLabel, Form, FormControl, FormGroup
+    Button, Checkbox, ControlLabel, Form, FormControl, FormGroup,
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -58,6 +58,7 @@ class Record extends Component {
             chromrecord: {}, //to save
             material: {}, //to save
             reference: {}, //to save
+            dna: {}, // to save
             histories: [], //to save - not persisted yet
             listOfSpecies: [],
             persons: [],
@@ -84,6 +85,7 @@ class Record extends Component {
 
         const {
             chromrecord,
+            dna,
             material,
             reference,
             histories
@@ -91,6 +93,7 @@ class Record extends Component {
 
         this.setState({
             chromrecord,
+            dna,
             material,
             reference,
             histories
@@ -217,6 +220,8 @@ class Record extends Component {
     }
 
     render() {
+        console.log(this.state);
+
         return (
             <div id="chromosome-record">
                 <Grid>
