@@ -1,10 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setPagination } from '../../actions';
+import { setPagination, setExportCdata } from '../../actions';
 
 import get from 'lodash.get';
 
-import { Button, Glyphicon, Grid } from 'react-bootstrap';
+import {
+    Grid, Row, Col,
+    Badge, Button, Glyphicon, Checkbox
+} from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -32,7 +35,12 @@ const columns = [
         text: 'ID',
         filter: textFilter(),
         headerStyle: { width: '80px' }
-    }, {
+    },
+    {
+        dataField: 'inExport',
+        text: 'Add to export'
+    },
+    {
         dataField: 'action',
         text: 'Action'
     }, {
@@ -140,7 +148,7 @@ const getInitialToggles = (columns) => {
     }, {});
 }
 
-const formatResult = data => {
+const formatResult = (data, { onAddToExport, isExported }) => {
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
@@ -150,6 +158,12 @@ const formatResult = data => {
         const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return ({
             id: d.id,
+            inExport: (
+                <Checkbox
+                    name={`${d.id}isExported`}
+                    checked={isExported(d.id)}
+                    onChange={() => onAddToExport(d.id)} />
+            ),
             action: (
                 <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
                     <Button bsStyle="warning" bsSize="xsmall">Edit</Button>
@@ -202,22 +216,42 @@ class Cdata extends React.Component {
         });
     }
 
+    onAddToExport = id => {
+        let exportedIds = [...this.props.exportedCdata];
+        if (!exportedIds.includes(id)) {
+            exportedIds.push(id);
+        } else {
+            exportedIds = exportedIds.filter(item => item !== id)
+        }
+
+        this.props.onAddToCdataExport(exportedIds);
+    }
+
+    isExported = id => this.props.exportedCdata.includes(id);
+
+    getExportedCount = () => this.props.exportedCdata.length;
+
     render() {
         return (
             <div id='chromosome-data'>
                 <Grid id="functions">
-                    <div id="functions">
-                        <LinkContainer to={NEW_RECORD}>
-                            <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
-                        </LinkContainer>
-                    </div>
+                    <Row id="functions">
+                        <Col md={2}>
+                            <LinkContainer to={NEW_RECORD}>
+                                <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                            </LinkContainer>
+                        </Col>
+                        <Col md={2}>
+                            <Button bsStyle="primary"><Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge></Button>
+                        </Col>
+                    </Row>
                     <h2>Chromosome data</h2>
                 </Grid>
                 <Grid fluid={true}>
                     <ToolkitProvider
                         columnToggle
                         keyField="id"
-                        data={formatResult(this.props.data)}
+                        data={formatResult(this.props.data, { onAddToExport: this.onAddToExport, isExported: this.isExported })}
                         columns={columns}
                     >
                         {
@@ -250,13 +284,17 @@ class Cdata extends React.Component {
 const mapStateToProps = state => ({
     accessToken: state.authentication.accessToken,
     page: state.pagination.page,
-    pageSize: state.pagination.pageSize
+    pageSize: state.pagination.pageSize,
+    exportedCdata: state.exportData.cdata
 });
 
 const mapDispatchToProps = dispatch => {
     return {
         onChangePage: (page, pageSize) => {
             dispatch(setPagination({ page, pageSize }));
+        },
+        onAddToCdataExport: (ids) => {
+            dispatch(setExportCdata({ ids }));
         }
     }
 }

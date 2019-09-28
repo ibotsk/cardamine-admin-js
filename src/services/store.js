@@ -13,7 +13,8 @@ const store = createStore(
 store.subscribe(() => {
     saveState({
         authentication: store.getState().authentication,
-        pagination: store.getState().pagination
+        pagination: store.getState().pagination,
+        exportData: store.getState().exportData
     });
 });
 
