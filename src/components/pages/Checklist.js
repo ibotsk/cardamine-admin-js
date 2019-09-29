@@ -16,9 +16,9 @@ import { NotificationContainer } from 'react-notifications';
 
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
-import SpeciesNameModal from '../segments/SpeciesNameModal';
 import AddableList from '../segments/AddableList';
 import SynonymListItem from '../segments/SynonymListItem';
+import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 import checklistFacade from '../../facades/checklist';
 

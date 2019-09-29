@@ -18,9 +18,9 @@ import notifications from '../../utils/notifications';
 import cRecordFacade from '../../facades/crecord';
 
 import LosName from '../segments/LosName';
-import PersonModal from '../segments/PersonModal';
-import PublicationModal from '../segments/PublicationModal';
-import SpeciesNameModal from '../segments/SpeciesNameModal';
+import PersonModal from '../segments/modals/PersonModal';
+import PublicationModal from '../segments/modals/PublicationModal';
+import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 const revisionsColumns = [
     {

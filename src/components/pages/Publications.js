@@ -8,7 +8,7 @@ import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
 import TabledPage from '../wrappers/TabledPageParent';
-import PublicationModal from '../segments/PublicationModal';
+import PublicationModal from '../segments/modals/PublicationModal';
 
 import helper from '../../utils/helper';
 import config from '../../config/config';
