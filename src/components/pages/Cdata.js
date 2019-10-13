@@ -23,6 +23,7 @@ import LosName from '../segments/LosName';
 
 import formatter from '../../utils/formatter';
 import config from '../../config/config';
+import ExportDataModal from '../segments/modals/ExportDataModal';
 
 const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
@@ -200,7 +201,8 @@ class Cdata extends React.Component {
         super(props);
 
         this.state = {
-            toggles: getInitialToggles(columns)
+            toggles: getInitialToggles(columns),
+            showModalExport: false
         };
     }
 
@@ -231,6 +233,14 @@ class Cdata extends React.Component {
 
     getExportedCount = () => this.props.exportedCdata.length;
 
+    showExportModal = () => {
+        this.setState({ showModalExport: true });
+    }
+
+    hideModal = async () => {
+        this.setState({ showModalExport: false });
+    }
+
     render() {
         return (
             <div id='chromosome-data'>
@@ -242,7 +252,7 @@ class Cdata extends React.Component {
                             </LinkContainer>
                         </Col>
                         <Col md={2}>
-                            <Button bsStyle="primary"><Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge></Button>
+                            <Button bsStyle="primary" onClick={this.showExportModal}><Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge></Button>
                         </Col>
                     </Row>
                     <h2>Chromosome data</h2>
@@ -275,6 +285,12 @@ class Cdata extends React.Component {
                         }
                     </ToolkitProvider>
                 </Grid>
+                <ExportDataModal
+                    show={this.state.showModalExport}
+                    onHide={this.hideModal}
+                    count={this.props.exportedCdata.length}
+                    ids={this.props.exportedCdata}
+                />
                 <NotificationContainer />
             </div>
         )

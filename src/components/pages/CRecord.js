@@ -221,8 +221,6 @@ class Record extends Component {
     }
 
     render() {
-        console.log(this.state);
-
         return (
             <div id="chromosome-record">
                 <Grid>
