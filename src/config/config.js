@@ -2,6 +2,9 @@ import exportConfig from './export';
 
 const backendBase = `${process.env.REACT_APP_BACKEND_BASE}:${process.env.REACT_APP_BACKEND_PORT}`;
 
+const L = '%7B';
+const R = '%7D';
+
 export default {
 
     nomenclature: {
@@ -177,6 +180,7 @@ export default {
                     %7D
                 %7D
             ]%7D`,
+            exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":${L}"reference":["literature"]${R}${R}]${R}`,
             countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
         dnaUri: {

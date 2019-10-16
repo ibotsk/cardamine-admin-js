@@ -77,11 +77,20 @@ const saveUpdateDna = async (data, accessToken) => {
     return await axios.put(dnaUri, data);
 }
 
+const getForExport = async (where, accessToken) => {
+    const exportUri = template.parse(config.uris.chromosomeDataUri.exportUri).expand({ where, accessToken });
+    console.log(exportUri);
+    
+    const response = await axios.get(exportUri);
+    return response.data;
+}
+
 export default {
     getChromosomeRecordById,
     getAllLiteratures,
     getAllPersons,
     getAllWorld4s,
+    getForExport,
     saveUpdateChromrecord,
     saveUpdateMaterial,
     saveUpdateReference,

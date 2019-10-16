@@ -1,15 +1,19 @@
 
 export default {
+    options: {
+        separator: ",",
+        enclosingCharacter: `'`
+    },
     chromdata: {
-        "reference.nameAsPublished": {
+        nameAsPublished: {
             name: "Name as published",
-            column: "reference.NameAsPublished",
+            column: "material.reference.nameAsPublished",
             group: "identification",
             default: true
         },
         publicationFull: {
             name: "Publication full",
-            column: "publicationFull",
+            column: "material.reference.literature",
             group: "publication"
         },
         ambiguousRecord: {
@@ -139,142 +143,143 @@ export default {
         },
         chCount: {
             name: "Chromosome Count",
-            column: "chCount",
+            column: "dna.chCount",
             group: "dna"
         },
         method: {
             name: "Method",
-            column: "method",
+            column: "dna.method",
             group: "dna"
         },
         dnaNote: {
             name: "Note",
-            column: "note",
+            column: "dna.note",
             group: "dna"
         },
         numberAnalyses: {
             name: "Number Of Analyses",
-            column: "numberAnalyses",
+            column: "dna.numberAnalyses",
             group: "dna"
         },
         plantsAnalysed: {
             name: "Number of Plants Analysed",
-            column: "plantsAnalysed",
+            column: "dna.plantsAnalysed",
             group: "dna"
         },
         ploidy: {
             name: "Ploidy",
-            column: "ploidy",
+            column: "dna.ploidy",
             group: "dna"
         },
         ploidyRevised: {
             name: "Ploidy Revised",
-            column: "ploidyRevised",
+            column: "dna.ploidyRevised",
             group: "dna"
         },
         sizeC: {
             name: "Size C",
-            column: "sizeC",
+            column: "dna.sizeC",
             group: "dna"
         },
         sizeFrom: {
             name: "Size From",
-            column: "sizeFrom",
+            column: "dna.sizeFrom",
             group: "dna"
         },
         sizeTo: {
             name: "Size To",
-            column: "sizeTo",
+            column: "dna.sizeTo",
             group: "dna"
         },
         sizeUnits: {
             name: "Size Units",
-            column: "sizeUnits",
+            column: "dna.sizeUnits",
             group: "dna"
         },
         administrativeUnit: {
             name: "Administrative Unit",
-            column: "administrativeUnit",
+            column: "material.administrativeUnit",
             group: "material"
         },
         altitude: {
             name: "Altitude",
-            column: "altitude",
+            column: "material.altitude",
             group: "material"
         },
         centralEuropeanMappingUnit: {
             name: "Central European Mapping Unit",
-            column: "centralEuropeanMappingUnit",
+            column: "material.centralEuropeanMappingUnit",
             group: "material"
         },
         closestVillageTown: {
             name: "Closest Village/Town",
-            column: "closestVillageTown",
-            group: "material"
+            column: "material.closestVillageTown",
+            group: "material",
+            default: true
         },
         collectedBy: {
             name: "Collected By",
-            column: "collectedBy",
+            column: "material.collectedBy",
             group: "material"
         },
         collectedDate: {
             name: "Collected Date",
-            column: "collectedDate",
+            column: "material.collectedDate",
             group: "material"
         },
         coordinatesGeorefLat: {
             name: "Latitude Georeferenced",
-            column: "coordinatesGeorefLat",
+            column: "material.coordinatesGeorefLat",
             group: "material"
         },
         coordinatesGeorefLon: {
             name: "Longitude Georeferenced",
-            column: "coordinatesGeorefLon",
+            column: "material.coordinatesGeorefLon",
             group: "material"
         },
         country: {
             name: "Country",
-            column: "country",
+            column: "material.country",
             group: "material"
         },
         materialDepositedIn: {
             name: "Deposited In",
-            column: "depositedIn",
+            column: "material.depositedIn",
             group: "material"
         },
         description: {
             name: "Description",
-            column: "description",
+            column: "material.description",
             group: "material"
         },
         exposition: {
             name: "Exposition",
-            column: "exposition",
+            column: "material.exposition",
             group: "material"
         },
         geographicalDistrict: {
             name: "Geographical District",
-            column: "geographicalDistrict",
+            column: "material.geographicalDistrict",
             group: "material"
         },
         idWorld4: {
             name: "World 4",
-            column: "idWorld4",
+            column: "material.idWorld4",
             group: "material"
         },
         identifiedBy: {
             name: "Identified By",
-            column: "identifiedBy",
+            column: "material.identifiedBy",
             group: "material"
         },
         phytogeographicalDistrict: {
             name: "Phytogeographical District",
-            column: "phytogeographicalDistrict",
+            column: "material.phytogeographicalDistrict",
             group: "material"
         },
         voucherSpecimenNo: {
             name: "Voucher Specimen No",
-            column: "voucherSpecimenNo",
+            column: "material.voucherSpecimenNo",
             group: "material"
         }
 

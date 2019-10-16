@@ -288,8 +288,10 @@ class Cdata extends React.Component {
                 <ExportDataModal
                     show={this.state.showModalExport}
                     onHide={this.hideModal}
+                    type='chromdata'
                     count={this.props.exportedCdata.length}
                     ids={this.props.exportedCdata}
+                    accessToken={this.props.accessToken}
                 />
                 <NotificationContainer />
             </div>
