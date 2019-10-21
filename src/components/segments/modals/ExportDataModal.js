@@ -5,7 +5,7 @@ import {
     FormGroup, FormControl, ControlLabel,
     Row, Col
 } from 'react-bootstrap';
-import { CSVLink } from "react-csv";
+import { CSVDownload } from "react-csv";
 
 import exportconfig from '../../../config/export';
 import exportFacade from '../../../facades/export';
@@ -21,23 +21,28 @@ const makeColumns = (which) => {
     }, {});
 }
 
+const initialState = {
+    exportFormat: ["CSV"],
+    filename: "chromdata_export.csv",
+    separator: exportconfig.options.separator,
+    enclosingCharacter: exportconfig.options.enclosingCharacter,
+    chromdata: makeColumns(EXPORT_CHROMDATA), // checkboxes
+    exportData: [],
+    exportHeaders: []
+}
+
 class ExportDataModal extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            filename: "chromdata_export.csv",
-            separator: exportconfig.options.separator ,
-            enclosingCharacter: exportconfig.options.enclosingCharacter,
-            chromdata: makeColumns(EXPORT_CHROMDATA), // checkboxes
-            exportData: [],
-            exportHeaders: []
-        }
+            ...initialState
+        };
     }
 
     handleHide = () => {
-        this.setState({});
+        this.setState({ ...initialState });
         this.props.onHide();
     }
 
@@ -50,10 +55,10 @@ class ExportDataModal extends React.Component {
         const exportconfigWhich = exportconfig[which];
 
         const { data: exportData, headers: exportHeaders } = exportUtils.createCsvData(dataToExport, checkedFields, exportconfigWhich);
-        
+
         this.setState({
-            exportData,
-            exportHeaders
+            exportData: exportData,
+            exportHeaders: exportHeaders
         });
     }
 
@@ -86,7 +91,7 @@ class ExportDataModal extends React.Component {
 
     render() {
         return (
-            <Modal id="export-data-modal" show={this.props.show} onHide={this.handleHide} >
+            <Modal id="export-data-modal" show={this.props.show} onHide={this.handleHide} onEnter={this.handleEnter}>
                 <Modal.Header closeButton>
                     <Modal.Title>
                         Export data - {this.props.count || 0} records to export
@@ -95,6 +100,12 @@ class ExportDataModal extends React.Component {
                 <Modal.Body>
                     <Tabs defaultActiveKey={1} id="export-tabs" className="">
                         <Tab eventKey={1} title="File">
+                            <FormGroup controlId="formControlsSelect">
+                                <ControlLabel>Export format</ControlLabel>
+                                <FormControl componentClass="select">
+                                    {this.state.exportFormat.map((v, i) => (<option key={i} value={v}>{v}</option>))}
+                                </FormControl>
+                            </FormGroup>
                             <FormGroup controlId="filename" bsSize="sm">
                                 <ControlLabel>File name</ControlLabel>
                                 <FormControl type="text" value={this.state.filename} onChange={this.onChangeTextInput} placeholder="Filename" />
@@ -132,17 +143,18 @@ class ExportDataModal extends React.Component {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={this.handleHide}>Close</Button>
-                    <CSVLink
-                        headers={this.state.exportHeaders}
-                        data={this.state.exportData}
-                        filename={this.state.filename}
-                        separator={this.state.separator}
-                        enclosingCharacter={this.state.enclosingCharacter}
-                        asyncOnClick={true}
-                        onClick={(event, done) => this.handleExport().then(() => done())}
-                    >
-                        <Button bsStyle="primary">Export</Button>
-                    </CSVLink>
+                    {
+                        this.state.exportData.length > 0 &&
+                        <CSVDownload
+                            headers={this.state.exportHeaders}
+                            data={this.state.exportData}
+                            filename={this.state.filename}
+                            separator={this.state.separator}
+                            enclosingCharacter={this.state.enclosingCharacter}
+                            target="_self"
+                        />
+                    }
+                    <Button bsStyle="primary" onClick={this.handleExport}>Export</Button>
                 </Modal.Footer>
             </Modal >
         );

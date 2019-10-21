@@ -79,8 +79,6 @@ const saveUpdateDna = async (data, accessToken) => {
 
 const getForExport = async (where, accessToken) => {
     const exportUri = template.parse(config.uris.chromosomeDataUri.exportUri).expand({ where, accessToken });
-    console.log(exportUri);
-    
     const response = await axios.get(exportUri);
     return response.data;
 }
