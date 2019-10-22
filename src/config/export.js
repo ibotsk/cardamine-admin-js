@@ -9,12 +9,15 @@ export default {
             name: "Name as published",
             column: "material.reference.nameAsPublished",
             group: "identification",
-            default: true
+            default: true,
+            composite: true
         },
         publicationFull: {
             name: "Publication full",
             column: "material.reference.literature",
-            group: "publication"
+            group: "publication",
+            default: true,
+            composite: true
         },
         ambiguousRecord: {
             name: "Ambiguous Record",
@@ -44,7 +47,8 @@ export default {
         dn: {
             name: "2n",
             column: "dn",
-            group: "cdata"
+            group: "cdata",
+            default: true
         },
         doubtfulRecord: {
             name: "Doubtful Record",
@@ -230,12 +234,14 @@ export default {
         coordinatesGeorefLat: {
             name: "Latitude Georeferenced",
             column: "material.coordinatesGeorefLat",
-            group: "material"
+            group: "material",
+            default: true
         },
         coordinatesGeorefLon: {
             name: "Longitude Georeferenced",
             column: "material.coordinatesGeorefLon",
-            group: "material"
+            group: "material",
+            default: true
         },
         country: {
             name: "Country",
@@ -248,9 +254,10 @@ export default {
             group: "material"
         },
         description: {
-            name: "Description",
+            name: "Locality Description",
             column: "material.description",
-            group: "material"
+            group: "material",
+            default: true
         },
         exposition: {
             name: "Exposition",
@@ -262,10 +269,11 @@ export default {
             column: "material.geographicalDistrict",
             group: "material"
         },
-        idWorld4: {
+        world4: {
             name: "World 4",
             column: "material.idWorld4",
-            group: "material"
+            group: "material",
+            default: true
         },
         identifiedBy: {
             name: "Identified By",

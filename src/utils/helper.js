@@ -285,4 +285,11 @@ const publicationCurateFields = (publication) => {
     return curatedPubl;
 }
 
-export default { listOfSpeciesForComponent, listOfSpeciesString, listOfSpeciesSorterLex, makeWhere, parsePublication, publicationCurateFields };
+export default { 
+    listOfSpeciesForComponent, 
+    listOfSpeciesString, 
+    listOfSpeciesSorterLex, 
+    makeWhere, 
+    parsePublication, 
+    publicationCurateFields 
+};
