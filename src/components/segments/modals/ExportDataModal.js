@@ -11,6 +11,7 @@ import exportconfig from '../../../config/export';
 import exportFacade from '../../../facades/export';
 import exportUtils from '../../../utils/export';
 
+const CHECK_ALL = "All";
 const EXPORT_CHROMDATA = 'chromdata';
 
 const makeColumns = (which) => {
@@ -27,6 +28,7 @@ const initialState = {
     separator: exportconfig.options.separator,
     enclosingCharacter: exportconfig.options.enclosingCharacter,
     chromdata: makeColumns(EXPORT_CHROMDATA), // checkboxes
+    checkedAll: false,
     exportData: [],
     exportHeaders: []
 }
@@ -49,7 +51,6 @@ class ExportDataModal extends React.Component {
     handleExport = async () => {
         const which = this.props.type;
         const dataToExport = await exportFacade.getForExport(this.props.ids, this.props.accessToken);
-
         const fields = this.state[which];
         const checkedFields = Object.keys(fields).filter(f => fields[f] === true);
         const exportconfigWhich = exportconfig[which];
@@ -67,9 +68,26 @@ class ExportDataModal extends React.Component {
     }
 
     onChangeCheckbox = (e, which) => {
-        const toChange = { ...this.state[which] };
-        toChange[e.target.name] = e.target.checked;
-        this.setState({ [which]: toChange });
+        const targetName = e.target.name;
+        const targetChecked = e.target.checked;
+
+        const checkboxesToChooseFrom = { ...this.state[which] };
+        let checkedAll = this.state.checkedAll;
+        if (targetName === CHECK_ALL) {
+            if (targetChecked) {
+                Object.keys(checkboxesToChooseFrom).forEach(k => checkboxesToChooseFrom[k] = true);
+            } else {
+                Object.keys(checkboxesToChooseFrom).forEach(k => checkboxesToChooseFrom[k] = false);
+            }
+            checkedAll = targetChecked;
+        } else {
+            checkboxesToChooseFrom[targetName] = targetChecked;
+        }
+
+        this.setState({
+            [which]: checkboxesToChooseFrom,
+            checkedAll
+        });
     }
 
     makeCheckboxes = (which, subwhich) => {
@@ -122,6 +140,15 @@ class ExportDataModal extends React.Component {
                         <Tab eventKey={2} title="Columns">
                             <Row>
                                 <Col md={6}>
+                                    <Checkbox
+                                        name={CHECK_ALL}
+                                        checked={this.state.checkedAll}
+                                        value={CHECK_ALL}
+                                        onChange={e => this.onChangeCheckbox(e, 'chromdata')}
+                                    >
+                                        All
+                                    </Checkbox>
+
                                     <h6>Identification:</h6>
                                     {this.makeCheckboxes('chromdata', 'identification')}
 

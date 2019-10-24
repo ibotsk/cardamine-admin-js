@@ -5,16 +5,18 @@ const VALUE_NA = "-";
 
 const createCsvData = (dataToExport, fields, configfields) => {
 
-    const headers = fields.map(f => ({
-        label: configfields[f].name,
-        key: f
-    }));
+    const headers = fields.map(f => {
+        return ({
+            label: configfields[f].name,
+            key: f
+        })
+    });
 
     const data = dataToExport.map(d => {
         const obj = {};
         for (const f of fields) {
             const info = configfields[f];
-            const fieldValue = get(d, info.column, VALUE_NA);
+            const fieldValue = getValue(d, info.column);
             obj[f] = handleCompositeField(fieldValue, f, info);
         }
         return obj;
@@ -39,24 +41,43 @@ function handleCompositeField(data, field, fieldInfo) {
     switch (field) {
         case 'publicationFull':
             return createPublication(data);
+        case 'originalIdentification':
+        case 'latestRevision':
+            return createLosName(data);
         default:
             return data;
     }
 }
 
 function createPublication(data) {
-    return helper.parsePublication({ 
-        type: data.displayType, 
-        authors: data.paperAuthor, 
-        title: data.paperTitle, 
-        series: data.seriesSource, 
-        volume: data.volume, 
-        issue: data.issue, 
-        publisher: data.publisher, 
-        editor: data.editor, 
-        year: data.year, 
-        pages: data.pages, 
-        journal: data.journalName });
+    return helper.parsePublication({
+        type: data.displayType,
+        authors: data.paperAuthor,
+        title: data.paperTitle,
+        series: data.seriesSource,
+        volume: data.volume,
+        issue: data.issue,
+        publisher: data.publisher,
+        editor: data.editor,
+        year: data.year,
+        pages: data.pages,
+        journal: data.journalName
+    });
+}
+
+function createLosName(name) {
+    return helper.listOfSpeciesString(name, { isPublication: true });
+}
+
+function getValue(data, column) {
+    const fieldValue = get(data, column, VALUE_NA);
+    if (fieldValue === false) {
+        return "FALSE";
+    }
+    if (!fieldValue || fieldValue === "") {
+        return VALUE_NA;
+    }
+    return fieldValue;
 }
 
 export default {

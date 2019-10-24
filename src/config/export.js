@@ -1,15 +1,27 @@
 
 export default {
     options: {
-        separator: ",",
-        enclosingCharacter: `'`
+        separator: ";",
+        enclosingCharacter: `"`
     },
     chromdata: {
         nameAsPublished: {
             name: "Name as published",
             column: "material.reference.nameAsPublished",
             group: "identification",
+            default: true
+        },
+        originalIdentification: {
+            name: "Original identification",
+            column: "material.reference.original-identification",
+            group: "identification",
             default: true,
+            composite: true
+        },
+        latestRevision: {
+            name: "Latest revision",
+            column: "latest-revision.list-of-species",
+            group: "identification",
             composite: true
         },
         publicationFull: {
@@ -31,7 +43,7 @@ export default {
         },
         countedBy: {
             name: "Counted By",
-            column: "countedBy",
+            column: "counted-by.persName",
             group: "cdata"
         },
         countedDate: {
@@ -223,12 +235,37 @@ export default {
         },
         collectedBy: {
             name: "Collected By",
-            column: "material.collectedBy",
+            column: "material.collected-by.persName",
             group: "material"
         },
         collectedDate: {
             name: "Collected Date",
             column: "material.collectedDate",
+            group: "material"
+        },
+        country: {
+            name: "Country",
+            column: "material.country",
+            group: "material"
+        },
+        materialDepositedIn: {
+            name: "Deposited In",
+            column: "material.depositedIn",
+            group: "material"
+        },
+        exposition: {
+            name: "Exposition",
+            column: "material.exposition",
+            group: "material"
+        },
+        geographicalDistrict: {
+            name: "Geographical District",
+            column: "material.geographicalDistrict",
+            group: "material"
+        },
+        identifiedBy: {
+            name: "Identified By",
+            column: "material.identified-by.persName",
             group: "material"
         },
         coordinatesGeorefLat: {
@@ -243,42 +280,11 @@ export default {
             group: "material",
             default: true
         },
-        country: {
-            name: "Country",
-            column: "material.country",
-            group: "material"
-        },
-        materialDepositedIn: {
-            name: "Deposited In",
-            column: "material.depositedIn",
-            group: "material"
-        },
         description: {
             name: "Locality Description",
             column: "material.description",
             group: "material",
             default: true
-        },
-        exposition: {
-            name: "Exposition",
-            column: "material.exposition",
-            group: "material"
-        },
-        geographicalDistrict: {
-            name: "Geographical District",
-            column: "material.geographicalDistrict",
-            group: "material"
-        },
-        world4: {
-            name: "World 4",
-            column: "material.idWorld4",
-            group: "material",
-            default: true
-        },
-        identifiedBy: {
-            name: "Identified By",
-            column: "material.identifiedBy",
-            group: "material"
         },
         phytogeographicalDistrict: {
             name: "Phytogeographical District",
@@ -289,6 +295,12 @@ export default {
             name: "Voucher Specimen No",
             column: "material.voucherSpecimenNo",
             group: "material"
+        },
+        world4: {
+            name: "World 4",
+            column: "material.world-l4.description",
+            group: "material",
+            default: true
         }
 
     }

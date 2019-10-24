@@ -180,7 +180,7 @@ export default {
                     %7D
                 %7D
             ]%7D`,
-            exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":${L}"reference":["literature"]${R}${R}]${R}`,
+            exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":[${L}"reference":["literature","original-identification"]${R},"collected-by","identified-by","world-l4"]${R},"latest-revision","dna","counted-by"]${R}`,
             countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
         dnaUri: {
