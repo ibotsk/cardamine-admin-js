@@ -234,7 +234,9 @@ class Cdata extends React.Component {
     getExportedCount = () => this.props.exportedCdata.length;
 
     showExportModal = () => {
-        this.setState({ showModalExport: true });
+        if (this.props.exportedCdata.length > 0) {
+            this.setState({ showModalExport: true });
+        }
     }
 
     hideModal = async () => {
@@ -252,7 +254,9 @@ class Cdata extends React.Component {
                             </LinkContainer>
                         </Col>
                         <Col md={2}>
-                            <Button bsStyle="primary" onClick={this.showExportModal}><Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge></Button>
+                            <Button bsStyle="primary" onClick={this.showExportModal} disabled={this.props.exportedCdata.length === 0}>
+                                <Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge>
+                            </Button>
                         </Col>
                     </Row>
                     <h2>Chromosome data</h2>
