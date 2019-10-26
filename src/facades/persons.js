@@ -7,8 +7,6 @@ const getPersonsByIdCurated = async ({ id, accessToken }) => {
 }
 
 const savePerson = async ({ data, accessToken }) => {
-    console.log('Saving person: ', data);
-    
     await personsService.putPerson({ data, accessToken });
 }
 
