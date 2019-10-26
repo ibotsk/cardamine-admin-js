@@ -29,6 +29,10 @@ const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
 const NEW_RECORD = "/chromosome-data/new";
 
+const EXPORT_PAGE = "exportPage";
+const EXPORT_ALL = "exportAll";
+const EXPORT_ALL_VALUE = "all";
+
 const { ToggleList } = ColumnToggle;
 const columns = [
     {
@@ -163,7 +167,7 @@ const formatResult = (data, { onAddToExport, isExported }) => {
                 <Checkbox
                     name={`${d.id}isExported`}
                     checked={isExported(d.id)}
-                    onChange={() => onAddToExport(d.id)} />
+                    onChange={e => onAddToExport(e, [d.id])} />
             ),
             action: (
                 <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
@@ -202,6 +206,8 @@ class Cdata extends React.Component {
 
         this.state = {
             toggles: getInitialToggles(columns),
+            exportPage: false,
+            exportAll: false,
             showModalExport: false
         };
     }
@@ -218,20 +224,27 @@ class Cdata extends React.Component {
         });
     }
 
-    onAddToExport = id => {
-        let exportedIds = [...this.props.exportedCdata];
-        if (!exportedIds.includes(id)) {
-            exportedIds.push(id);
-        } else {
-            exportedIds = exportedIds.filter(item => item !== id)
+    onAddToExport = (e, ids) => {
+        let exportedIds = ids.includes(EXPORT_ALL_VALUE) ? [] : [...this.props.exportedCdata]; // when adding "all", remove all others
+        if (exportedIds.includes(EXPORT_ALL_VALUE)) { // remove "all" when adding specific ids
+            exportedIds = [];
+        }
+
+        const checked = e.target.checked;
+        for (const id of ids) {
+            if (checked && !exportedIds.includes(id)) {
+                exportedIds.push(id);
+            } else {
+                exportedIds = exportedIds.filter(item => item !== id)
+            }
         }
 
         this.props.onAddToCdataExport(exportedIds);
     }
 
-    isExported = id => this.props.exportedCdata.includes(id);
+    isExported = id => this.props.exportedCdata.includes(id) || this.props.exportedCdata.includes(EXPORT_ALL_VALUE);
 
-    getExportedCount = () => this.props.exportedCdata.length;
+    getExportedCount = () => this.props.exportedCdata.includes(EXPORT_ALL_VALUE) ? this.props.size : this.props.exportedCdata.length;
 
     showExportModal = () => {
         if (this.props.exportedCdata.length > 0) {
@@ -241,6 +254,39 @@ class Cdata extends React.Component {
 
     hideModal = async () => {
         this.setState({ showModalExport: false });
+    }
+
+    ExportToggles = ({ onAddToExport }) => {
+        const onChangeCheckboxPage = e => {
+            const idsOnPage = this.props.data.map(d => d.id);
+            onAddToExport(e, idsOnPage);
+            this.setState({ exportPage: e.target.checked, exportAll: false });
+        };
+        const onChangeCheckboxAll = e => {
+            onAddToExport(e, [EXPORT_ALL_VALUE]);
+            this.setState({ exportAll: e.target.checked, exportPage: false });
+        }
+
+        return (
+            <Row>
+                <Col xs={12}>
+                    <Checkbox
+                        name={EXPORT_PAGE}
+                        checked={this.state.exportPage}
+                        onChange={e => onChangeCheckboxPage(e)}
+                    >
+                        Add <b>all records on this page</b> to export
+                    </Checkbox>
+                    <Checkbox
+                        name={EXPORT_ALL}
+                        checked={this.state.exportAll}
+                        onChange={e => onChangeCheckboxAll(e)}
+                    >
+                        Add <b>all results</b> to export
+                    </Checkbox>
+                </Col>
+            </Row>
+        );
     }
 
     render() {
@@ -254,8 +300,8 @@ class Cdata extends React.Component {
                             </LinkContainer>
                         </Col>
                         <Col md={2}>
-                            <Button bsStyle="primary" onClick={this.showExportModal} disabled={this.props.exportedCdata.length === 0}>
-                                <Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.props.exportedCdata.length}</Badge>
+                            <Button bsStyle="primary" onClick={this.showExportModal} disabled={this.getExportedCount() === 0}>
+                                <Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.getExportedCount()}</Badge>
                             </Button>
                         </Col>
                     </Row>
@@ -277,6 +323,7 @@ class Cdata extends React.Component {
                                         onColumnToggle={(p) => this.onColumnToggleWithDispatch(tkProps, p)}
                                     />
                                     <hr />
+                                    <this.ExportToggles onAddToExport={this.onAddToExport} />
                                     <BootstrapTable hover striped condensed
                                         {...tkProps.baseProps}
                                         remote={{ filter: true, pagination: true }}
