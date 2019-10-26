@@ -2,7 +2,9 @@ import {
     SET_AUTHENTICATED,
     UNSET_AUTHENTICATED,
     SET_PAGINATION,
-    RESET_PAGINATION
+    RESET_PAGINATION,
+    SET_EXPORT_CDATA,
+    RESET_EXPORT_CDATA
 } from './action-types';
 
 export const setAuthenticated = token => ({
@@ -23,4 +25,13 @@ export const setPagination = ({ page, pageSize }) => ({
 
 export const resetPagination = () => ({
     type: RESET_PAGINATION
+});
+
+export const setExportCdata = ({ ids }) => ({
+    type: SET_EXPORT_CDATA,
+    ids
+});
+
+export const resetExportCdata = () => ({
+    type: RESET_EXPORT_CDATA
 });

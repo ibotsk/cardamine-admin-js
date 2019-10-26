@@ -6,7 +6,7 @@ import {
     Form, FormGroup, FormControl
 } from 'react-bootstrap';
 
-import personsFacade from '../../facades/persons';
+import personsFacade from '../../../facades/persons';
 
 const VALIDATION_STATE_SUCCESS = 'success';
 const VALIDATION_STATE_ERROR = 'error';

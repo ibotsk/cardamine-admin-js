@@ -7,9 +7,9 @@ import {
     Form, FormGroup, FormControl, ControlLabel
 } from 'react-bootstrap';
 
-import publicationsFacade from '../../facades/publications';
+import publicationsFacade from '../../../facades/publications';
 
-import config from '../../config/config';
+import config from '../../../config/config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

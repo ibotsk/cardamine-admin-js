@@ -1,10 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { setPagination } from '../../actions';
+import { setPagination, setExportCdata } from '../../actions';
 
 import get from 'lodash.get';
 
-import { Button, Glyphicon, Grid } from 'react-bootstrap';
+import {
+    Grid, Row, Col,
+    Badge, Button, Glyphicon, Checkbox
+} from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -20,10 +23,15 @@ import LosName from '../segments/LosName';
 
 import formatter from '../../utils/formatter';
 import config from '../../config/config';
+import ExportDataModal from '../segments/modals/ExportDataModal';
 
 const PAGE_DETAIL = "/names/";
 const EDIT_RECORD = "/chromosome-data/edit/";
 const NEW_RECORD = "/chromosome-data/new";
+
+const EXPORT_PAGE = "exportPage";
+const EXPORT_ALL = "exportAll";
+const EXPORT_ALL_VALUE = "all";
 
 const { ToggleList } = ColumnToggle;
 const columns = [
@@ -32,7 +40,12 @@ const columns = [
         text: 'ID',
         filter: textFilter(),
         headerStyle: { width: '80px' }
-    }, {
+    },
+    {
+        dataField: 'inExport',
+        text: 'Add to export'
+    },
+    {
         dataField: 'action',
         text: 'Action'
     }, {
@@ -140,7 +153,7 @@ const getInitialToggles = (columns) => {
     }, {});
 }
 
-const formatResult = data => {
+const formatResult = (data, { onAddToExport, isExported }) => {
     return data.map(d => {
         const origIdentification = get(d, ['material', 'reference', 'original-identification'], '');
         const latestRevision = d["latest-revision"];
@@ -150,6 +163,12 @@ const formatResult = data => {
         const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
         return ({
             id: d.id,
+            inExport: (
+                <Checkbox
+                    name={`${d.id}isExported`}
+                    checked={isExported(d.id)}
+                    onChange={e => onAddToExport(e, [d.id])} />
+            ),
             action: (
                 <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
                     <Button bsStyle="warning" bsSize="xsmall">Edit</Button>
@@ -186,7 +205,10 @@ class Cdata extends React.Component {
         super(props);
 
         this.state = {
-            toggles: getInitialToggles(columns)
+            toggles: getInitialToggles(columns),
+            exportPage: false,
+            exportAll: false,
+            showModalExport: false
         };
     }
 
@@ -202,22 +224,94 @@ class Cdata extends React.Component {
         });
     }
 
+    onAddToExport = (e, ids) => {
+        let exportedIds = ids.includes(EXPORT_ALL_VALUE) ? [] : [...this.props.exportedCdata]; // when adding "all", remove all others
+        if (exportedIds.includes(EXPORT_ALL_VALUE)) { // remove "all" when adding specific ids
+            exportedIds = [];
+        }
+
+        const checked = e.target.checked;
+        for (const id of ids) {
+            if (checked && !exportedIds.includes(id)) {
+                exportedIds.push(id);
+            } else {
+                exportedIds = exportedIds.filter(item => item !== id)
+            }
+        }
+
+        this.props.onAddToCdataExport(exportedIds);
+    }
+
+    isExported = id => this.props.exportedCdata.includes(id) || this.props.exportedCdata.includes(EXPORT_ALL_VALUE);
+
+    getExportedCount = () => this.props.exportedCdata.includes(EXPORT_ALL_VALUE) ? this.props.size : this.props.exportedCdata.length;
+
+    showExportModal = () => {
+        if (this.props.exportedCdata.length > 0) {
+            this.setState({ showModalExport: true });
+        }
+    }
+
+    hideModal = async () => {
+        this.setState({ showModalExport: false });
+    }
+
+    ExportToggles = ({ onAddToExport }) => {
+        const onChangeCheckboxPage = e => {
+            const idsOnPage = this.props.data.map(d => d.id);
+            onAddToExport(e, idsOnPage);
+            this.setState({ exportPage: e.target.checked, exportAll: false });
+        };
+        const onChangeCheckboxAll = e => {
+            onAddToExport(e, [EXPORT_ALL_VALUE]);
+            this.setState({ exportAll: e.target.checked, exportPage: false });
+        }
+
+        return (
+            <Row>
+                <Col xs={12}>
+                    <Checkbox
+                        name={EXPORT_PAGE}
+                        checked={this.state.exportPage}
+                        onChange={e => onChangeCheckboxPage(e)}
+                    >
+                        Add <b>all records on this page</b> to export
+                    </Checkbox>
+                    <Checkbox
+                        name={EXPORT_ALL}
+                        checked={this.state.exportAll}
+                        onChange={e => onChangeCheckboxAll(e)}
+                    >
+                        Add <b>all results</b> to export
+                    </Checkbox>
+                </Col>
+            </Row>
+        );
+    }
+
     render() {
         return (
             <div id='chromosome-data'>
                 <Grid id="functions">
-                    <div id="functions">
-                        <LinkContainer to={NEW_RECORD}>
-                            <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
-                        </LinkContainer>
-                    </div>
+                    <Row id="functions">
+                        <Col md={2}>
+                            <LinkContainer to={NEW_RECORD}>
+                                <Button bsStyle="success"><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                            </LinkContainer>
+                        </Col>
+                        <Col md={2}>
+                            <Button bsStyle="primary" onClick={this.showExportModal} disabled={this.getExportedCount() === 0}>
+                                <Glyphicon glyph="export"></Glyphicon>Export <Badge>{this.getExportedCount()}</Badge>
+                            </Button>
+                        </Col>
+                    </Row>
                     <h2>Chromosome data</h2>
                 </Grid>
                 <Grid fluid={true}>
                     <ToolkitProvider
                         columnToggle
                         keyField="id"
-                        data={formatResult(this.props.data)}
+                        data={formatResult(this.props.data, { onAddToExport: this.onAddToExport, isExported: this.isExported })}
                         columns={columns}
                     >
                         {
@@ -229,6 +323,7 @@ class Cdata extends React.Component {
                                         onColumnToggle={(p) => this.onColumnToggleWithDispatch(tkProps, p)}
                                     />
                                     <hr />
+                                    <this.ExportToggles onAddToExport={this.onAddToExport} />
                                     <BootstrapTable hover striped condensed
                                         {...tkProps.baseProps}
                                         remote={{ filter: true, pagination: true }}
@@ -241,6 +336,14 @@ class Cdata extends React.Component {
                         }
                     </ToolkitProvider>
                 </Grid>
+                <ExportDataModal
+                    show={this.state.showModalExport}
+                    onHide={this.hideModal}
+                    type='chromdata'
+                    count={this.props.exportedCdata.length}
+                    ids={this.props.exportedCdata}
+                    accessToken={this.props.accessToken}
+                />
                 <NotificationContainer />
             </div>
         )
@@ -250,13 +353,17 @@ class Cdata extends React.Component {
 const mapStateToProps = state => ({
     accessToken: state.authentication.accessToken,
     page: state.pagination.page,
-    pageSize: state.pagination.pageSize
+    pageSize: state.pagination.pageSize,
+    exportedCdata: state.exportData.cdata
 });
 
 const mapDispatchToProps = dispatch => {
     return {
         onChangePage: (page, pageSize) => {
             dispatch(setPagination({ page, pageSize }));
+        },
+        onAddToCdataExport: (ids) => {
+            dispatch(setExportCdata({ ids }));
         }
     }
 }

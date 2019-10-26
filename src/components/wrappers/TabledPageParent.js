@@ -80,6 +80,7 @@ const TabledPage = injectedProps => WrappedComponent => {
                     onTableChange={this.handleTableChange}
                     paginationOptions={allPaginationOptions}
                     data={this.state.records}
+                    size={this.state.totalSize}
                 />
             );
         }

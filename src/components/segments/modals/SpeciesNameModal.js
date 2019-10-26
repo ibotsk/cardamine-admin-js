@@ -8,9 +8,9 @@ import {
     Form, FormGroup, FormControl, ControlLabel
 } from 'react-bootstrap';
 
-import checklistFacade from '../../facades/checklist';
+import checklistFacade from '../../../facades/checklist';
 
-import config from '../../config/config';
+import config from '../../../config/config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

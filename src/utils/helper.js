@@ -140,9 +140,9 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
 }
 
-const listOfSpeciesForComponent = (name, formatString) => {
+const listOfSpeciesForComponent = (name, formatString, options = {}) => {
 
-    const nameArr = listOfSpeciesFormat(name);
+    const nameArr = listOfSpeciesFormat(name, options);
 
     const formattedNameArr = nameArr.map(t => {
         if (t.format === ff) {
@@ -155,8 +155,8 @@ const listOfSpeciesForComponent = (name, formatString) => {
     return formattedNameArr.reduce((acc, el) => acc.concat(el, ' '), []).slice(0, -1);
 }
 
-const listOfSpeciesString = (name) => {
-    return listOfSpeciesForComponent(name, 'plain').join('');
+const listOfSpeciesString = (name, options) => {
+    return listOfSpeciesForComponent(name, 'plain', options).join('');
 }
 
 const listOfSpeciesSorterLex = (losA, losB) => {
@@ -285,4 +285,11 @@ const publicationCurateFields = (publication) => {
     return curatedPubl;
 }
 
-export default { listOfSpeciesForComponent, listOfSpeciesString, listOfSpeciesSorterLex, makeWhere, parsePublication, publicationCurateFields };
+export default { 
+    listOfSpeciesForComponent, 
+    listOfSpeciesString, 
+    listOfSpeciesSorterLex, 
+    makeWhere, 
+    parsePublication, 
+    publicationCurateFields 
+};

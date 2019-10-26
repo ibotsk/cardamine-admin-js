@@ -1,5 +1,9 @@
+import exportConfig from './export';
 
 const backendBase = `${process.env.REACT_APP_BACKEND_BASE}:${process.env.REACT_APP_BACKEND_PORT}`;
+
+const L = '%7B';
+const R = '%7D';
 
 export default {
 
@@ -25,6 +29,7 @@ export default {
             report: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}"
         }
     },
+    export: exportConfig,
     format: {
         formatted: "formatted",
         plain: "plain"
@@ -73,6 +78,10 @@ export default {
             U: {
                 text: "Unresolved",
                 colour: "#bb9d00"
+            },
+            I: {
+                text: "Designation not validly published",
+                colour: "#ff6666"
             }
         },
         synonym: {
@@ -171,6 +180,7 @@ export default {
                     %7D
                 %7D
             ]%7D`,
+            exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":[${L}"reference":["literature","original-identification"]${R},"collected-by","identified-by","world-l4"]${R},"latest-revision","dna","counted-by"]${R}`,
             countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
         },
         dnaUri: {
