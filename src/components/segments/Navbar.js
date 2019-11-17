@@ -30,17 +30,21 @@ const CNavbar = props => {
                             <LinkContainer to="/persons">
                                 <MenuItem eventKey={1.3}>Persons</MenuItem>
                             </LinkContainer>
+                            <MenuItem divider />
+                            <LinkContainer to="/chromosome-data/import">
+                                <MenuItem eventKey={1.4}>Import</MenuItem>
+                            </LinkContainer>
                         </NavDropdown>
                         <LinkContainer to="/names">
                             <NavItem eventKey={2}>Names</NavItem>
                         </LinkContainer>
                     </Nav>
                     <Nav pullRight>
-                        <NavItem eventKey={1} href="#">
+                        <NavItem eventKey={3} href="#">
                             Users
                         </NavItem>
                         <LinkContainer to="/logout">
-                            <NavItem eventKey={2}>
+                            <NavItem eventKey={3.1}>
                                 <Glyphicon glyph="log-out" /> Logout
                             </NavItem>
                         </LinkContainer>
