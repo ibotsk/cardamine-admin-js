@@ -30,150 +30,55 @@ export default {
         idWorld4: 40
     },
     dataColumns: {
-        6: {
-            table: "reference",
-            name: "name_as_published",
-            relatedColumns: [7, 8, 9, 10]
+        cdata: {
+            n: 17,
+            dn: 18,
+            x: 19,
+            xRevised: 20,
+            ploidyLevel: 21,
+            ploidyLevelRevised: 22,
+            countedDate: 24,
+            karyotype: 25,
+            numberOfAnalysedPlants: 26,
+            slideNo: 27,
+            depositedIn: 28,
+            note: 29,
+            drawing: 30,
+            photo: 31,
+            idiogram: 32
         },
-        17: {
-            table: "cdata",
-            name: "n"
+        dna: {
+            method: 33,
+            ploidy: 35,
+            ploidyRevised: 36,
+            plantsAnalysed: 37,
+            numberAnalyses: 38,
+            note: 39
         },
-        18: {
-            table: "cdata",
-            name: "dn"
+        material: {
+            country: 41,
+            geographicalDistrict: 42,
+            administrativeUnit: 43,
+            closestVillageTown: 44,
+            altitude: 45,
+            exposition: 46,
+            description: 47,
+            collectedDate: 49,
+            voucherSpecimenNo: 51,
+            coordinatesLon: 54,
+            coordinatesLat: 55,
+            coordinatesGeorefLat: 56,
+            coordinatesGeorefLon: 57
         },
-        19: {
-            table: "cdata",
-            name: "x"
+        reference: {
+            page: 59
         },
-        20: {
-            table: "cdata",
-            name: "xRevised"
-        },
-        21: {
-            table: "cdata",
-            name: "ploidyLevel"
-        },
-        22: {
-            table: "cdata",
-            name: "ploidyLevelRevised"
-        },
-        24: {
-            table: "cdata",
-            name: "countedDate"
-        },
-        25: {
-            table: "cdata",
-            name: "karyotype"
-        },
-        26: {
-            table: "cdata",
-            name: "numberOfAnalysedPlants"
-        },
-        27: {
-            table: "cdata",
-            name: "slideNo"
-        },
-        28: {
-            table: "cdata",
-            name: "depositedIn"
-        },
-        29: {
-            table: "cdata",
-            name: "note"
-        },
-        30: {
-            table: "cdata",
-            name: "drawing"
-        },
-        31: {
-            table: "cdata",
-            name: "photo"
-        },
-        32: {
-            table: "cdata",
-            name: "idiogram"
-        },
-        33: {
-            table: "dna",
-            name: "method"
-        },
-        35: {
-            table: "dna",
-            name: "ploidy"
-        },
-        36: {
-            table: "dna",
-            name: "ploidyRevised"
-        },
-        37: {
-            table: "dna",
-            name: "plantsAnalysed"
-        },
-        38: {
-            table: "dna",
-            name: "numberAnalyses"
-        },
-        39: {
-            table: "dna",
-            name: "note"
-        },
-        41: {
-            table: "material",
-            name: "country"
-        },
-        42: {
-            table: "material",
-            name: "geographicalDistrict"
-        },
-        43: {
-            table: "material",
-            name: "administrativeUnit"
-        },
-        44: {
-            table: "material",
-            name: "closestVillageTown"
-        },
-        45: {
-            table: "material",
-            name: "altitude"
-        },
-        46: {
-            table: "material",
-            name: "exposition"
-        },
-        47: {
-            table: "material",
-            name: "description"
-        },
-        49: {
-            table: "material",
-            name: "collectedDate"
-        },
-        51: {
-            table: "material",
-            name: "voucherSpecimenNo"
-        },
-        54: {
-            table: "material",
-            name: "cooradinatesLon"
-        },
-        55: {
-            table: "material",
-            name: "coordinatesLat"
-        },
-        56: {
-            table: "material",
-            name: "coordinatesGeorefLat"
-        },
-        57: {
-            table: "material",
-            name: "coordinatesGeorefLon"
-        },
-        59: {
-            table: "reference",
-            name: "page"
+        nameAsPublished: {
+            genus: 6,
+            species: 7,
+            subsp: 8,
+            var: 9,
+            authors: 10
         }
     }
 
