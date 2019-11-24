@@ -101,7 +101,9 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
     const infras = infraTaxa(nomenclature.subsp, nomenclature.var, nomenclature.subvar, nomenclature.forma, nomenclature.nothosubsp, nomenclature.nothoforma);
 
     if (nomenclature.species === nomenclature.subsp || nomenclature.species === nomenclature.var || nomenclature.species === nomenclature.forma) {
-        name.push(Plain(nomenclature.authors));
+        if (nomenclature.authors) {
+            name.push(Plain(nomenclature.authors));
+        }
         isAuthorLast = false;
     }
 
@@ -278,18 +280,18 @@ const publicationCurateFields = (publication) => {
     const usedFields = config.mappings.displayType[publication.displayType].columns;
     const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(el => !usedFields.includes(el));
 
-    const curatedPubl = {...publication};
+    const curatedPubl = { ...publication };
     for (const field of fieldsToBeEmpty) {
         curatedPubl[field] = '';
     }
     return curatedPubl;
 }
 
-export default { 
-    listOfSpeciesForComponent, 
-    listOfSpeciesString, 
-    listOfSpeciesSorterLex, 
-    makeWhere, 
-    parsePublication, 
-    publicationCurateFields 
+export default {
+    listOfSpeciesForComponent,
+    listOfSpeciesString,
+    listOfSpeciesSorterLex,
+    makeWhere,
+    parsePublication,
+    publicationCurateFields
 };
