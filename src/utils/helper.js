@@ -256,25 +256,6 @@ const parsePublication = ({ type, authors, title, series, volume, issue, publish
     });
 }
 
-const makeWhere = (filters) => {
-    const whereList = [];
-    const keys = Object.keys(filters);
-    for (const key of keys) {
-        whereList.push({
-            [key]: {
-                like: `%${filters[key].filterVal}%`
-            }
-        });
-    }
-    if (whereList.length > 1) {
-        return { 'OR': whereList };
-    }
-    if (whereList.length === 1) {
-        return whereList[0];
-    }
-    return {};
-}
-
 // useful when changing type of publication, so the unused fields are set to empty
 const publicationCurateFields = (publication) => {
     const usedFields = config.mappings.displayType[publication.displayType].columns;
@@ -291,7 +272,6 @@ export default {
     listOfSpeciesForComponent,
     listOfSpeciesString,
     listOfSpeciesSorterLex,
-    makeWhere,
     parsePublication,
     publicationCurateFields
 };

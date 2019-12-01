@@ -4,7 +4,7 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 
 import tablesService from '../../services/tables';
 
-import helper from '../../utils/helper';
+import whereHelper from '../../utils/where';
 import config from '../../config/config';
 
 const customTotal = (from, to, size) => (
@@ -21,7 +21,7 @@ const TabledPage = injectedProps => WrappedComponent => {
 
         constructor(props) {
             super(props);
-         
+
             this.state = {
                 records: [],
                 totalSize: 0,
@@ -32,7 +32,7 @@ const TabledPage = injectedProps => WrappedComponent => {
         }
 
         handleTableChange = async (type, { page, sizePerPage, filters = {} }) => {
-            const where = helper.makeWhere(filters); //TODO make function to take into account existing where
+            const where = whereHelper.makeWhereFromFilter(filters); //TODO make function to take into account existing where
             await this.handleChange(page, sizePerPage, where);
         }
 
