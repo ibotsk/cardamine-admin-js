@@ -5,4 +5,11 @@ const nullToEmpty = (obj) => {
     return newObj;
 }
 
-export default { nullToEmpty };
+const emptyToNull = obj => {
+    return Object.keys(obj).map(k => obj[k] = (obj[k] === '' ? null : obj[k]));
+}
+
+export default {
+    nullToEmpty,
+    emptyToNull
+};

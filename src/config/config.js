@@ -58,16 +58,23 @@ export default {
                 columns: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "year", "pages", "journalName", "note"]
             }
         },
+        displayTypeStringToId: {
+            paper: 1,
+            book: 2,
+            manuscript: 3,
+            chapter: 4,
+            report: 5
+        },
         losType: {
             A: {
                 text: "Accepted name",
                 colour: "#57ab27"
             },
-            PA: { 
+            PA: {
                 text: "Provisionally accepted",
                 colour: "#ee7f00"
             },
-            S: { 
+            S: {
                 text: "Synonym",
                 colour: "#008fc8"
             },
@@ -118,10 +125,10 @@ export default {
         // paginationTotalRenderer: customTotal, //custom renderer is in TablePageParent
         sizePerPageList: [
             {
-                text: '25', 
+                text: '25',
                 value: 25
             }, {
-                text: '50', 
+                text: '50',
                 value: 50
             }, {
                 text: '100',

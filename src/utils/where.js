@@ -17,6 +17,18 @@ const makeWhereFromFilter = (filters) => {
     return {};
 };
 
+// displayType is id
+// { displayType, paperAuthor, paperTitle, seriesSource, volume, issue, publisher, editor, year, pages, journalName }
+const whereLiteratureAll = (data) => {
+
+    const and = Object.keys(data).filter(k => data[k] ? true : false).map(k => ({ [k]: data[k] }));
+
+    return {
+        and
+    };
+}
+
 export default {
-    makeWhereFromFilter
+    makeWhereFromFilter,
+    whereLiteratureAll
 };

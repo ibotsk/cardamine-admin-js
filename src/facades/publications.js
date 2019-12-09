@@ -1,10 +1,16 @@
 import publicationsService from '../services/publications';
 import utils from '../utils/utils';
 import helper from '../utils/helper';
+import whereHelper from '../utils/where';
 
 const getPublicationByIdCurated = async ({ id, accessToken }) => {
     const data = await publicationsService.getPublicationById({ id, accessToken });
     return utils.nullToEmpty(data);
+}
+
+const getPublicationByAll = async ({ literatureData, accessToken }) => {
+    const where = whereHelper.whereLiteratureAll(literatureData);
+    return publicationsService.getPublicationByWhere({ where: JSON.stringify(where), offset: 0, limit: 2, accessToken });
 }
 
 const savePublicationCurated = async ({ data, accessToken }) => {
@@ -14,5 +20,6 @@ const savePublicationCurated = async ({ data, accessToken }) => {
 
 export default {
     getPublicationByIdCurated,
+    getPublicationByAll,
     savePublicationCurated
 }

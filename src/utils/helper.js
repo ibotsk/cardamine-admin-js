@@ -268,10 +268,23 @@ const publicationCurateFields = (publication) => {
     return curatedPubl;
 }
 
+const publicationCurateStringDisplayType = publication => {
+    const displayTypeString = publication.displayType;
+    const displayTypeId = config.mappings.displayTypeStringToId[displayTypeString];
+
+    if (!displayTypeId) {
+        throw new Error(`Unknown display type "${displayTypeString}"`);
+    }
+    publication.displayType = displayTypeId;
+
+    return publication;
+}
+
 export default {
     listOfSpeciesForComponent,
     listOfSpeciesString,
     listOfSpeciesSorterLex,
     parsePublication,
-    publicationCurateFields
+    publicationCurateFields,
+    publicationCurateStringDisplayType
 };
