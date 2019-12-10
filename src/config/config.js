@@ -232,7 +232,8 @@ export default {
             synonymsByIdUri: `${backendBase}/api/synonyms/{id}?access_token={accessToken}`
         },
         worldl4Uri: {
-            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D&access_token={accessToken}`
+            getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D&access_token={accessToken}`,
+            getByDescription: `${backendBase}/api/world-l4s?filter=%7B"where":%7B"description":"{description}"%7D%7D&access_token={accessToken}`
         },
     },
 
