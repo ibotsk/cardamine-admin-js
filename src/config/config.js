@@ -202,6 +202,7 @@ export default {
         listOfSpeciesUri: {
             baseUri: `${backendBase}/api/list-of-species?access_token={accessToken}`,
             getAllWOrderUri: `${backendBase}/api/list-of-species?filter=%7B"order":["genus","species","subsp","var","subvar","forma","authors","id"]%7D&access_token={accessToken}`,
+            getAllWFilterUri: `${backendBase}/api/list-of-species?filter=%7B"where":{where}%7D&access_token={accessToken}`,
             getByIdUri: `${backendBase}/api/list-of-species/{id}?access_token={accessToken}`,
             getByIdWFilterUri: `${backendBase}/api/list-of-species/{id}?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
             getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/{id}/synonyms-nomenclatoric?filter=%7B"include":"synonyms-nomenclatoric"%7D&access_token={accessToken}`,
@@ -223,6 +224,7 @@ export default {
         personsUri: {
             baseUri: `${backendBase}/api/persons?access_token={accessToken}`,
             getByIdUri: `${backendBase}/api/persons/{id}?access_token={accessToken}`,
+            getByNameUri: `${backendBase}/api/persons?filter=%7B"where":%7B"persName":"{name}"%7D%7D&access_token={accessToken}`,
             getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D&access_token={accessToken}`,
             getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D&access_token={accessToken}`,
             countUri: `${backendBase}/api/persons/count?access_token={accessToken}`

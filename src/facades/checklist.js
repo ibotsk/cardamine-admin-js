@@ -1,6 +1,7 @@
 import checklistService from '../services/checklist';
 
 import helper from '../utils/helper';
+import whereHelper from '../utils/where';
 import config from '../config/config';
 
 const getAllSpecies = async accessToken => {
@@ -40,6 +41,20 @@ const getBasionymsFor = async (id, accessToken) => {
     }
 }
 
+const getSpeciesByAll = async (data, accessToken) => {
+    const where = whereHelper.whereDataAll(data);
+
+    if (!where) {
+        return null;
+    }
+
+    const species = await checklistService.getSpeciesByAll({ where: JSON.stringify(where), accessToken });
+    return {
+        term: data,
+        found: species
+    }
+}
+
 const saveSpecies = async ({ data, accessToken }) => {
     await checklistService.putSpecies({ data, accessToken });
 }
@@ -58,14 +73,14 @@ const saveSynonyms = async ({ id, list, syntype, accessToken }) => {
     }
 }
 
-const submitSynonyms = async ({ 
-    id, 
+const submitSynonyms = async ({
+    id,
     nomenclatoricSynonyms,
     taxonomicSynonyms,
     invalidDesignations,
-    isNomenclatoricSynonymsChanged, 
-    isTaxonomicSynonymsChanged, 
-    isInvalidDesignationsChanged, 
+    isNomenclatoricSynonymsChanged,
+    isTaxonomicSynonymsChanged,
+    isInvalidDesignationsChanged,
     accessToken }) => {
     // get synonyms to be deleted
     const originalSynonyms = await checklistService.getAllSynonymsOf({ id, accessToken });
@@ -135,6 +150,7 @@ export default {
     getAllSpecies,
     getSpeciesById,
     getSpeciesByIdWithFilter,
+    getSpeciesByAll,
     getSynonyms,
     getBasionymsFor,
     saveSpecies,

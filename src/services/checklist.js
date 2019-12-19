@@ -27,13 +27,19 @@ const getSpeciesById = async ({ id, accessToken }) => {
     return response.data;
 }
 
+const getSpeciesByAll = async ({ where, accessToken }) => {
+    const getByAllUri = template.parse(config.uris.listOfSpeciesUri.getAllWFilterUri).expand({ where, accessToken });
+    const response = await axios.get(getByAllUri);
+    return response.data;
+}
+
 const getBasionymFor = async ({ id, accessToken }) => {
     const getBasionymForUri = template.parse(config.uris.listOfSpeciesUri.getBasionymForUri).expand({ id, accessToken });
     const response = await axios.get(getBasionymForUri);
     return response.data;
 }
 
-const getReplacedFor = async ({id, accessToken }) => {
+const getReplacedFor = async ({ id, accessToken }) => {
     const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id, accessToken });
     const response = await axios.get(getReplacedForUri);
     return response.data;
@@ -95,6 +101,7 @@ export default {
     getAllSpecies,
     getSpeciesById,
     getSpeciesByIdWithFilter,
+    getSpeciesByAll,
     getBasionymFor,
     getReplacedFor,
     getNomenNovumFor,

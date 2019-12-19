@@ -8,9 +8,13 @@ const getPublicationByIdCurated = async ({ id, accessToken }) => {
     return utils.nullToEmpty(data);
 }
 
-const getPublicationByAll = async ({ literatureData, accessToken }) => {
-    const where = whereHelper.whereLiteratureAll(literatureData);
-    return publicationsService.getPublicationByWhere({ where: JSON.stringify(where), offset: 0, limit: 2, accessToken });
+const getPublicationByAll = async (literatureData, accessToken) => {
+    const where = whereHelper.whereDataAll(literatureData);
+    const publication = await publicationsService.getPublicationByWhere({ where: JSON.stringify(where), offset: 0, limit: 2, accessToken });
+    return {
+        term: literatureData,
+        found: publication
+    };
 }
 
 const savePublicationCurated = async ({ data, accessToken }) => {

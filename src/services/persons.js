@@ -9,6 +9,12 @@ const getPersonById = async ({ id, accessToken }) => {
     return response.data;
 }
 
+const getPersonByName = async ({ name, accessToken }) => {
+    const getByNameUri = template.parse(config.uris.personsUri.getByNameUri).expand({ name, accessToken });
+    const response = await axios.get(getByNameUri);
+    return response.data;
+}
+
 const putPerson = async ({ data, accessToken }) => {
     const personsUri = template.parse(config.uris.personsUri.baseUri).expand({ accessToken });
     await axios.put(personsUri, data);
@@ -16,5 +22,6 @@ const putPerson = async ({ data, accessToken }) => {
 
 export default {
     getPersonById,
+    getPersonByName,
     putPerson
 }
