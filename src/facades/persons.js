@@ -12,11 +12,16 @@ const getPersonsByName = async (names, accessToken) => {
     const result = {};
     for (const key of keys) {
         const name = names[key];
-        const value = await personsService.getPersonByName({ name, accessToken });
-        result[key] = {
-            term: name,
-            found: value
-        };
+
+        if (!name) {
+            result[key] = null;
+        } else {
+            const value = await personsService.getPersonByName({ name, accessToken });
+            result[key] = {
+                term: name,
+                found: value
+            };
+        }
     }
     return result;
 }
