@@ -10,6 +10,9 @@ const getPublicationByIdCurated = async ({ id, accessToken }) => {
 
 const getPublicationByAll = async (literatureData, accessToken) => {
     const where = whereHelper.whereDataAll(literatureData);
+    if (!where) {
+        return null;
+    }
     const publication = await publicationsService.getPublicationByWhere({ where: JSON.stringify(where), offset: 0, limit: 2, accessToken });
     return {
         term: literatureData,

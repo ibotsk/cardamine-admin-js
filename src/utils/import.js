@@ -24,17 +24,21 @@ function importCSV(data) {
 }
 
 function createReport(records) {
+
+    let speciesReport = {};
+    let publicationReport = {};
     let personsReport = {};
 
     for (const [i, { references }] of records.entries()) {
         const rowNum = i + 2; // 1st row in the file is header
 
+        processSimpleReport(speciesReport, references.species, rowNum, helper.listOfSpeciesString);
+        processSimpleReport(publicationReport, references.publication, rowNum, helper.parsePublication);
+
         const personsOneRow = processRowPersonsReport(references.persons, rowNum);
         personsReport = merge(personsReport, personsOneRow);
 
     }
-
-    // console.log({ personsReport });
 
     return {
         personsReport
@@ -102,6 +106,27 @@ function createObject(configTemplate, rowData) {
 function makeNameAsPublished(rowData) {
     const nameObj = createObject(importConfig.dataColumns.nameAsPublished, rowData);
     return helper.listOfSpeciesString(nameObj);
+}
+
+function processSimpleReport(report, data, rowNum, formatKey = undefined) {
+
+    if (!data) {
+        const empty = report[""] || [];
+        empty.push(rowNum);
+        report[""] = empty;
+        return;
+    }
+
+    if (data.found.length === 0) { // report those that will be created
+        let name = data.term;
+        if (formatKey) {
+            name = formatKey(name);
+        }
+        const inReportRows = report[name] || [];
+        inReportRows.push(rowNum);
+        report[name] = inReportRows;
+    }
+
 }
 
 function processRowPersonsReport(personsObj, rowNum) {

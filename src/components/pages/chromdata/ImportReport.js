@@ -27,7 +27,11 @@ const PersonsReport = ({ data }) => {
             </ListGroup>
         </Well>
     )
-}
+};
+
+const SpeciesReport = ({ data }) => {
+
+};
 
 const ImportReport = ({ report }) => {
     return (
