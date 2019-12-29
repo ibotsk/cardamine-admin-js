@@ -10,12 +10,14 @@ import checklistFacade from '../../../facades/checklist';
 import publicationsFacade from '../../../facades/publications';
 import personsFacade from '../../../facades/persons';
 import world4Facade from '../../../facades/world4';
+import ImportReport from './ImportReport';
 
 const loadData = async (data, accessToken) => {
     const dataToImport = importUtils.importCSV(data);
 
+    const records = [];
+
     for (const row of dataToImport) {
-        console.log("row: %o", row);
         const { literature: refLiterature, standardizedName: refStandardizedName, idWorld4: refWorld4, ...refPersons } = row.references;
 
         let idWorld4 = null;
@@ -23,23 +25,30 @@ const loadData = async (data, accessToken) => {
             // world 4 must be present in the database, if not, it will not be created
             idWorld4 = await world4Facade.getOneByDescription({ description: refWorld4, accessToken });
         }
-        console.log({ idWorld4 });
 
         const species = await checklistFacade.getSpeciesByAll(refStandardizedName, accessToken);
-        console.log({ species });
 
-        // literature will be created if not found
         const literatureData = helper.publicationCurateStringDisplayType(refLiterature);
         const publication = await publicationsFacade.getPublicationByAll(literatureData, accessToken);
-        console.log({ publication });
 
         const persons = await personsFacade.getPersonsByName(refPersons, accessToken);
-        console.log({ persons });
 
+        const record = {
+            main: row.main,
+            references: {
+                species,
+                publication,
+                persons,
+                idWorld4
+            }
+        };
+
+        records.push(record);
     }
 
     return {
-        count: dataToImport.length
+        count: dataToImport.length,
+        records
     };
 }
 
@@ -49,23 +58,21 @@ class Import extends React.Component {
         super(props);
 
         this.state = {
-            showSubmit: false,
-            recordsInfo: {
-                count: 0
-            }
+            submitEnabled: false,
+            recordsCount: 0,
+            report: {}
         };
     }
 
     handleOnFileLoad = async (data) => {
-        const { count } = await loadData(data, this.props.accessToken);
+        const { count, records } = await loadData(data, this.props.accessToken);
 
-        const recordsInfo = this.state.recordsInfo;
-
-        recordsInfo.count = count;
+        const report = importUtils.createReport(records);
 
         this.setState({
-            showSubmit: true,
-            recordsInfo
+            submitEnabled: true,
+            recordsCount: count,
+            report
         });
     }
 
@@ -80,13 +87,12 @@ class Import extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Body>
-                            Records to import: {this.state.recordsInfo.count}
+                            Records to import: {this.state.recordsCount}
+
+                            <ImportReport report={this.state.report} />
                         </Panel.Body>
                     </Panel>
-                    {
-                        this.state.showSubmit &&
-                        <Button bsStyle='info'>Create new</Button>
-                    }
+                    <Button bsStyle='info' disabled={!this.state.submitEnabled}>Import</Button>
                 </Grid>
             </div>
         );

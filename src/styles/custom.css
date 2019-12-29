@@ -1,3 +1,6 @@
+ul {
+    list-style-type: square;
+}
 
 .scrollable {
     overflow-y: scroll;

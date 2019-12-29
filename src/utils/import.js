@@ -2,6 +2,8 @@ import helper from './helper';
 
 import importConfig from '../config/import';
 
+import merge from 'lodash.merge';
+
 function importCSV(data) {
 
     const dataToImport = [];
@@ -20,6 +22,28 @@ function importCSV(data) {
 
     return dataToImport;
 }
+
+function createReport(records) {
+    let personsReport = {};
+
+    for (const [i, { references }] of records.entries()) {
+        const rowNum = i + 2; // 1st row in the file is header
+
+        const personsOneRow = processRowPersonsReport(references.persons, rowNum);
+        personsReport = merge(personsReport, personsOneRow);
+
+    }
+
+    // console.log({ personsReport });
+
+    return {
+        personsReport
+    };
+}
+
+// -----------------------------------------//
+// -----------------------------------------//
+// -----------------------------------------//
 
 function processRow(row) {
 
@@ -80,6 +104,38 @@ function makeNameAsPublished(rowData) {
     return helper.listOfSpeciesString(nameObj);
 }
 
+function processRowPersonsReport(personsObj, rowNum) {
+    const keys = Object.keys(personsObj); // countedBy, identifiedBy atd
+
+    const personsReport = {};
+
+    for (const key of keys) {
+        const val = personsObj[key];
+        if (!val) {
+            continue;
+        }
+        if (val.found.length === 0) { // report those that will be created
+            const personName = val.term;
+            addToPersonReport(personsReport, personName, rowNum, key);
+        }
+    }
+
+    return personsReport;
+}
+
+function addToPersonReport(report, name, rowNum, role) {
+    const existingName = report[name] || {};
+
+    const roles = existingName[rowNum] || [];
+    roles.push(role);
+
+    report[name] = {
+        ...existingName,
+        [rowNum]: roles
+    };
+}
+
 export default {
-    importCSV
+    importCSV,
+    createReport
 };
