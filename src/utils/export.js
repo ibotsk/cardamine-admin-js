@@ -50,19 +50,7 @@ function handleCompositeField(data, field, fieldInfo) {
 }
 
 function createPublication(data) {
-    return helper.parsePublication({
-        type: data.displayType,
-        authors: data.paperAuthor,
-        title: data.paperTitle,
-        series: data.seriesSource,
-        volume: data.volume,
-        issue: data.issue,
-        publisher: data.publisher,
-        editor: data.editor,
-        year: data.year,
-        pages: data.pages,
-        journal: data.journalName
-    });
+    return helper.parsePublication(data);
 }
 
 function createLosName(name) {

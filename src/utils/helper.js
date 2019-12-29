@@ -237,22 +237,21 @@ const listOfSpeciesSorterLex = (losA, losB) => {
     return 0;
 }
 
-const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
-
-    const typeMapping = config.mappings.displayType[type].name;
+const parsePublication = (publication) => {
+    const typeMapping = config.mappings.displayType[publication.displayType].name;
     const template = config.nomenclature.publication[typeMapping];
 
     return Mustache.render(template, {
-        authors,
-        title,
-        series,
-        volume,
-        issue: issue ? `(${issue})` : '',
-        publisher,
-        editor,
-        year,
-        pages,
-        journal
+        authors: publication.paperAuthor,
+        title: publication.paperTitle,
+        series: publication.seriesSource,
+        volume: publication.volume,
+        issue: publication.issue ? `(${publication.issue})` : '',
+        publisher: publication.publisher,
+        editor: publication.editor,
+        year: publication.year,
+        pages: publication.pages,
+        journal: publication.journalName
     });
 }
 
@@ -269,6 +268,11 @@ const publicationCurateFields = (publication) => {
 }
 
 const publicationCurateStringDisplayType = publication => {
+    const nonEmptyProps = Object.keys(publication).filter(prop => !!publication[prop]);
+    if (nonEmptyProps.length === 0) {
+        return publication;
+    }
+
     const displayTypeString = publication.displayType;
     const displayTypeId = config.mappings.displayTypeStringToId[displayTypeString];
 

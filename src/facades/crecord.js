@@ -31,19 +31,7 @@ const getChromosomeRecord = async (accessToken, idRecord) => {
 const getLiteratures = async (accessToken, idLiterature) => {
     const literatures = await chromDataService.getAllLiteratures(accessToken, l => ({
         id: l.id,
-        label: helper.parsePublication({
-            type: l.displayType,
-            authors: l.paperAuthor,
-            title: l.paperTitle,
-            series: l.seriesSource,
-            volume: l.volume,
-            issue: l.issue,
-            publisher: l.publisher,
-            editor: l.editor,
-            year: l.year,
-            pages: l.pages,
-            journal: l.journalName
-        })
+        label: helper.parsePublication(l)
     }));
     const literatureInitial = literatures.find(l => l.id === idLiterature);
 

@@ -62,19 +62,7 @@ class Publications extends Component {
             id: l.id,
             action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(l.id)}>Edit</Button>,
             type: config.mappings.displayType[l.displayType].name,
-            publication: helper.parsePublication({
-                type: l.displayType,
-                authors: l.paperAuthor,
-                title: l.paperTitle,
-                series: l.seriesSource,
-                volume: l.volume,
-                issue: l.issue,
-                publisher: l.publisher,
-                editor: l.editor,
-                year: l.year,
-                pages: l.pages,
-                journal: l.journalName
-            })
+            publication: helper.parsePublication(l)
         }));
     }
 
