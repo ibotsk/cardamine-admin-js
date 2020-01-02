@@ -3,23 +3,32 @@ import {
     Panel, ListGroup, ListGroupItem, Well
 } from 'react-bootstrap';
 
-const PersonsReport = ({ data }) => {
+const InfoReportCategory = ({ data, label }) => {
     if (!data) {
+        return null;
+    }
+    const nonEmptyKeysEntries = Object.entries(data).filter(([key]) => key !== "");
+
+    if (nonEmptyKeysEntries.length === 0) {
         return null;
     }
     return (
         <Well bsSize="small">
-            <h4>Persons</h4>
+            <h4>{label}</h4>
             <ListGroup>
                 {
-                    Object.entries(data).map(([key, value]) => {
+                    nonEmptyKeysEntries.map(([key, value]) => {
                         const rows = Object.keys(value);
                         return (
                             <ListGroupItem key={key}>
-                                <strong>{key}</strong> will be created. Used in rows:
-                                <ul>
-                                    {rows.map(r => <li key={r}>{r} - in column: {value[r].map(v => `"${v}"`).join(', ')}</li>)}
-                                </ul>
+                                <strong>{key}</strong> - used in rows:
+                                {Array.isArray(value) ? (
+                                    ` ${value.join(', ')} `
+                                ) : (
+                                        <ul>
+                                            {rows.map(r => <li key={r}>{r} - in column: {value[r].map(v => `"${v}"`).join(', ')}</li>)}
+                                        </ul>
+                                    )}
                             </ListGroupItem>
                         );
                     })
@@ -29,21 +38,51 @@ const PersonsReport = ({ data }) => {
     )
 };
 
-const SpeciesReport = ({ data }) => {
+const WarningsReport = ({ speciesReport, publicationReport }) => {
+    if (!speciesReport && !publicationReport) {
+        return null;
+    }
+    const emptySpecies = speciesReport[""];
+    const emptyPublication = publicationReport[""];
+    if (!emptySpecies && !emptyPublication) {
+        return null;
+    }
+    return (
+        <ListGroup>
+            {emptySpecies && <ListGroupItem><strong>Standard name</strong> empty on rows: {emptySpecies.join(", ")}</ListGroupItem>}
+            {emptyPublication && <ListGroupItem><strong>Publication</strong> empty on rows: {emptyPublication.join(", ")}</ListGroupItem>}
+        </ListGroup>);
+};
 
+const ReportPanel = ({ panelClass, label, ...props }) => {
+    return (
+        <Panel bsStyle={panelClass}>
+            <Panel.Heading>
+                <Panel.Title componentClass="h4" toggle>
+                    {label}
+                </Panel.Title>
+            </Panel.Heading>
+            <Panel.Collapse>
+                <Panel.Body>
+                    {props.children}
+                </Panel.Body>
+            </Panel.Collapse>
+        </Panel>
+    );
 };
 
 const ImportReport = ({ report }) => {
     return (
         <div id="import-report">
-            <Panel bsStyle='info'>
-                <Panel.Heading>
-                    Import info
-                </Panel.Heading>
-                <Panel.Body>
-                    <PersonsReport data={report.personsReport} />
-                </Panel.Body>
-            </Panel>
+            <ReportPanel panelClass="warning" label="Warnings">
+                <WarningsReport speciesReport={report.speciesReport} publicationReport={report.publicationReport} />
+            </ReportPanel>
+
+            <ReportPanel panelClass="info" label="Import info">
+                <InfoReportCategory data={report.personsReport} label="Persons to be created" />
+                <InfoReportCategory data={report.speciesReport} label="Species to be created" />
+                <InfoReportCategory data={report.publicationReport} label="Publications to be created" />
+            </ReportPanel>
         </div>
     );
 

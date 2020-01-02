@@ -41,6 +41,8 @@ function createReport(records) {
     }
 
     return {
+        speciesReport,
+        publicationReport,
         personsReport
     };
 }
