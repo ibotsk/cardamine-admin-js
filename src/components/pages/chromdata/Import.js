@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, Button, Panel } from 'react-bootstrap';
 
 import CSVReader from 'react-csv-reader';
+import { Line } from 'rc-progress';
 
 import importUtils from '../../../utils/import';
 import helper from '../../../utils/helper';
@@ -12,11 +13,14 @@ import personsFacade from '../../../facades/persons';
 import world4Facade from '../../../facades/world4';
 import ImportReport from './ImportReport';
 
-const loadData = async (data, accessToken) => {
+const loadData = async (data, accessToken, increase = undefined) => {
+
     const dataToImport = importUtils.importCSV(data);
 
     const records = [];
 
+    const total = data.length - 1;
+    let i = 1;
     for (const row of dataToImport) {
         const { literature: refLiterature, standardizedName: refStandardizedName, idWorld4: refWorld4, ...refPersons } = row.references;
 
@@ -44,6 +48,11 @@ const loadData = async (data, accessToken) => {
         };
 
         records.push(record);
+
+        if (increase) {
+            increase(i, total);
+        }
+        i++;
     }
 
     return {
@@ -60,12 +69,24 @@ class Import extends React.Component {
         this.state = {
             submitEnabled: false,
             recordsCount: 0,
-            report: {}
+            report: {},
+            loadDataPercent: 0
         };
     }
 
+    increase = (i, total) => {
+        let newValue = Math.floor(i * 100 / total);
+
+        if (newValue > 100) {
+            newValue = 100;
+        }
+        this.setState({
+            loadDataPercent: newValue
+        });
+    }
+
     handleOnFileLoad = async (data) => {
-        const { count, records } = await loadData(data, this.props.accessToken);
+        const { count, records } = await loadData(data, this.props.accessToken, this.increase);
 
         const report = importUtils.createReport(records);
 
@@ -83,11 +104,12 @@ class Import extends React.Component {
                     <Panel>
                         <Panel.Body>
                             <CSVReader onFileLoaded={this.handleOnFileLoad} />
+                            <Line percent={this.state.loadDataPercent} />
                         </Panel.Body>
                     </Panel>
                     <Panel>
                         <Panel.Body>
-                            Records to import: {this.state.recordsCount}
+                            <h4>Records to import: {this.state.recordsCount}</h4>
 
                             <ImportReport report={this.state.report} />
                         </Panel.Body>
