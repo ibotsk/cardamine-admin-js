@@ -9,9 +9,11 @@ const InfoReportCategory = ({ data, label }) => {
     }
     const nonEmptyKeysEntries = Object.entries(data).filter(([key]) => key !== "");
 
-    if (nonEmptyKeysEntries.length === 0) {
+    const nonEmptyKeysEntriesLength = nonEmptyKeysEntries.length;
+    if (nonEmptyKeysEntriesLength === 0) {
         return null;
     }
+
     return (
         <Well bsSize="small">
             <h4>{label}</h4>
@@ -44,14 +46,17 @@ const WarningsReport = ({ speciesReport, publicationReport }) => {
     }
     const emptySpecies = speciesReport[""];
     const emptyPublication = publicationReport[""];
+
     if (!emptySpecies && !emptyPublication) {
         return null;
     }
+
     return (
         <ListGroup>
             {emptySpecies && <ListGroupItem><strong>Standard name</strong> empty on rows: {emptySpecies.join(", ")}</ListGroupItem>}
             {emptyPublication && <ListGroupItem><strong>Publication</strong> empty on rows: {emptyPublication.join(", ")}</ListGroupItem>}
-        </ListGroup>);
+        </ListGroup>
+    );
 };
 
 const ReportPanel = ({ panelClass, label, ...props }) => {
