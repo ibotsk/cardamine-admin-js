@@ -21,21 +21,21 @@ const CNavbar = props => {
                 <Navbar.Collapse>
                     <Nav>
                         <NavDropdown eventKey={1} title="Chromosome data" id="basic-nav-dropdown">
-                            <LinkContainer to="/chromosome-data">
+                            <LinkContainer exact to="/chromosome-data">
                                 <MenuItem eventKey={1.1}>All data</MenuItem>
                             </LinkContainer>
-                            <LinkContainer to="/publications">
+                            <LinkContainer exact to="/publications">
                                 <MenuItem eventKey={1.2}>Publications</MenuItem>
                             </LinkContainer>
-                            <LinkContainer to="/persons">
+                            <LinkContainer exact to="/persons">
                                 <MenuItem eventKey={1.3}>Persons</MenuItem>
                             </LinkContainer>
                             <MenuItem divider />
-                            <LinkContainer to="/chromosome-data/import">
+                            <LinkContainer exact to="/chromosome-data/import">
                                 <MenuItem eventKey={1.4}>Import</MenuItem>
                             </LinkContainer>
                         </NavDropdown>
-                        <LinkContainer to="/names">
+                        <LinkContainer exact to="/names">
                             <NavItem eventKey={2}>Names</NavItem>
                         </LinkContainer>
                     </Nav>
