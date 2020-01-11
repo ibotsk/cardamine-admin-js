@@ -81,6 +81,7 @@ const addSynonymToList = async (selected, synonyms, accessToken) => {
 
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
+const typifications = config.mappings.typifications;
 
 const columns = [
     {
@@ -403,7 +404,7 @@ class Checklist extends Component {
             )
         }
         return (
-            <Panel>
+            <Panel id="species-edit-header">
                 <Panel.Heading>
                     <Button bsStyle='warning' bsSize='xsmall' onClick={() => this.showModal(this.state.species.id)}>
                         <Glyphicon glyph='edit' /> Edit Name
@@ -412,7 +413,11 @@ class Checklist extends Component {
                 <Panel.Body>
                     <h4><LosName data={this.state.species} /></h4>
                     <h5>{this.state.species.publication || '-'}</h5>
+                    <hr />
                     <FormGroup controlId='ntype' bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Category
+                        </Col>
                         <Col xs={3}>
                             <FormControl
                                 componentClass="select"
@@ -425,6 +430,38 @@ class Checklist extends Component {
                             </FormControl>
                         </Col>
                     </FormGroup>
+                    <hr />
+                    <FormGroup controlId='typification' bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Type
+                        </Col>
+                        <Col xs={3}>
+                            <FormControl
+                                componentClass="select"
+                                placeholder="typification"
+                                value={this.state.species.typification || ""}
+                                onChange={this.handleChangeInput} >
+                                <option value={""}>-</option>
+                                {
+                                    Object.keys(typifications).map(t => <option value={t} key={t}>{typifications[t].text}</option>)
+                                }
+                            </FormControl>
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId="typeLocality" bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Type Locality
+                        </Col>
+                        <Col sm={mainColWidth}>
+                            <FormControl
+                                type="text"
+                                value={this.state.species.typeLocality || ""}
+                                placeholder="Type Locality"
+                                onChange={this.handleChangeInput}
+                                disabled={!this.state.species.typification}
+                            />
+                        </Col>
+                    </FormGroup>
                 </Panel.Body>
             </Panel>
         )
@@ -433,7 +470,7 @@ class Checklist extends Component {
     renderEditDetails = () => {
         if (this.state.species.id) {
             return (
-                <Well>
+                <Well id="species-edit-references">
                     <FormGroup controlId={idAcceptedName} bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Accepted name
@@ -583,7 +620,7 @@ class Checklist extends Component {
                 </Grid>
                 <Grid fluid={true} >
                     <Row>
-                        <Col sm={6}>
+                        <Col sm={6} id="species-list">
                             <div className="scrollable">
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
@@ -596,7 +633,7 @@ class Checklist extends Component {
                                 />
                             </div>
                         </Col>
-                        <Col sm={6}>
+                        <Col sm={6} id="species-detail">
                             <Form onSubmit={this.submitForm} horizontal>
                                 {this.renderDetailHeader()}
                                 {this.renderEditDetails()}
