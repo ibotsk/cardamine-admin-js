@@ -57,13 +57,11 @@ const ntypeFormatter = cell => {
     );
 }
 
-const synonymFormatter = (synonym, prefix) => (
-    {
-        id: synonym.id,
-        prefix,
-        value: synonym
-    }
-);
+const synonymFormatter = (synonym, prefix) => ({
+    id: synonym.id,
+    prefix,
+    value: synonym
+});
 
 const addSynonymToList = async (selected, synonyms, accessToken) => {
     if (!selected) {
@@ -548,7 +546,7 @@ class Checklist extends Component {
                         <Col xs={mainColWidth}>
                             <AddableList
                                 id={`${idTaxonomicSynonyms}-autocomplete`}
-                                data={this.state.taxonomicSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
+                                data={this.state.taxonomicSynonyms.map(s => s.ntype === 'DS' ? synonymFormatter(s, config.mappings.synonym.doubtful.prefix) : synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                                 onAddItemToList={this.handleAddTaxonomicSynonym}

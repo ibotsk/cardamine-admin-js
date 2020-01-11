@@ -98,6 +98,9 @@ export default {
             invalid: {
                 numType: 1,
                 prefix: '–'
+            },
+            doubtful: {
+                prefix: '?='
             }
         },
         typifications: {
