@@ -17,6 +17,7 @@ class Import extends React.Component {
 
         this.state = {
             submitEnabled: false,
+            records: [],
             recordsCount: 0,
             report: {},
             loadDataPercent: 0
@@ -38,6 +39,7 @@ class Import extends React.Component {
     handleOnFileLoad = async (data) => {
         const { count, records } = await importFacade.loadData(data, this.props.accessToken, this.increase);
 
+        // TODO: handle duplicate references found
         const report = importUtils.createReport(records);
 
         // console.log({ records });
@@ -45,12 +47,15 @@ class Import extends React.Component {
         this.setState({
             submitEnabled: true,
             recordsCount: count,
-            report
+            report,
+            records
         });
     };
 
     importRecords = async () => {
+        const records = this.state.records;
 
+        importFacade.importData(records, this.props.accessToken);
     };
 
     render() {
