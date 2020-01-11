@@ -1,8 +1,7 @@
 
 const nullToEmpty = (obj) => {
-    const newObj = {};
-    Object.keys(obj).map(k => newObj[k] = (obj[k] ? obj[k] : ''));
-    return newObj;
+    Object.keys(obj).forEach(k => obj[k] = (obj[k] ? obj[k] : ''));
+    return obj;
 }
 
 export default { nullToEmpty };
