@@ -41,7 +41,7 @@ const getBasionymsFor = async (id, accessToken) => {
     }
 }
 
-const getSpeciesByAll = async (data, accessToken) => {
+const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
     const where = whereHelper.whereDataAll(data);
 
     if (!where) {
@@ -49,9 +49,15 @@ const getSpeciesByAll = async (data, accessToken) => {
     }
 
     const species = await checklistService.getSpeciesByAll({ where: JSON.stringify(where), accessToken });
+
+    let found = species;
+    if (formatFound) {
+        found = formatFound(found);
+    }
+
     return {
         term: data,
-        found: species
+        found
     }
 }
 

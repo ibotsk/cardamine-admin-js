@@ -53,8 +53,8 @@ const WarningsReport = ({ speciesReport, publicationReport }) => {
 
     return (
         <ListGroup>
-            {emptySpecies && <ListGroupItem><strong>Standard name</strong> empty on rows: {emptySpecies.join(", ")}</ListGroupItem>}
-            {emptyPublication && <ListGroupItem><strong>Publication</strong> empty on rows: {emptyPublication.join(", ")}</ListGroupItem>}
+            {emptySpecies && <ListGroupItem><strong>Standard name</strong> empty in rows: {emptySpecies.join(", ")}</ListGroupItem>}
+            {emptyPublication && <ListGroupItem><strong>Publication</strong> empty in rows: {emptyPublication.join(", ")}</ListGroupItem>}
         </ListGroup>
     );
 };

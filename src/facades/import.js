@@ -20,15 +20,15 @@ const loadData = async (data, accessToken, increase = undefined) => {
         let idWorld4 = null;
         if (refWorld4) {
             // world 4 must be present in the database, if not, it will not be created
-            idWorld4 = await world4Facade.getOneByDescription({ description: refWorld4, accessToken });
+            idWorld4 = await world4Facade.getOneByDescription(refWorld4, accessToken, getIdOfFound);
         }
 
-        const species = await checklistFacade.getSpeciesByAll(refStandardizedName, accessToken);
+        const species = await checklistFacade.getSpeciesByAll(refStandardizedName, accessToken, getIdOfFound);
 
         const literatureData = helper.publicationCurateStringDisplayType(refLiterature);
-        const publication = await publicationsFacade.getPublicationByAll(literatureData, accessToken);
+        const publication = await publicationsFacade.getPublicationByAll(literatureData, accessToken, getIdOfFound);
 
-        const persons = await personsFacade.getPersonsByName(refPersons, accessToken);
+        const persons = await personsFacade.getPersonsByName(refPersons, accessToken, getIdOfFound);
 
         const record = {
             main: row.main,
@@ -52,7 +52,7 @@ const loadData = async (data, accessToken, increase = undefined) => {
         count: dataToImport.length,
         records
     };
-}
+};
 
 export default {
     loadData

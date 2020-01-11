@@ -17,7 +17,7 @@ const getPersonByName = async ({ name, accessToken }) => {
 
 const putPerson = async ({ data, accessToken }) => {
     const personsUri = template.parse(config.uris.personsUri.baseUri).expand({ accessToken });
-    await axios.put(personsUri, data);
+    return await axios.put(personsUri, data);
 }
 
 export default {

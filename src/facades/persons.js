@@ -6,7 +6,7 @@ const getPersonsByIdCurated = async ({ id, accessToken }) => {
     return utils.nullToEmpty(data);
 }
 
-const getPersonsByName = async (names, accessToken) => {
+const getPersonsByName = async (names, accessToken, formatFound) => {
     const keys = Object.keys(names);
 
     const result = {};
@@ -17,9 +17,15 @@ const getPersonsByName = async (names, accessToken) => {
             result[key] = null;
         } else {
             const value = await personsService.getPersonByName({ name, accessToken });
+
+            let found = value;
+            if (formatFound) {
+                found = formatFound(found);
+            }
+
             result[key] = {
                 term: name,
-                found: value
+                found
             };
         }
     }
@@ -27,7 +33,8 @@ const getPersonsByName = async (names, accessToken) => {
 }
 
 const savePerson = async ({ data, accessToken }) => {
-    await personsService.putPerson({ data, accessToken });
+    const response = await personsService.putPerson({ data, accessToken });
+    return response.data;
 }
 
 export default {
