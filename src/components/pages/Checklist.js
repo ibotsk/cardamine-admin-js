@@ -29,16 +29,6 @@ import config from '../../config/config';
 import '../../styles/custom.css';
 
 const MODAL_SPECIES_NAME = 'showModalSpecies';
-const idAcceptedName = 'idAcceptedName';
-const idBasionym = 'idBasionym';
-const idReplaced = 'idReplaced';
-const idNomenNovum = 'idNomenNovum';
-const idNomenclatoricSynonyms = 'idNomenclatoricSynonyms';
-const idTaxonomicSynonyms = 'idTaxonomicSynonyms';
-const idInvalidDesignations = 'idInvalidDesignations';
-const idBasionymFor = 'idBasionymFor';
-const idReplacedFor = 'idReplacedFor';
-const idNomenNovumFor = 'idNomenNovumFor';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
@@ -51,11 +41,7 @@ const buildNtypesOptions = ntypes => {
     return obj;
 }
 
-const ntypeFormatter = cell => {
-    return (
-        <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>
-    );
-}
+const ntypeFormatter = cell => <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>;
 
 const synonymFormatter = (synonym, prefix) => ({
     id: synonym.id,
@@ -133,12 +119,16 @@ class Checklist extends Component {
                 id: undefined
             },
             tableRowsSelected: [],
+
             nomenclatoricSynonyms: [], // contains objects of list-of-species
             taxonomicSynonyms: [], // contains objects of list-of-species
             invalidDesignations: [],
+            misidentifications: [],
+
             isNomenclatoricSynonymsChanged: false,
             isTaxonomicSynonymsChanged: false,
             isInvalidDesignationsChanged: false,
+            isMisidentificationsChanged: false,
 
             basionymFor: [],
             replacedFor: [],
@@ -146,12 +136,10 @@ class Checklist extends Component {
         }
     };
 
-    showModal = id => {
-        this.setState({
-            [MODAL_SPECIES_NAME]: true,
-            modalEditId: id
-        });
-    };
+    showModal = id => this.setState({
+        [MODAL_SPECIES_NAME]: true,
+        modalEditId: id
+    });
 
     hideModal = () => {
         this.props.onTableChange(undefined, {});
@@ -182,7 +170,7 @@ class Checklist extends Component {
             label: helper.listOfSpeciesString(l)
         }));
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations } = await checklistFacade.getSynonyms(id, accessToken);
+        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = await checklistFacade.getSynonyms(id, accessToken);
         const { basionymFor, replacedFor, nomenNovumFor } = await checklistFacade.getBasionymsFor(id, accessToken);
 
         this.setState({
@@ -194,24 +182,21 @@ class Checklist extends Component {
             nomenclatoricSynonyms,
             taxonomicSynonyms,
             invalidDesignations,
+            misidentifications,
             basionymFor,
             replacedFor,
             nomenNovumFor
         });
     };
 
-    getSelectedName = id => {
-        return this.state.listOfSpecies.filter(l => l.id === id);
-    };
+    getSelectedName = id => this.state.listOfSpecies.filter(l => l.id === id);
 
     handleChangeTypeahead = (selected, prop) => {
         const id = selected[0] ? selected[0].id : undefined;
         this.handleChange(prop, id);
     };
 
-    handleChangeInput = e => {
-        this.handleChange(e.target.id, e.target.value);
-    };
+    handleChangeInput = e => this.handleChange(e.target.id, e.target.value);
 
     handleChange = (prop, val) => {
         const species = { ...this.state.species };
@@ -224,6 +209,7 @@ class Checklist extends Component {
     handleAddNomenclatoricSynonym = async selected => this.handleAddRow(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
     handleAddTaxonomicSynonym = async selected => this.handleAddRow(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
     handleAddInvalidDesignation = async selected => this.handleAddRow(selected, 'invalidDesignations', 'isInvalidDesignationsChanged');
+    handleAddMisidentification = async selected => this.handleAddRow(selected, 'misidentifications', 'isMisidentificationsChanged');
 
     handleAddRow = async (selected, property, changedProperty) => {
         const accessToken = this.props.accessToken;
@@ -238,6 +224,7 @@ class Checklist extends Component {
     handleRemoveNomenclatoricSynonym = id => this.handleRemoveRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
     handleRemoveTaxonomicSynonym = id => this.handleRemoveRow(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
     handleRemoveInvalidDesignation = id => this.handleRemoveRow(id, 'invalidDesignations', 'isInvalidDesignationsChanged');
+    handleRemoveMisidentification = id => this.handleRemoveRow(id, 'misidentifications', 'isMisidentificationsChanged');
 
     handleRemoveRow = (id, property, changedProperty) => {
         const collection = this.state[property].filter(s => s.id !== id);
@@ -248,7 +235,6 @@ class Checklist extends Component {
     };
 
     handleChangeToTaxonomic = async (id, fromList) => {
-        // const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
         const selected = fromList.find(s => s.id === id);
         await this.handleAddTaxonomicSynonym(selected);
         // remove from all others
@@ -282,9 +268,11 @@ class Checklist extends Component {
                 nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,
                 taxonomicSynonyms: this.state.taxonomicSynonyms,
                 invalidDesignations: this.state.invalidDesignations,
+                misidentifications: this.state.misidentifications,
                 isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
                 isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
-                isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged
+                isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged,
+                isMisidentificationsChanged: this.state.isMisidentificationsChanged
             });
 
             notifications.success('Saved');
@@ -293,7 +281,8 @@ class Checklist extends Component {
             this.setState({
                 isNomenclatoricSynonymsChanged: false,
                 isTaxonomicSynonymsChanged: false,
-                isInvalidDesignationsChanged: false
+                isInvalidDesignationsChanged: false,
+                isMisidentificationsChanged: false
             });
         } catch (error) {
             notifications.error('Error saving');
@@ -367,6 +356,12 @@ class Checklist extends Component {
             <SynonymListItem {...props} additions={Additions} />
         );
     };
+
+    MisidentifiedSynonymListItem = ({ rowId, ...props }) => {
+        return (
+            <SynonymListItem {...props} />
+        );
+    }
 
     renderDetailHeader = () => {
         if (!this.state.species.id) {
@@ -444,66 +439,66 @@ class Checklist extends Component {
         if (this.state.species.id) {
             return (
                 <Well id="species-edit-references">
-                    <FormGroup controlId={idAcceptedName} bsSize='sm'>
+                    <FormGroup controlId="accepted-name-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Accepted name
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
-                                id={`${idAcceptedName}-autocomplete`}
+                                id="accepted-name-autocomplete"
                                 options={this.state.listOfSpecies}
-                                selected={this.getSelectedName(this.state.species[idAcceptedName])}
-                                onChange={(selected) => this.handleChangeTypeahead(selected, idAcceptedName)}
+                                selected={this.getSelectedName(this.state.species.idAcceptedName)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, 'idAcceptedName')}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idBasionym} bsSize='sm'>
+                    <FormGroup controlId="basionym-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Basionym
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
-                                id={`${idBasionym}-autocomplete`}
+                                id="basionym-autocomplete"
                                 options={this.state.listOfSpecies}
-                                selected={this.getSelectedName(this.state.species[idBasionym])}
-                                onChange={(selected) => this.handleChangeTypeahead(selected, idBasionym)}
+                                selected={this.getSelectedName(this.state.species.idBasionym)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, 'idBasionym')}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idReplaced} bsSize='sm'>
+                    <FormGroup controlId="replaced-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Replaced Name
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
-                                id={`${idReplaced}-autocomplete`}
+                                id="replaced-autocomplete"
                                 options={this.state.listOfSpecies}
-                                selected={this.getSelectedName(this.state.species[idReplaced])}
-                                onChange={(selected) => this.handleChangeTypeahead(selected, idReplaced)}
+                                selected={this.getSelectedName(this.state.species.idReplaced)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, 'idReplaced')}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idNomenNovum} bsSize='sm'>
+                    <FormGroup controlId="nomen-novum-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Nomen Novum
                         </Col>
                         <Col xs={mainColWidth}>
                             <Typeahead
-                                id={`${idNomenNovum}-autocomplete`}
+                                id="nomen-novum-autocomplete"
                                 options={this.state.listOfSpecies}
-                                selected={this.getSelectedName(this.state.species[idNomenNovum])}
-                                onChange={(selected) => this.handleChangeTypeahead(selected, idNomenNovum)}
+                                selected={this.getSelectedName(this.state.species.idNomenNovum)}
+                                onChange={(selected) => this.handleChangeTypeahead(selected, 'idNomenNovum')}
                                 placeholder="Start by typing a species present in the database" />
                         </Col>
                     </FormGroup>
                     <hr />
-                    <FormGroup controlId={idNomenclatoricSynonyms} bsSize='sm'>
+                    <FormGroup controlId="nomenclatoric-synonyms-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Nomenclatoric Synonyms
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                id={`${idNomenclatoricSynonyms}-autocomplete`}
+                                id="nomenclatoric-synonyms-autocomplete"
                                 data={this.state.nomenclatoricSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.nomenclatoric.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.taxonomic.prefix}
@@ -513,13 +508,13 @@ class Checklist extends Component {
                             />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idTaxonomicSynonyms} bsSize='sm'>
+                    <FormGroup controlId="taxonomic-synonyms-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Taxonomic Synonyms
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                id={`${idTaxonomicSynonyms}-autocomplete`}
+                                id="taxonomic-synonyms-autocomplete"
                                 data={this.state.taxonomicSynonyms.map(s => s.ntype === 'DS' ? synonymFormatter(s, config.mappings.synonym.doubtful.prefix) : synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
@@ -529,13 +524,13 @@ class Checklist extends Component {
                             />
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idInvalidDesignations} bsSize='sm'>
+                    <FormGroup controlId="invalid-designations-autocomplete" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Invalid Designations
                         </Col>
                         <Col xs={mainColWidth}>
                             <AddableList
-                                id={`${idInvalidDesignations}-autocomplete`}
+                                id="invalid-designations-autocomplete"
                                 data={this.state.invalidDesignations.map(s => synonymFormatter(s, config.mappings.synonym.invalid.prefix))}
                                 options={this.state.listOfSpecies}
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
@@ -545,8 +540,23 @@ class Checklist extends Component {
                             />
                         </Col>
                     </FormGroup>
+                    <FormGroup controlId="misidentifications-autocomplete" bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Misidentifications
+                        </Col>
+                        <Col xs={mainColWidth}>
+                            <AddableList
+                                id="misidentifications-autocomplete"
+                                data={this.state.misidentifications.map(s => synonymFormatter(s, config.mappings.synonym.misidentification.prefix))}
+                                options={this.state.listOfSpecies}
+                                onAddItemToList={this.handleAddMisidentification}
+                                onRowDelete={this.handleRemoveMisidentification}
+                                itemComponent={this.MisidentifiedSynonymListItem}
+                            />
+                        </Col>
+                    </FormGroup>
                     <hr />
-                    <FormGroup controlId={idBasionymFor}>
+                    <FormGroup controlId="basionym-for">
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Basionym For
                         </Col>
@@ -554,7 +564,7 @@ class Checklist extends Component {
                             {this.renderPlainListOfSpeciesNames(this.state.basionymFor)}
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idReplacedFor}>
+                    <FormGroup controlId="replaced-for">
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Replaced For
                         </Col>
@@ -562,7 +572,7 @@ class Checklist extends Component {
                             {this.renderPlainListOfSpeciesNames(this.state.replacedFor)}
                         </Col>
                     </FormGroup>
-                    <FormGroup controlId={idNomenNovumFor}>
+                    <FormGroup controlId="nomen-novum-for">
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
                             Nomen Novum For
                         </Col>
