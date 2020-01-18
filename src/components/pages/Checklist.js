@@ -77,6 +77,17 @@ const addSynonymToList = async (selected, synonyms, accessToken) => {
     return synonyms;
 }
 
+const formatTableRow = data => {
+    return data.map(n => {
+        return ({
+            id: n.id,
+            ntype: n.ntype,
+            speciesName: helper.listOfSpeciesString(n),
+            extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
+        })
+    });
+};
+
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
 const typifications = config.mappings.typifications;
@@ -133,14 +144,14 @@ class Checklist extends Component {
             replacedFor: [],
             nomenNovumFor: [],
         }
-    }
+    };
 
     showModal = id => {
         this.setState({
             [MODAL_SPECIES_NAME]: true,
             modalEditId: id
         });
-    }
+    };
 
     hideModal = () => {
         this.props.onTableChange(undefined, {});
@@ -148,7 +159,7 @@ class Checklist extends Component {
             this.populateDetailsForEdit(this.state.species.id);
         }
         this.setState({ [MODAL_SPECIES_NAME]: false });
-    }
+    };
 
     selectRow = {
         mode: 'radio',
@@ -187,31 +198,20 @@ class Checklist extends Component {
             replacedFor,
             nomenNovumFor
         });
-    }
-
-    formatTableRow = data => {
-        return data.map(n => {
-            return ({
-                id: n.id,
-                ntype: n.ntype,
-                speciesName: helper.listOfSpeciesString(n),
-                extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
-            })
-        });
-    }
+    };
 
     getSelectedName = id => {
         return this.state.listOfSpecies.filter(l => l.id === id);
-    }
+    };
 
     handleChangeTypeahead = (selected, prop) => {
         const id = selected[0] ? selected[0].id : undefined;
         this.handleChange(prop, id);
-    }
+    };
 
     handleChangeInput = e => {
         this.handleChange(e.target.id, e.target.value);
-    }
+    };
 
     handleChange = (prop, val) => {
         const species = { ...this.state.species };
@@ -219,58 +219,33 @@ class Checklist extends Component {
         this.setState({
             species
         });
-    }
+    };
 
-    handleAddNomenclatoricSynonym = async selected => {
+    handleAddNomenclatoricSynonym = async selected => this.handleAddRow(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
+    handleAddTaxonomicSynonym = async selected => this.handleAddRow(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
+    handleAddInvalidDesignation = async selected => this.handleAddRow(selected, 'invalidDesignations', 'isInvalidDesignationsChanged');
+
+    handleAddRow = async (selected, property, changedProperty) => {
         const accessToken = this.props.accessToken;
-        const nomenclatoricSynonyms = await addSynonymToList(selected, [...this.state.nomenclatoricSynonyms], accessToken);
+        const collectionState = this.state[property];
+        const collection = await addSynonymToList(selected, collectionState, accessToken);
         this.setState({
-            nomenclatoricSynonyms,
-            isNomenclatoricSynonymsChanged: true
+            [property]: collection,
+            [changedProperty]: true
         });
     }
 
-    handleAddTaxonomicSynonym = async selected => {
-        const accessToken = this.props.accessToken;
-        const taxonomicSynonyms = await addSynonymToList(selected, [...this.state.taxonomicSynonyms], accessToken);
-        this.setState({
-            taxonomicSynonyms,
-            isTaxonomicSynonymsChanged: true
-        });
-    }
+    handleRemoveNomenclatoricSynonym = id => this.handleRemoveRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
+    handleRemoveTaxonomicSynonym = id => this.handleRemoveRow(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
+    handleRemoveInvalidDesignation = id => this.handleRemoveRow(id, 'invalidDesignations', 'isInvalidDesignationsChanged');
 
-    handleAddInvalidDesignation = async selected => {
-        const accessToken = this.props.accessToken;
-        const invalidDesignations = await addSynonymToList(selected, [...this.state.invalidDesignations], accessToken);
+    handleRemoveRow = (id, property, changedProperty) => {
+        const collection = this.state[property].filter(s => s.id !== id);
         this.setState({
-            invalidDesignations,
-            isInvalidDesignationsChanged: true
+            [property]: collection,
+            [changedProperty]: true
         });
-    }
-
-    handleRemoveNomenclatoricSynonym = id => {
-        const nomenclatoricSynonyms = this.state.nomenclatoricSynonyms.filter(s => s.id !== id);
-        this.setState({
-            nomenclatoricSynonyms,
-            isNomenclatoricSynonymsChanged: true
-        });
-    }
-
-    handleRemoveTaxonomicSynonym = id => {
-        const taxonomicSynonyms = this.state.taxonomicSynonyms.filter(s => s.id !== id);
-        this.setState({
-            taxonomicSynonyms,
-            isTaxonomicSynonymsChanged: true
-        });
-    }
-
-    handleRemoveInvalidDesignation = id => {
-        const invalidDesignations = this.state.invalidDesignations.filter(s => s.id !== id);
-        this.setState({
-            invalidDesignations,
-            isInvalidDesignationsChanged: true
-        });
-    }
+    };
 
     handleChangeToTaxonomic = async (id, fromList) => {
         // const selected = this.state.nomenclatoricSynonyms.find(s => s.id === id);
@@ -324,7 +299,7 @@ class Checklist extends Component {
             notifications.error('Error saving');
             throw error;
         }
-    }
+    };
 
     componentDidMount() {
         const selectedId = this.props.match.params.id;
@@ -349,7 +324,7 @@ class Checklist extends Component {
                     </ListGroupItem>)}
             </ListGroup>
         )
-    }
+    };
 
     NomenclatoricSynonymListItem = ({ rowId, ...props }) => {
         const fromList = this.state.nomenclatoricSynonyms;
@@ -363,7 +338,7 @@ class Checklist extends Component {
         return (
             <SynonymListItem {...props} additions={Additions} />
         );
-    }
+    };
 
     TaxonomicSynonymListItem = ({ rowId, ...props }) => {
         const fromList = this.state.taxonomicSynonyms;
@@ -377,7 +352,7 @@ class Checklist extends Component {
         return (
             <SynonymListItem {...props} additions={Additions} />
         );
-    }
+    };
 
     InvalidSynonymListItem = ({ rowId, ...props }) => {
         const fromList = this.state.invalidDesignations;
@@ -391,7 +366,7 @@ class Checklist extends Component {
         return (
             <SynonymListItem {...props} additions={Additions} />
         );
-    }
+    };
 
     renderDetailHeader = () => {
         if (!this.state.species.id) {
@@ -534,7 +509,6 @@ class Checklist extends Component {
                                 changeToTypeSymbol={config.mappings.synonym.taxonomic.prefix}
                                 onAddItemToList={this.handleAddNomenclatoricSynonym}
                                 onRowDelete={this.handleRemoveNomenclatoricSynonym}
-                                onChangeType={this.handleChangeToTaxonomic}
                                 itemComponent={this.NomenclatoricSynonymListItem}
                             />
                         </Col>
@@ -551,7 +525,6 @@ class Checklist extends Component {
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                                 onAddItemToList={this.handleAddTaxonomicSynonym}
                                 onRowDelete={this.handleRemoveTaxonomicSynonym}
-                                onChangeType={this.handleChangeToNomenclatoric}
                                 itemComponent={this.TaxonomicSynonymListItem}
                             />
                         </Col>
@@ -568,7 +541,6 @@ class Checklist extends Component {
                                 changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                                 onAddItemToList={this.handleAddInvalidDesignation}
                                 onRowDelete={this.handleRemoveInvalidDesignation}
-                                onChangeType={this.handleChangeToNomenclatoric}
                                 itemComponent={this.InvalidSynonymListItem}
                             />
                         </Col>
@@ -623,7 +595,7 @@ class Checklist extends Component {
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
                                     rowClasses='as-pointer'
-                                    data={this.formatTableRow(this.props.data)}
+                                    data={formatTableRow(this.props.data)}
                                     columns={columns}
                                     filter={filterFactory()}
                                     selectRow={tableRowSelectedProps}
