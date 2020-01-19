@@ -125,6 +125,8 @@ class Checklist extends Component {
             invalidDesignations: [],
             misidentifications: [],
 
+            misidentificationAuthors: {},
+
             isNomenclatoricSynonymsChanged: false,
             isTaxonomicSynonymsChanged: false,
             isInvalidDesignationsChanged: false,
@@ -173,6 +175,11 @@ class Checklist extends Component {
         const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = await checklistFacade.getSynonyms(id, accessToken);
         const { basionymFor, replacedFor, nomenNovumFor } = await checklistFacade.getBasionymsFor(id, accessToken);
 
+        const misidentificationAuthors = misidentifications.reduce((acc, curr) => {
+            acc[curr.id] = curr.metadata ? curr.metadata.misidentificationAuthor : undefined;
+            return acc;
+        }, {});
+
         this.setState({
             species: {
                 ...los
@@ -183,6 +190,7 @@ class Checklist extends Component {
             taxonomicSynonyms,
             invalidDesignations,
             misidentifications,
+            misidentificationAuthors,
             basionymFor,
             replacedFor,
             nomenNovumFor
@@ -261,6 +269,15 @@ class Checklist extends Component {
     submitForm = async e => {
         e.preventDefault();
         const accessToken = this.props.accessToken;
+
+        const misidentifications = this.state.misidentifications;
+        misidentifications.forEach(m => {
+            if (!m.metadata) {
+                m.metadata = {};
+            }
+            m.metadata.misidentificationAuthor = this.state.misidentificationAuthors[m.id];
+        });
+
         try {
             await checklistFacade.saveSpeciesAndSynonyms({
                 species: this.state.species,
@@ -268,7 +285,7 @@ class Checklist extends Component {
                 nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,
                 taxonomicSynonyms: this.state.taxonomicSynonyms,
                 invalidDesignations: this.state.invalidDesignations,
-                misidentifications: this.state.misidentifications,
+                misidentifications,
                 isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
                 isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
                 isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged,
@@ -358,8 +375,32 @@ class Checklist extends Component {
     };
 
     MisidentifiedSynonymListItem = ({ rowId, ...props }) => {
+
+        const handleChangeAuthor = e => {
+            const misidentificationAuthors = this.state.misidentificationAuthors;
+            misidentificationAuthors[rowId] = e.target.value;
+            this.setState({
+                misidentificationAuthors,
+                isMisidentificationsChanged: true
+            });
+        };
+
         return (
-            <SynonymListItem {...props} />
+            <SynonymListItem showSubNomenclatoric={false} {...props}>
+                <FormGroup bsSize='sm'>
+                    <Col componentClass={ControlLabel} sm={2}>
+                        Author:
+                    </Col>
+                    <Col xs={8}>
+                        <FormControl
+                            type="text"
+                            value={this.state.misidentificationAuthors[rowId] || ""}
+                            placeholder="Misidentification Author"
+                            onChange={handleChangeAuthor}
+                        />
+                    </Col>
+                </FormGroup>
+            </SynonymListItem>
         );
     }
 

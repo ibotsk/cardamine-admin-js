@@ -145,11 +145,15 @@ function resolveChangesAndSaveSynonyms(isChanged, id, list, numType, originalSyn
 function saveSynonyms(id, list, syntype, accessToken) {
     let i = 1;
     for (const s of list) {
+        // anything else except ids, type ond order will be set from metadata (if such exist)
+        const { id: metaId, idParent: metaIdParent, idSynonym: metaIdSynonym, syntype: metaSyntype, rorder: metaRorder, ...otherMetadata } = s.metadata || {};
+
         const data = {
             idParent: id,
             idSynonym: s.id,
             syntype,
-            rorder: i
+            rorder: i,
+            ...otherMetadata
         };
         i++;
         checklistService.postSynonym({ data, accessToken });
