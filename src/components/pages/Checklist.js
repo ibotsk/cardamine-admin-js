@@ -28,8 +28,6 @@ import config from '../../config/config';
 
 import '../../styles/custom.css';
 
-const MODAL_SPECIES_NAME = 'showModalSpecies';
-
 const titleColWidth = 2;
 const mainColWidth = 10;
 
@@ -112,7 +110,7 @@ class Checklist extends Component {
         super(props);
 
         this.state = {
-            [MODAL_SPECIES_NAME]: false,
+            showModalSpecies: false,
             modalEditId: 0, //id for modal
             listOfSpecies: [], //options for autocomplete fields
             species: { // properties for synonyms
@@ -139,7 +137,7 @@ class Checklist extends Component {
     };
 
     showModal = id => this.setState({
-        [MODAL_SPECIES_NAME]: true,
+        showModalSpecies: true,
         modalEditId: id
     });
 
@@ -148,7 +146,7 @@ class Checklist extends Component {
         if (this.state.species.id) {
             this.populateDetailsForEdit(this.state.species.id);
         }
-        this.setState({ [MODAL_SPECIES_NAME]: false });
+        this.setState({ showModalSpecies: false });
     };
 
     selectRow = {
@@ -201,12 +199,12 @@ class Checklist extends Component {
 
     handleChangeTypeahead = (selected, prop) => {
         const id = selected[0] ? selected[0].id : undefined;
-        this.handleChange(prop, id);
+        this.handleSpeciesChange(prop, id);
     };
 
-    handleChangeInput = e => this.handleChange(e.target.id, e.target.value);
+    handleChangeInput = e => this.handleSpeciesChange(e.target.id, e.target.value);
 
-    handleChange = (prop, val) => {
+    handleSpeciesChange = (prop, val) => {
         const species = { ...this.state.species };
         species[prop] = val;
         this.setState({
@@ -662,7 +660,7 @@ class Checklist extends Component {
                         </Col>
                     </Row>
                 </Grid>
-                <SpeciesNameModal id={this.state.modalEditId} show={this.state[MODAL_SPECIES_NAME]} onHide={this.hideModal} />
+                <SpeciesNameModal id={this.state.modalEditId} show={this.state.showModalSpecies} onHide={this.hideModal} />
                 <NotificationContainer />
             </div>
         );
