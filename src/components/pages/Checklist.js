@@ -242,28 +242,28 @@ class Checklist extends Component {
         });
     };
 
-    handleChangeToTaxonomic = async (id, fromList) => {
+    handleChangeToTaxonomic = (id, fromList) => {
         const selected = fromList.find(s => s.id === id);
-        await this.handleAddTaxonomicSynonym(selected);
+        this.handleAddTaxonomicSynonym(selected);
         // remove from all others
-        await this.handleRemoveNomenclatoricSynonym(id);
-        await this.handleRemoveInvalidDesignation(id);
+        this.handleRemoveNomenclatoricSynonym(id);
+        this.handleRemoveInvalidDesignation(id);
     }
 
-    handleChangeToNomenclatoric = async (id, fromList) => {
+    handleChangeToNomenclatoric = (id, fromList) => {
         const selected = fromList.find(s => s.id === id);
-        await this.handleAddNomenclatoricSynonym(selected);
+        this.handleAddNomenclatoricSynonym(selected);
         // remove from all others
-        await this.handleRemoveTaxonomicSynonym(id);
-        await this.handleRemoveInvalidDesignation(id);
+        this.handleRemoveTaxonomicSynonym(id);
+        this.handleRemoveInvalidDesignation(id);
     }
 
-    handleChangeToInvalid = async (id, fromList) => {
+    handleChangeToInvalid = (id, fromList) => {
         const selected = fromList.find(s => s.id === id);
-        await this.handleAddInvalidDesignation(selected);
+        this.handleAddInvalidDesignation(selected);
         //remove from all others
-        await this.handleRemoveNomenclatoricSynonym(id);
-        await this.handleRemoveTaxonomicSynonym(id);
+        this.handleRemoveNomenclatoricSynonym(id);
+        this.handleRemoveTaxonomicSynonym(id);
     }
 
     submitForm = async e => {
@@ -463,7 +463,7 @@ class Checklist extends Component {
                         </Col>
                         <Col sm={mainColWidth}>
                             <FormControl
-                                type="text"
+                                componentClass="textarea"
                                 value={this.state.species.typeLocality || ""}
                                 placeholder="Type Locality"
                                 onChange={this.handleChangeInput}
