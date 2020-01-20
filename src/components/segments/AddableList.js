@@ -8,7 +8,6 @@ import {
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
-// import SynonymListItem from './SynonymListItem';
 
 class AddableList extends Component {
 

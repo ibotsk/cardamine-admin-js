@@ -1,3 +1,5 @@
+import keyBy from 'lodash.keyby';
+
 import checklistService from '../services/checklist';
 
 import helper from '../utils/helper';
@@ -26,7 +28,17 @@ const getSynonyms = async (id, accessToken) => {
     const invalidDesignations = await checklistService.getInvalidDesignationsOf({ id, accessToken });
     invalidDesignations.sort(helper.listOfSpeciesSorterLex);
 
-    return { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations };
+    // const misidentifications = await checklistService.getMisidentificationsOf({ id, accessToken });
+    // misidentifications.sort(helper.listOfSpeciesSorterLex);
+
+    const misidentifications = await getMisidentificationsWithMetadata(id, accessToken);
+
+    return {
+        nomenclatoricSynonyms,
+        taxonomicSynonyms,
+        invalidDesignations,
+        misidentifications
+    };
 }
 
 const getBasionymsFor = async (id, accessToken) => {
@@ -40,73 +52,7 @@ const getBasionymsFor = async (id, accessToken) => {
     }
 }
 
-const saveSpecies = async ({ data, accessToken }) => {
-    await checklistService.putSpecies({ data, accessToken });
-}
-
-const saveSynonyms = async ({ id, list, syntype, accessToken }) => {
-    let i = 1;
-    for (const s of list) {
-        const data = {
-            idParent: id,
-            idSynonym: s.id,
-            syntype,
-            rorder: i
-        };
-        i++;
-        await checklistService.postSynonym({ data, accessToken });
-    }
-}
-
-const submitSynonyms = async ({ 
-    id, 
-    nomenclatoricSynonyms,
-    taxonomicSynonyms,
-    invalidDesignations,
-    isNomenclatoricSynonymsChanged, 
-    isTaxonomicSynonymsChanged, 
-    isInvalidDesignationsChanged, 
-    accessToken }) => {
-    // get synonyms to be deleted
-    const originalSynonyms = await checklistService.getAllSynonymsOf({ id, accessToken });
-
-    const toBeDeleted = [];
-
-    // save new
-    if (isNomenclatoricSynonymsChanged) {
-        toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.nomenclatoric.numType));
-        await saveSynonyms({
-            id,
-            list: nomenclatoricSynonyms,
-            syntype: config.mappings.synonym.nomenclatoric.numType,
-            accessToken
-        });
-    }
-    if (isTaxonomicSynonymsChanged) {
-        toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.taxonomic.numType));
-        await saveSynonyms({
-            id,
-            list: taxonomicSynonyms,
-            syntype: config.mappings.synonym.taxonomic.numType,
-            accessToken
-        });
-    }
-    if (isInvalidDesignationsChanged) {
-        toBeDeleted.push(...originalSynonyms.filter(s => s.syntype === config.mappings.synonym.invalid.numType));
-        await saveSynonyms({
-            id,
-            list: invalidDesignations,
-            syntype: config.mappings.synonym.invalid.numType,
-            accessToken
-        });
-    }
-
-    // delete originals
-    for (const syn of toBeDeleted) {
-        // await axios.delete(synonymsByIdUri.expand({ id: syn.id, accessToken }));
-        await checklistService.deleteSynonym({ id: syn.id, accessToken });
-    }
-}
+const saveSpecies = ({ data, accessToken }) => checklistService.putSpecies({ data, accessToken });
 
 const saveSpeciesAndSynonyms = async ({
     species,
@@ -114,22 +60,105 @@ const saveSpeciesAndSynonyms = async ({
     nomenclatoricSynonyms,
     taxonomicSynonyms,
     invalidDesignations,
+    misidentifications,
     isNomenclatoricSynonymsChanged = true,
     isTaxonomicSynonymsChanged = true,
-    isInvalidDesignationsChanged = true }) => {
+    isInvalidDesignationsChanged = true,
+    isMisidentificationsChanged = true
+}) => {
 
-    await checklistService.putSpecies({ data: species, accessToken });
-    await submitSynonyms({
+    checklistService.putSpecies({ data: species, accessToken });
+    submitSynonyms({
         id: species.id,
         accessToken,
         nomenclatoricSynonyms,
         taxonomicSynonyms,
         invalidDesignations,
+        misidentifications,
         isNomenclatoricSynonymsChanged,
         isTaxonomicSynonymsChanged,
-        isInvalidDesignationsChanged
+        isInvalidDesignationsChanged,
+        isMisidentificationsChanged
     });
 }
+
+async function getMisidentificationsWithMetadata(id, accessToken) {
+
+    const misidentifications = await checklistService.getMisidentificationsOf({ id, accessToken });
+    misidentifications.sort(helper.listOfSpeciesSorterLex);
+
+    const filter = { where: { syntype: config.mappings.synonym.misidentification.numType } };
+    const allSynonyms = await checklistService.getAllSynonymsOf({ id, accessToken, filter: JSON.stringify(filter) });
+
+    return enrichWithMetadata(misidentifications, allSynonyms);
+}
+
+function enrichWithMetadata(collection, metadataArray) {
+
+    const idToMetadata = keyBy(metadataArray, 'idSynonym');
+    collection.forEach(e => e.metadata = idToMetadata[e.id] || {});
+
+    return collection;
+}
+
+async function submitSynonyms({
+    id,
+    nomenclatoricSynonyms,
+    taxonomicSynonyms,
+    invalidDesignations,
+    misidentifications,
+    isNomenclatoricSynonymsChanged,
+    isTaxonomicSynonymsChanged,
+    isInvalidDesignationsChanged,
+    isMisidentificationsChanged,
+    accessToken }) {
+    // get synonyms to be deleted
+    const originalSynonyms = await checklistService.getAllSynonymsOf({ id, accessToken });
+
+    const toBeDeleted = [];
+
+    // save new
+    const toBeDeletedNomenclatoric = resolveChangesAndSaveSynonyms(isNomenclatoricSynonymsChanged, id, nomenclatoricSynonyms, config.mappings.synonym.nomenclatoric.numType, originalSynonyms, accessToken);
+    const toBeDeletedTaxonomic = resolveChangesAndSaveSynonyms(isTaxonomicSynonymsChanged, id, taxonomicSynonyms, config.mappings.synonym.taxonomic.numType, originalSynonyms, accessToken);
+    const toBeDeletedInvalid = resolveChangesAndSaveSynonyms(isInvalidDesignationsChanged, id, invalidDesignations, config.mappings.synonym.invalid.numType, originalSynonyms, accessToken);
+    const toBeDeletedMisidentified = resolveChangesAndSaveSynonyms(isMisidentificationsChanged, id, misidentifications, config.mappings.synonym.misidentification.numType, originalSynonyms, accessToken);
+
+    toBeDeleted.push(...toBeDeletedNomenclatoric, ...toBeDeletedTaxonomic, ...toBeDeletedInvalid, ...toBeDeletedMisidentified);
+
+    // delete originals
+    for (const syn of toBeDeleted) {
+        checklistService.deleteSynonym({ id: syn.id, accessToken });
+    }
+}
+
+function resolveChangesAndSaveSynonyms(isChanged, id, list, numType, originalSynonyms, accessToken) {
+    if (!isChanged) {
+        return [];
+    }
+    const toBeDeleted = originalSynonyms.filter(s => s.syntype === numType);
+
+    saveSynonyms(id, list, numType, accessToken);
+
+    return toBeDeleted;
+}
+
+function saveSynonyms(id, list, syntype, accessToken) {
+    let i = 1;
+    for (const s of list) {
+        // anything else except ids, type ond order will be set from metadata (if such exist)
+        const { id: metaId, idParent: metaIdParent, idSynonym: metaIdSynonym, syntype: metaSyntype, rorder: metaRorder, ...otherMetadata } = s.metadata || {};
+
+        const data = {
+            idParent: id,
+            idSynonym: s.id,
+            syntype,
+            rorder: i,
+            ...otherMetadata
+        };
+        i++;
+        checklistService.postSynonym({ data, accessToken });
+    }
+};
 
 export default {
     getAllSpecies,
@@ -138,6 +167,5 @@ export default {
     getSynonyms,
     getBasionymsFor,
     saveSpecies,
-    saveSynonyms,
     saveSpeciesAndSynonyms
 }

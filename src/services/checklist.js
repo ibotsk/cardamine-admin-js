@@ -33,7 +33,7 @@ const getBasionymFor = async ({ id, accessToken }) => {
     return response.data;
 }
 
-const getReplacedFor = async ({id, accessToken }) => {
+const getReplacedFor = async ({ id, accessToken }) => {
     const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id, accessToken });
     const response = await axios.get(getReplacedForUri);
     return response.data;
@@ -70,25 +70,35 @@ const getInvalidDesignationsOf = async ({ id, accessToken }) => {
     return response.data;
 }
 
-const getAllSynonymsOf = async ({ id, accessToken }) => {
-    const losIsParentOfSynonymsUri = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id, accessToken });
+const getMisidentificationsOf = async ({ id, accessToken }) => {
+    const getMisidentificationsUri = template.parse(config.uris.listOfSpeciesUri.getMisidentificationUri).expand({ id, accessToken });
+    const response = await axios.get(getMisidentificationsUri);
+    return response.data;
+}
+
+/**
+ * 
+ * @param {{ id: string, filter: string, accessToken: string }} param0 
+ */
+const getAllSynonymsOf = async ({ id, filter = "{}", accessToken }) => {
+    const losIsParentOfSynonymsUri = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id, filter, accessToken });
     const response = await axios.get(losIsParentOfSynonymsUri);
     return response.data;
 }
 
-const postSynonym = async ({ data, accessToken }) => {
+const postSynonym = ({ data, accessToken }) => {
     const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
-    await axios.post(synonymsUri, data);
+    axios.post(synonymsUri, data);
 }
 
-const deleteSynonym = async ({ id, accessToken }) => {
+const deleteSynonym = ({ id, accessToken }) => {
     const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri).expand({ id, accessToken });
-    await axios.delete(synonymsByIdUri);
+    axios.delete(synonymsByIdUri);
 }
 
-const putSpecies = async ({ data, accessToken }) => {
+const putSpecies = ({ data, accessToken }) => {
     const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
-    await axios.put(losUri, data);
+    axios.put(losUri, data);
 }
 
 export default {
@@ -101,6 +111,7 @@ export default {
     getSynonymsNomenclatoricOf,
     getSynonymsTaxonomicOf,
     getInvalidDesignationsOf,
+    getMisidentificationsOf,
     getAllSynonymsOf,
     postSynonym,
     deleteSynonym,
