@@ -69,7 +69,7 @@ const MisidentifiedSynonymListItem = ({ rowId, misidentificationAuthors, onChang
     );
 };
 
-export default {
+export {
     NomenclatoricSynonymListItem,
     TaxonomicSynonymListItem,
     InvalidSynonymListItem,

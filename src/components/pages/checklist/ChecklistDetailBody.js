@@ -33,7 +33,7 @@ const ChecklistDetailBody = ({
     const getSelectedName = id => listOfSpeciesOptions.filter(l => l.id === id);
 
     if (!species || !species.id) {
-        return undefined;
+        return null;
     }
 
     return (

@@ -54,7 +54,7 @@ const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
                         <FormControl
                             componentClass="select"
                             placeholder="typification"
-                            value={this.state.species.typification || ""}
+                            value={data.typification || ""}
                             onChange={onChangeInput} >
                             <option value={""}>-</option>
                             {

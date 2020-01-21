@@ -158,7 +158,11 @@ class Checklist extends Component {
         bgColor: '#ffea77',
         onSelect: (row, isSelect, rowIndex, e) => {
             this.props.history.push(`/names/${row.id}`);
-            this.populateDetailsForEdit(row.id);
+            // this.populateDetailsForEdit(row.id);
+            this.setState({
+                tableRowSelected: [row.id],
+                editId: row.id
+            });
         },
     };
 
@@ -311,9 +315,10 @@ class Checklist extends Component {
         const selectedId = this.props.match.params.id;
         if (selectedId) {
             const selectedIdInt = parseInt(selectedId);
-            this.populateDetailsForEdit(selectedIdInt);
+            // this.populateDetailsForEdit(selectedIdInt);
             this.setState({
-                tableRowsSelected: [selectedIdInt]
+                tableRowsSelected: [selectedIdInt],
+                editId: selectedIdInt
             });
         }
     }
@@ -630,6 +635,8 @@ class Checklist extends Component {
     // }
 
     render() {
+        console.log(this.state);
+
         const tableRowSelectedProps = { ...this.selectRow, selected: this.state.tableRowsSelected };
         return (
             <div id='names'>
