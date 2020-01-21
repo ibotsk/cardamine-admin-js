@@ -69,6 +69,7 @@ class ChecklistDetail extends React.Component {
                         listOfSpeciesOptions={this.state.listOfSpecies}
                         fors={this.state.fors}
                         synonyms={this.state.synonyms}
+                        misidentificationAuthors={this.state.misidentificationAuthors}
                         onSpeciesInputChange={this.handleSpeciesChange}
                         onAddRow={this.handleSynonymAddRow}
                         onDeleteRow={this.handleSynonymRemoveRow}

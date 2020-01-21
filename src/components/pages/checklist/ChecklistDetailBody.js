@@ -9,31 +9,25 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 
 import AddableList from '../../segments/AddableList';
 import SpeciesNamePlainList from './SpeciesNamePlainList';
-
-import config from '../../../config/config';
+import { NomenclatoricSynonymListItem, TaxonomicSynonymListItem, InvalidSynonymListItem, MisidentifiedSynonymListItem } from './items/synonym-list-items';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
-
-const synonymFormatter = (synonym, prefix) => ({
-    id: synonym.id,
-    prefix,
-    value: synonym
-});
 
 const ChecklistDetailBody = ({
     species,
     listOfSpeciesOptions,
     fors: { basionymFor, replacedFor, nomenNovumFor },
     synonyms: { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications },
-    onChangeInput,
+    misidentificationAuthors,
+    onSpeciesInputChange,
     onAddRow,
-    handleRemoveRow
+    onDeleteRow
 }) => {
 
     const handleChangeTypeAhead = (selected, prop) => {
         const id = selected[0] ? selected[0].id : undefined;
-        onChangeInput(prop, id);
+        onSpeciesInputChange(prop, id);
     };
 
     const getSelectedName = id => listOfSpeciesOptions.filter(l => l.id === id);
@@ -104,12 +98,14 @@ const ChecklistDetailBody = ({
                 <Col xs={mainColWidth}>
                     <AddableList
                         id="nomenclatoric-synonyms-autocomplete"
-                        data={nomenclatoricSynonyms.map(s => synonymFormatter(s, config.mappings.synonym.nomenclatoric.prefix))}
+                        data={nomenclatoricSynonyms}
                         options={listOfSpeciesOptions}
-                        changeToTypeSymbol={config.mappings.synonym.taxonomic.prefix}
                         onAddItemToList={selected => onAddRow(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged')}
-                        onRowDelete={id => handleRemoveRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged')}
-                        itemComponent={this.NomenclatoricSynonymListItem}
+                        itemComponent={itemProps => <NomenclatoricSynonymListItem {...itemProps}
+                            onRowDelete={id => onDeleteRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged')}
+                            onChangeToTaxonomic={() => console.log('change to taxonomic')}
+                            onChangeToInvalid={() => console.log('change to invalid')}
+                        />}
                     />
                 </Col>
             </FormGroup>
@@ -120,12 +116,14 @@ const ChecklistDetailBody = ({
                 <Col xs={mainColWidth}>
                     <AddableList
                         id="taxonomic-synonyms-autocomplete"
-                        data={taxonomicSynonyms.map(s => s.ntype === 'DS' ? synonymFormatter(s, config.mappings.synonym.doubtful.prefix) : synonymFormatter(s, config.mappings.synonym.taxonomic.prefix))}
+                        data={taxonomicSynonyms}
                         options={listOfSpeciesOptions}
-                        changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                         onAddItemToList={selected => onAddRow(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged')}
-                        onRowDelete={id => handleRemoveRow(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged')}
-                        itemComponent={this.TaxonomicSynonymListItem}
+                        itemComponent={itemProps => <TaxonomicSynonymListItem {...itemProps}
+                            onRowDelete={id => onDeleteRow(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged')}
+                            onChangeToNomenclatoric={() => console.log('change to nomenclatoric')}
+                            onChangeToInvalid={() => console.log('change to invalid')}
+                        />}
                     />
                 </Col>
             </FormGroup>
@@ -136,12 +134,14 @@ const ChecklistDetailBody = ({
                 <Col xs={mainColWidth}>
                     <AddableList
                         id="invalid-designations-autocomplete"
-                        data={invalidDesignations.map(s => synonymFormatter(s, config.mappings.synonym.invalid.prefix))}
+                        data={invalidDesignations}
                         options={listOfSpeciesOptions}
-                        changeToTypeSymbol={config.mappings.synonym.nomenclatoric.prefix}
                         onAddItemToList={selected => onAddRow(selected, 'invalidDesignations', 'isInvalidDesignationsChanged')}
-                        onRowDelete={id => this.handleRemoveRow(id, 'invalidDesignations', 'isInvalidDesignationsChanged')}
-                        itemComponent={this.InvalidSynonymListItem}
+                        itemComponent={itemProps => <InvalidSynonymListItem {...itemProps}
+                            onRowDelete={id => onDeleteRow(id, 'invalidDesignations', 'isInvalidDesignationsChanged')}
+                            onChangeToNomenclatoric={() => console.log('change to nomenclatoric')}
+                            onChangeToTaxonomic={() => console.log('change to taxonomic')}
+                        />}
                     />
                 </Col>
             </FormGroup>
@@ -152,11 +152,14 @@ const ChecklistDetailBody = ({
                 <Col xs={mainColWidth}>
                     <AddableList
                         id="misidentifications-autocomplete"
-                        data={misidentifications.map(s => synonymFormatter(s, config.mappings.synonym.misidentification.prefix))}
+                        data={misidentifications}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => onAddRow(selected, 'misidentifications', 'isMisidentificationsChanged')}
-                        onRowDelete={id => handleRemoveRow(id, 'misidentifications', 'isMisidentificationsChanged')}
-                        itemComponent={this.MisidentifiedSynonymListItem}
+                        itemComponent={itemProps => <MisidentifiedSynonymListItem {...itemProps}
+                            onRowDelete={id => onDeleteRow(id, 'misidentifications', 'isMisidentificationsChanged')}
+                            misidentificationAuthors={misidentificationAuthors}
+                            onChangeAuthor={() => console.log('change misidentification author')}
+                        />}
                     />
                 </Col>
             </FormGroup>
