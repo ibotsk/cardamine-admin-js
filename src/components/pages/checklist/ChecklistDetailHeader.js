@@ -16,19 +16,12 @@ const mainColWidth = 10;
 const ntypes = config.mappings.losType;
 const typifications = config.mappings.typifications;
 
-const ChecklistDetailHeader = ({ id, data, showModal, onChangeInput }) => {
+const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
 
-    if (!id) {
-        return (
-            <Panel>
-                <Panel.Body>Click row to edit details</Panel.Body>
-            </Panel>
-        );
-    }
     return (
         <Panel id="species-edit-header">
             <Panel.Heading>
-                <Button bsStyle='warning' bsSize='xsmall' onClick={() => showModal(id)}>
+                <Button bsStyle='warning' bsSize='xsmall' onClick={onShowModal}>
                     <Glyphicon glyph='edit' /> Edit Name
                     </Button>
             </Panel.Heading>
