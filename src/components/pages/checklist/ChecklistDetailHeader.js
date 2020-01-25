@@ -38,7 +38,7 @@ const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
                             componentClass="select"
                             placeholder="select"
                             value={data.ntype}
-                            onChange={onChangeInput} >
+                            onChange={e => onChangeInput(e.target.id, e.target.value)} >
                             {
                                 Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
                             }
@@ -55,7 +55,7 @@ const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
                             componentClass="select"
                             placeholder="typification"
                             value={data.typification || ""}
-                            onChange={onChangeInput} >
+                            onChange={e => onChangeInput(e.target.id, e.target.value)} >
                             <option value={""}>-</option>
                             {
                                 Object.keys(typifications).map(t => <option value={t} key={t}>{typifications[t].text}</option>)
@@ -72,7 +72,7 @@ const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
                             type="text"
                             value={data.typeLocality || ""}
                             placeholder="Type Locality"
-                            onChange={onChangeInput}
+                            onChange={e => onChangeInput(e.target.id, e.target.value)}
                             disabled={!data.typification}
                         />
                     </Col>

@@ -19,37 +19,27 @@ class ChecklistDetail extends React.Component {
 
         this.state = {
             listOfSpecies: [],
-            species: {},
-
-            synonyms: {},
-            // nomenclatoricSynonyms: [], // contains objects of list-of-species
-            // taxonomicSynonyms: [], // contains objects of list-of-species
-            // invalidDesignations: [],
-            // misidentifications: [],
-
-            fors: {},
-            // basionymFor: [],
-            // replacedFor: [],
-            // nomenNovumFor: [],
-
-            misidentificationAuthors: {},
 
             isNomenclatoricSynonymsChanged: false,
             isTaxonomicSynonymsChanged: false,
             isInvalidDesignationsChanged: false,
-            isMisidentificationsChanged: false,
+            isMisidentificationsChanged: false
         };
     }
 
-    componentDidMount() {
-        const selectedId = this.props.id;
-        if (selectedId) {
-            this.populateDetailsForEdit(selectedId);
-        }
+    async componentDidMount() {
+        const speciesListRaw = await checklistFacade.getAllSpecies(this.props.accessToken)
+        const listOfSpecies = speciesListRaw.map(l => ({
+            id: l.id,
+            label: helper.listOfSpeciesString(l)
+        }));
+        this.setState({
+            listOfSpecies
+        });
     }
 
     render() {
-        if (!this.props.id) {
+        if (!this.props.species.id) {
             return (
                 <Panel>
                     <Panel.Body>Click row to edit details</Panel.Body>
@@ -60,53 +50,24 @@ class ChecklistDetail extends React.Component {
             <React.Fragment>
                 <Form onSubmit={this.onSubmit} horizontal>
                     <ChecklistDetailHeader
-                        data={this.state.species}
+                        data={this.props.species}
                         onShowModal={this.props.onShowModal}
-                        onChangeInput={this.handleChangeInput}
+                        onChangeInput={this.handleChangeSpecies}
                     />
-                    <ChecklistDetailBody
-                        species={this.state.species}
+                    {/* <ChecklistDetailBody
+                        species={this.props.species}
                         listOfSpeciesOptions={this.state.listOfSpecies}
-                        fors={this.state.fors}
-                        synonyms={this.state.synonyms}
-                        misidentificationAuthors={this.state.misidentificationAuthors}
+                        fors={this.props.fors}
+                        synonyms={this.props.synonyms}
+                        misidentificationAuthors={this.props.misidentificationAuthors}
                         onSpeciesInputChange={this.handleSpeciesChange}
                         onAddRow={this.handleSynonymAddRow}
                         onDeleteRow={this.handleSynonymRemoveRow}
-                    />
+                    /> */}
                 </Form>
             </React.Fragment>
         );
     }
-
-    populateDetailsForEdit = async id => {
-        const accessToken = this.props.accessToken;
-
-        const species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
-        const speciesListRaw = await checklistFacade.getAllSpecies(accessToken);
-        const listOfSpecies = speciesListRaw.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
-
-        // const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = await checklistFacade.getSynonyms(id, accessToken);
-        const synonyms = await checklistFacade.getSynonyms(id, accessToken);
-        // const { basionymFor, replacedFor, nomenNovumFor } = await checklistFacade.getBasionymsFor(id, accessToken);
-        const fors = await checklistFacade.getBasionymsFor(id, accessToken);
-
-        const misidentificationAuthors = fors.misidentifications.reduce((acc, curr) => {
-            acc[curr.id] = curr.metadata ? curr.metadata.misidentificationAuthor : undefined;
-            return acc;
-        }, {});
-
-        this.setState({
-            species,
-            listOfSpecies,
-            synonyms,
-            fors,
-            misidentificationAuthors
-        });
-    };
 
     submitForm = async e => {
         e.preventDefault();
@@ -151,15 +112,7 @@ class ChecklistDetail extends React.Component {
         }
     };
 
-    handleChangeInput = e => this.handleSpeciesChange(e.target.id, e.target.value);
-
-    handleSpeciesChange = (prop, val) => {
-        const species = { ...this.state.species };
-        species[prop] = val;
-        this.setState({
-            species
-        });
-    };
+    handleChangeSpecies = (prop, val) => this.props.onChangeSpecies(prop, val);
 
     handleSynonymAddRow = async (selected, property, changedProperty) => {
         const accessToken = this.props.accessToken;
