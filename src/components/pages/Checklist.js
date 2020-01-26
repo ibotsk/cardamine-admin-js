@@ -459,7 +459,7 @@ class Checklist extends Component {
                     </FormGroup>
                     <FormGroup controlId="typeLocality" bsSize='sm'>
                         <Col componentClass={ControlLabel} sm={titleColWidth}>
-                            Type Locality
+                            Type specimen / Illustration
                         </Col>
                         <Col sm={mainColWidth}>
                             <FormControl
@@ -468,6 +468,33 @@ class Checklist extends Component {
                                 placeholder="Type Locality"
                                 onChange={this.handleChangeInput}
                                 disabled={!this.state.species.typification}
+                            />
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId="referenceToTypeDesignation" bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Reference to the type designation
+                        </Col>
+                        <Col sm={mainColWidth}>
+                            <FormControl
+                                componentClass="textarea"
+                                value={this.state.species.referenceToTypeDesignation || ""}
+                                placeholder="Reference to the type designation"
+                                onChange={this.handleChangeInput}
+                                disabled={!this.state.species.typification}
+                            />
+                        </Col>
+                    </FormGroup>
+                    <FormGroup controlId="indLoc" bsSize='sm'>
+                        <Col componentClass={ControlLabel} sm={titleColWidth}>
+                            Ind. loc. (from the protologue)
+                        </Col>
+                        <Col sm={mainColWidth}>
+                            <FormControl
+                                componentClass="textarea"
+                                value={this.state.species.indLoc || ""}
+                                placeholder="Ind. loc."
+                                onChange={this.handleChangeInput}
                             />
                         </Col>
                     </FormGroup>
