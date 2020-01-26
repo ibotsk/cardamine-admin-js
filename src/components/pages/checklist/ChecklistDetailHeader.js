@@ -65,15 +65,42 @@ const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
                 </FormGroup>
                 <FormGroup controlId="typeLocality" bsSize='sm'>
                     <Col componentClass={ControlLabel} sm={titleColWidth}>
-                        Type Locality
+                        Type specimen / Illustration
                         </Col>
                     <Col sm={mainColWidth}>
                         <FormControl
                             type="text"
                             value={data.typeLocality || ""}
-                            placeholder="Type Locality"
+                            placeholder="Type Specimen / Illustration"
                             onChange={e => onChangeInput(e.target.id, e.target.value)}
                             disabled={!data.typification}
+                        />
+                    </Col>
+                </FormGroup>
+                <FormGroup controlId="referenceToTypeDesignation" bsSize='sm'>
+                    <Col componentClass={ControlLabel} sm={titleColWidth}>
+                        Reference to the type designation
+                        </Col>
+                    <Col sm={mainColWidth}>
+                        <FormControl
+                            componentClass="textarea"
+                            value={data.referenceToTypeDesignation || ""}
+                            placeholder="Reference to the type designation"
+                            onChange={e => onChangeInput(e.target.id, e.target.value)}
+                            disabled={!data.typification}
+                        />
+                    </Col>
+                </FormGroup>
+                <FormGroup controlId="indLoc" bsSize='sm'>
+                    <Col componentClass={ControlLabel} sm={titleColWidth}>
+                        Ind. loc. (from the protologue)
+                        </Col>
+                    <Col sm={mainColWidth}>
+                        <FormControl
+                            componentClass="textarea"
+                            value={data.indLoc || ""}
+                            placeholder="Ind. loc."
+                            onChange={e => onChangeInput(e.target.id, e.target.value)}
                         />
                     </Col>
                 </FormGroup>
