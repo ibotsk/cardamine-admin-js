@@ -32,6 +32,20 @@ const ChecklistDetailBody = ({
 
     const getSelectedName = id => listOfSpeciesOptions.filter(l => l.id === id);
 
+    const handleChangeToTaxonomic = (id, fromList) => {
+        const selected = fromList.find(s => s.id === id);
+
+        console.log(selected);
+
+        onAddRow(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
+        // add to taxonomic
+        // this.handleAddTaxonomicSynonym(selected);
+
+        // remove from all others
+        // this.handleRemoveNomenclatoricSynonym(id);
+        // this.handleRemoveInvalidDesignation(id);
+    };
+
     if (!species || !species.id) {
         return null;
     }
@@ -103,7 +117,7 @@ const ChecklistDetailBody = ({
                         onAddItemToList={selected => onAddRow(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged')}
                         itemComponent={itemProps => <NomenclatoricSynonymListItem {...itemProps}
                             onRowDelete={id => onDeleteRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged')}
-                            onChangeToTaxonomic={() => console.log('change to taxonomic')}
+                            onChangeToTaxonomic={id => handleChangeToTaxonomic(id, nomenclatoricSynonyms)}
                             onChangeToInvalid={() => console.log('change to invalid')}
                         />}
                     />
