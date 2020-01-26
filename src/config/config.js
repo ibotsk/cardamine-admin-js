@@ -112,6 +112,9 @@ export default {
             },
             lectotype: {
                 text: "LECTOTYPE"
+            },
+            originalMaterial: {
+                text: "ORIGINAL MATERIAL"
             }
         }
     },
