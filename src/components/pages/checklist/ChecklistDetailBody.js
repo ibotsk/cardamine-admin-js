@@ -9,7 +9,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 
 import AddableList from '../../segments/AddableList';
 import SpeciesNamePlainList from './SpeciesNamePlainList';
-import { NomenclatoricSynonymListItem, TaxonomicSynonymListItem, InvalidSynonymListItem, MisidentifiedSynonymListItem } from './items/synonym-list-items';
+import { NomenclatoricSynonymListItem, TaxonomicSynonymListItem, InvalidSynonymListItem, MisidentifiedSynonymListItem } from './items';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

@@ -4,34 +4,23 @@ import { connect } from 'react-redux';
 import {
     Grid, Col, Row,
     Button, Glyphicon,
-    // Panel, Well,
-    // ListGroup, ListGroupItem,
-    // Form, FormControl, FormGroup, ControlLabel
 } from 'react-bootstrap';
 
-// import { Typeahead } from 'react-bootstrap-typeahead';
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter, multiSelectFilter } from 'react-bootstrap-table2-filter';
 
 import { NotificationContainer } from 'react-notifications';
 
 import TabledPage from '../wrappers/TabledPageParent';
-// import LosName from '../segments/LosName';
-// import AddableList from '../segments/AddableList';
-// import SynonymListItem from '../segments/SynonymListItem';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 import checklistFacade from '../../facades/checklist';
 
 import helper from '../../utils/helper';
-import notifications from '../../utils/notifications';
 import config from '../../config/config';
 
 import '../../styles/custom.css';
 import ChecklistDetail from './checklist/ChecklistDetail';
-
-// const titleColWidth = 2;
-// const mainColWidth = 10;
 
 const buildNtypesOptions = ntypes => {
     const obj = {};
@@ -42,26 +31,6 @@ const buildNtypesOptions = ntypes => {
 }
 
 const ntypeFormatter = cell => <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>;
-
-// const synonymFormatter = (synonym, prefix) => ({
-//     id: synonym.id,
-//     prefix,
-//     value: synonym
-// });
-
-// const addSynonymToList = async (selected, synonyms, accessToken) => {
-//     if (!selected) {
-//         return null;
-//     }
-//     if (synonyms.find(s => s.id === selected.id)) {
-//         notifications.warning('The item is already in the list');
-//         return null;
-//     }
-//     const synonymJson = await checklistFacade.getSpeciesByIdWithFilter(selected.id, accessToken);
-//     synonyms.push(synonymJson);
-//     synonyms.sort(helper.listOfSpeciesSorterLex);
-//     return synonyms;
-// }
 
 const formatTableRow = data => {
     return data.map(n => {
@@ -119,14 +88,8 @@ class Checklist extends Component {
             tableRowsSelected: [],
 
             synonyms: {},
-            misidentificationAuthors: {},
-
-            // isNomenclatoricSynonymsChanged: false,
-            // isTaxonomicSynonymsChanged: false,
-            // isInvalidDesignationsChanged: false,
-            // isMisidentificationsChanged: false,
-
-            fors: {}
+            fors: {},
+            misidentificationAuthors: {}
         }
     };
 
@@ -189,15 +152,6 @@ class Checklist extends Component {
         });
     };
 
-    // getSelectedName = id => this.state.listOfSpecies.filter(l => l.id === id);
-
-    // handleChangeTypeahead = (selected, prop) => {
-    //     const id = selected[0] ? selected[0].id : undefined;
-    //     this.handleSpeciesChange(prop, id);
-    // };
-
-    // handleChangeInput = e => this.handleSpeciesChange(e.target.id, e.target.value);
-
     handleValueChange = (prop, val) => this.setState({ [prop]: val });
 
     handleSpeciesChange = (prop, val) => {
@@ -231,47 +185,6 @@ class Checklist extends Component {
         this.handleRemoveNomenclatoricSynonym(id);
         this.handleRemoveTaxonomicSynonym(id);
     }
-
-    // submitForm = async e => {
-    //     e.preventDefault();
-    //     const accessToken = this.props.accessToken;
-
-    //     const misidentifications = this.state.misidentifications;
-    //     misidentifications.forEach(m => {
-    //         if (!m.metadata) {
-    //             m.metadata = {};
-    //         }
-    //         m.metadata.misidentificationAuthor = this.state.misidentificationAuthors[m.id];
-    //     });
-
-    //     try {
-    //         await checklistFacade.saveSpeciesAndSynonyms({
-    //             species: this.state.species,
-    //             accessToken,
-    //             nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,
-    //             taxonomicSynonyms: this.state.taxonomicSynonyms,
-    //             invalidDesignations: this.state.invalidDesignations,
-    //             misidentifications,
-    //             isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
-    //             isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
-    //             isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged,
-    //             isMisidentificationsChanged: this.state.isMisidentificationsChanged
-    //         });
-
-    //         notifications.success('Saved');
-    //         this.props.onTableChange(undefined, {});
-
-    //         this.setState({
-    //             isNomenclatoricSynonymsChanged: false,
-    //             isTaxonomicSynonymsChanged: false,
-    //             isInvalidDesignationsChanged: false,
-    //             isMisidentificationsChanged: false
-    //         });
-    //     } catch (error) {
-    //         notifications.error('Error saving');
-    //         throw error;
-    //     }
-    // };
 
     componentDidMount() {
         const selectedId = this.props.match.params.id;
