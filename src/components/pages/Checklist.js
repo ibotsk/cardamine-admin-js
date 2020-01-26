@@ -465,7 +465,7 @@ class Checklist extends Component {
                             <FormControl
                                 componentClass="textarea"
                                 value={this.state.species.typeLocality || ""}
-                                placeholder="Type Locality"
+                                placeholder="Type specimen / Illustration"
                                 onChange={this.handleChangeInput}
                                 disabled={!this.state.species.typification}
                             />
