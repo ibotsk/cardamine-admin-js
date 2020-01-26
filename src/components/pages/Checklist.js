@@ -320,7 +320,7 @@ class Checklist extends Component {
                                 onShowModal={this.showModal}
                                 onChangeSpecies={this.handleSpeciesChange}
                                 onChangeValue={this.handleValueChange}
-                                onDetailsChanged={() => this.onTableChange(undefined, {})}
+                                onDetailsChanged={() => this.props.onTableChange(undefined, {})}
                             />
                         </Col>
                     </Row>

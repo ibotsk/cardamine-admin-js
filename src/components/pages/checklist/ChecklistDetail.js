@@ -1,7 +1,8 @@
 import React from 'react';
 
 import {
-    Panel, Form
+    Button,
+    Panel, Form, Well
 } from 'react-bootstrap';
 
 import checklistFacade from '../../../facades/checklist';
@@ -48,7 +49,7 @@ class ChecklistDetail extends React.Component {
         }
         return (
             <React.Fragment>
-                <Form onSubmit={this.onSubmit} horizontal>
+                <Form onSubmit={this.submitForm} horizontal>
                     <ChecklistDetailHeader
                         data={this.props.species}
                         onShowModal={this.props.onShowModal}
@@ -64,6 +65,9 @@ class ChecklistDetail extends React.Component {
                         onAddRow={this.handleSynonymAddRow}
                         onDeleteRow={this.handleSynonymRemoveRow}
                     />
+                    <Well>
+                        <Button bsStyle="primary" type='submit' >Save</Button>
+                    </Well>
                 </Form>
             </React.Fragment>
         );
@@ -73,21 +77,22 @@ class ChecklistDetail extends React.Component {
         e.preventDefault();
         const accessToken = this.props.accessToken;
 
-        const misidentifications = this.state.misidentifications;
+        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = this.props.synonyms;
+
         misidentifications.forEach(m => {
             if (!m.metadata) {
                 m.metadata = {};
             }
-            m.metadata.misidentificationAuthor = this.state.misidentificationAuthors[m.id];
+            m.metadata.misidentificationAuthor = this.props.misidentificationAuthors[m.id];
         });
 
         try {
             await checklistFacade.saveSpeciesAndSynonyms({
-                species: this.state.species,
+                species: this.props.species,
                 accessToken,
-                nomenclatoricSynonyms: this.state.nomenclatoricSynonyms,
-                taxonomicSynonyms: this.state.taxonomicSynonyms,
-                invalidDesignations: this.state.invalidDesignations,
+                nomenclatoricSynonyms,
+                taxonomicSynonyms,
+                invalidDesignations,
                 misidentifications,
                 isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
                 isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,

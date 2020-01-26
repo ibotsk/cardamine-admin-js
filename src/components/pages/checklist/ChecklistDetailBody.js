@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Button, Well,
+    Well,
     ControlLabel, FormGroup,
     Col
 } from 'react-bootstrap';
@@ -188,8 +188,6 @@ const ChecklistDetailBody = ({
                     <SpeciesNamePlainList list={nomenNovumFor} />
                 </Col>
             </FormGroup>
-            <hr />
-            <Button bsStyle="primary" type='submit' >Save</Button>
         </Well>
     );
 
