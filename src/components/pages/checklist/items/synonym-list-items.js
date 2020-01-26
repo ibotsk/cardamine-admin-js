@@ -19,12 +19,12 @@ const NomenclatoricSynonymListItem = ({ rowId, onChangeToTaxonomic, onChangeToIn
         </React.Fragment>
     );
     return (
-        <SynonymListItem {...props} additions={Additions} />
+        <SynonymListItem {...props} rowId={rowId} prefix={config.mappings.synonym.nomenclatoric.prefix} additions={Additions} />
     );
 };
 
 const TaxonomicSynonymListItem = ({ rowId, fromList, onChangeToNomenclatoric, onChangeToInvalid, ...props }) => {
-    const Additions = p => (
+    const Additions = () => (
         <React.Fragment>
             <Button bsStyle="primary" bsSize="xsmall" onClick={() => onChangeToNomenclatoric(rowId)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
             &nbsp;
@@ -32,12 +32,12 @@ const TaxonomicSynonymListItem = ({ rowId, fromList, onChangeToNomenclatoric, on
         </React.Fragment>
     );
     return (
-        <SynonymListItem {...props} additions={Additions} />
+        <SynonymListItem {...props} rowId={rowId} prefix={config.mappings.synonym.taxonomic.prefix} additions={Additions} />
     );
 };
 
 const InvalidSynonymListItem = ({ rowId, onChangeToNomenclatoric, onChangeToTaxonomic, ...props }) => {
-    const Additions = p => (
+    const Additions = () => (
         <React.Fragment>
             <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
             &nbsp;
@@ -45,13 +45,13 @@ const InvalidSynonymListItem = ({ rowId, onChangeToNomenclatoric, onChangeToTaxo
         </React.Fragment>
     );
     return (
-        <SynonymListItem {...props} additions={Additions} />
+        <SynonymListItem {...props} rowId={rowId} prefix={config.mappings.synonym.invalid.prefix} additions={Additions} />
     );
 };
 
 const MisidentifiedSynonymListItem = ({ rowId, misidentificationAuthors, onChangeAuthor, ...props }) => {
     return (
-        <SynonymListItem showSubNomenclatoric={false} {...props}>
+        <SynonymListItem rowId={rowId} showSubNomenclatoric={false} prefix={config.mappings.synonym.misidentification.prefix} {...props}>
             <FormGroup bsSize='sm'>
                 <Col componentClass={ControlLabel} sm={2}>
                     Author:

@@ -54,16 +54,16 @@ class ChecklistDetail extends React.Component {
                         onShowModal={this.props.onShowModal}
                         onChangeInput={this.handleChangeSpecies}
                     />
-                    {/* <ChecklistDetailBody
+                    <ChecklistDetailBody
                         species={this.props.species}
                         listOfSpeciesOptions={this.state.listOfSpecies}
                         fors={this.props.fors}
                         synonyms={this.props.synonyms}
                         misidentificationAuthors={this.props.misidentificationAuthors}
-                        onSpeciesInputChange={this.handleSpeciesChange}
+                        onSpeciesInputChange={this.handleChangeSpecies}
                         onAddRow={this.handleSynonymAddRow}
                         onDeleteRow={this.handleSynonymRemoveRow}
-                    /> */}
+                    />
                 </Form>
             </React.Fragment>
         );
@@ -112,25 +112,29 @@ class ChecklistDetail extends React.Component {
         }
     };
 
-    handleChangeSpecies = (prop, val) => this.props.onChangeSpecies(prop, val);
+    handleChangeSpecies = this.props.onChangeSpecies;
+    handleChangeValue = this.props.onChangeValue;
 
     handleSynonymAddRow = async (selected, property, changedProperty) => {
         const accessToken = this.props.accessToken;
-        const synonyms = this.state.synonyms;
+        const synonyms = this.props.synonyms;
         const collectionState = synonyms[property];
         const collection = await addSynonymToList(selected, collectionState, accessToken);
 
         synonyms[property] = collection;
+        this.handleChangeValue('synonyms', synonyms);
         this.setState({
-            synonyms,
             [changedProperty]: true
         });
     }
 
     handleSynonymRemoveRow = (id, property, changedProperty) => {
-        const collection = this.state[property].filter(s => s.id !== id);
+        const synonyms = this.props.synonyms;
+        const collection = synonyms[property].filter(s => s.id !== id);
+
+        synonyms[property] = collection;
+        this.handleChangeValue('synonyms', synonyms);
         this.setState({
-            [property]: collection,
             [changedProperty]: true
         });
     };

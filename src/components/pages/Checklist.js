@@ -113,20 +113,12 @@ class Checklist extends Component {
 
         this.state = {
             showModalSpecies: false,
-            // modalEditId: 0, //id for modal
             editId: undefined,
             listOfSpecies: [], //options for autocomplete fields
-            species: { // properties for synonyms
-                // id: undefined
-            },
+            species: {},
             tableRowsSelected: [],
 
             synonyms: {},
-            // nomenclatoricSynonyms: [], // contains objects of list-of-species
-            // taxonomicSynonyms: [], // contains objects of list-of-species
-            // invalidDesignations: [],
-            // misidentifications: [],
-
             misidentificationAuthors: {},
 
             // isNomenclatoricSynonymsChanged: false,
@@ -135,9 +127,6 @@ class Checklist extends Component {
             // isMisidentificationsChanged: false,
 
             fors: {}
-            // basionymFor: [],
-            // replacedFor: [],
-            // nomenNovumFor: [],
         }
     };
 
@@ -180,9 +169,7 @@ class Checklist extends Component {
         }));
 
         const synonyms = await checklistFacade.getSynonyms(id, accessToken);
-        // const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = await checklistFacade.getSynonyms(id, accessToken);
         const fors = await checklistFacade.getBasionymsFor(id, accessToken);
-        // const { basionymFor, replacedFor, nomenNovumFor } = await checklistFacade.getBasionymsFor(id, accessToken);
 
         let misidentificationAuthors = {};
         if (fors.misidentifications) {
@@ -196,65 +183,30 @@ class Checklist extends Component {
             species,
             listOfSpecies,
             tableRowsSelected: [id],
-            // nomenclatoricSynonyms,
-            // taxonomicSynonyms,
-            // invalidDesignations,
-            // misidentifications,
             misidentificationAuthors,
-            // basionymFor,
-            // replacedFor,
-            // nomenNovumFor,
             fors,
             synonyms
         });
     };
 
-    getSelectedName = id => this.state.listOfSpecies.filter(l => l.id === id);
+    // getSelectedName = id => this.state.listOfSpecies.filter(l => l.id === id);
 
-    handleChangeTypeahead = (selected, prop) => {
-        const id = selected[0] ? selected[0].id : undefined;
-        this.handleSpeciesChange(prop, id);
-    };
+    // handleChangeTypeahead = (selected, prop) => {
+    //     const id = selected[0] ? selected[0].id : undefined;
+    //     this.handleSpeciesChange(prop, id);
+    // };
 
-    handleChangeInput = e => this.handleSpeciesChange(e.target.id, e.target.value);
+    // handleChangeInput = e => this.handleSpeciesChange(e.target.id, e.target.value);
+
+    handleValueChange = (prop, val) => this.setState({ [prop]: val });
 
     handleSpeciesChange = (prop, val) => {
-        console.log(prop, val);
-
         const species = { ...this.state.species };
         species[prop] = val;
         this.setState({
             species
         });
     };
-
-    // handleAddNomenclatoricSynonym = async selected => this.handleAddRow(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
-    // handleAddTaxonomicSynonym = async selected => this.handleAddRow(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
-    // handleAddInvalidDesignation = async selected => this.handleAddRow(selected, 'invalidDesignations', 'isInvalidDesignationsChanged');
-    // handleAddMisidentification = async selected => this.handleAddRow(selected, 'misidentifications', 'isMisidentificationsChanged');
-
-    // handleAddRow = async (selected, property, changedProperty) => {
-    //     const accessToken = this.props.accessToken;
-    //     const collectionState = this.state[property];
-    //     const collection = await addSynonymToList(selected, collectionState, accessToken);
-    //     this.setState({
-    //         [property]: collection,
-    //         [changedProperty]: true
-    //     });
-    // }
-
-    // handleRemoveNomenclatoricSynonym = id => this.handleRemoveRow(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged');
-    // handleRemoveTaxonomicSynonym = id => this.handleRemoveRow(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged');
-    // handleRemoveInvalidDesignation = id => this.handleRemoveRow(id, 'invalidDesignations', 'isInvalidDesignationsChanged');
-    // handleRemoveMisidentification = id => this.handleRemoveRow(id, 'misidentifications', 'isMisidentificationsChanged');
-
-    // handleRemoveRow = (id, property, changedProperty) => {
-    //     const collection = this.state[property].filter(s => s.id !== id);
-    //     this.setState({
-    //         [property]: collection,
-    //         [changedProperty]: true
-    //     });
-    // };
 
     handleChangeToTaxonomic = async (id, fromList) => {
         const selected = fromList.find(s => s.id === id);
@@ -367,6 +319,7 @@ class Checklist extends Component {
                                 accessToken={this.props.accessToken}
                                 onShowModal={this.showModal}
                                 onChangeSpecies={this.handleSpeciesChange}
+                                onChangeValue={this.handleValueChange}
                                 onDetailsChanged={() => this.onTableChange(undefined, {})}
                             />
                         </Col>
