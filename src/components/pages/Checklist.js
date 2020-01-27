@@ -32,20 +32,15 @@ const buildNtypesOptions = ntypes => {
 
 const ntypeFormatter = cell => <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>;
 
-const formatTableRow = data => {
-    return data.map(n => {
-        return ({
-            id: n.id,
-            ntype: n.ntype,
-            speciesName: helper.listOfSpeciesString(n),
-            extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
-        })
-    });
-};
+const formatTableRow = data => data.map(n => ({
+    id: n.id,
+    ntype: n.ntype,
+    speciesName: helper.listOfSpeciesString(n),
+    extra: <Glyphicon glyph='chevron-right' style={{ color: '#cecece' }}></Glyphicon>
+}));
 
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
-// const typifications = config.mappings.typifications;
 
 const columns = [
     {
@@ -94,8 +89,7 @@ class Checklist extends Component {
     };
 
     showModal = id => this.setState({
-        showModalSpecies: true,
-        modalEditId: id
+        showModalSpecies: true
     });
 
     hideModal = () => {
@@ -114,10 +108,6 @@ class Checklist extends Component {
         onSelect: (row, isSelect, rowIndex, e) => {
             this.props.history.push(`/names/${row.id}`);
             this.populateDetailsForEdit(row.id);
-            this.setState({
-                tableRowsSelected: [row.id],
-                editId: row.id
-            });
         },
     };
 
@@ -143,6 +133,7 @@ class Checklist extends Component {
         }
 
         this.setState({
+            editId: id,
             species,
             listOfSpecies,
             tableRowsSelected: [id],
@@ -161,30 +152,6 @@ class Checklist extends Component {
             species
         });
     };
-
-    handleChangeToTaxonomic = async (id, fromList) => {
-        const selected = fromList.find(s => s.id === id);
-        this.handleAddTaxonomicSynonym(selected);
-        // remove from all others
-        this.handleRemoveNomenclatoricSynonym(id);
-        this.handleRemoveInvalidDesignation(id);
-    }
-
-    handleChangeToNomenclatoric = (id, fromList) => {
-        const selected = fromList.find(s => s.id === id);
-        this.handleAddNomenclatoricSynonym(selected);
-        // remove from all others
-        this.handleRemoveTaxonomicSynonym(id);
-        this.handleRemoveInvalidDesignation(id);
-    }
-
-    handleChangeToInvalid = (id, fromList) => {
-        const selected = fromList.find(s => s.id === id);
-        this.handleAddInvalidDesignation(selected);
-        //remove from all others
-        this.handleRemoveNomenclatoricSynonym(id);
-        this.handleRemoveTaxonomicSynonym(id);
-    }
 
     componentDidMount() {
         const selectedId = this.props.match.params.id;
