@@ -205,7 +205,7 @@ class Checklist extends Component {
                         </Col>
                     </Row>
                 </Grid>
-                <SpeciesNameModal id={this.state.editId} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <SpeciesNameModal editId={this.state.editId} show={this.state.showModalSpecies} onHide={this.hideModal} />
                 <NotificationContainer />
             </div>
         );
