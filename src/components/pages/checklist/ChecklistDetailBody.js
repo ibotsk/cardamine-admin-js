@@ -21,6 +21,7 @@ const ChecklistDetailBody = ({
     synonyms: { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications },
     misidentificationAuthors,
     onSpeciesInputChange,
+    onMisidentificationAuthorsChanged,
     onAddRow,
     onDeleteRow
 }) => {
@@ -155,7 +156,7 @@ const ChecklistDetailBody = ({
                             <MisidentifiedSynonymListItem {...itemProps}
                                 onRowDelete={id => handleRemoveMisidentification(id, onDeleteRow)}
                                 misidentificationAuthors={misidentificationAuthors}
-                                onChangeAuthor={() => console.log('change misidentification author')}
+                                onChangeAuthor={onMisidentificationAuthorsChanged}
                             />}
                     />
                 </Col>

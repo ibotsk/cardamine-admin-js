@@ -53,7 +53,7 @@ class ChecklistDetail extends React.Component {
                     <ChecklistDetailHeader
                         data={this.props.species}
                         onShowModal={this.props.onShowModal}
-                        onChangeInput={this.handleChangeSpecies}
+                        onChangeInput={this.props.onChangeSpecies}
                     />
                     <ChecklistDetailBody
                         species={this.props.species}
@@ -61,7 +61,8 @@ class ChecklistDetail extends React.Component {
                         fors={this.props.fors}
                         synonyms={this.props.synonyms}
                         misidentificationAuthors={this.props.misidentificationAuthors}
-                        onSpeciesInputChange={this.handleChangeSpecies}
+                        onMisidentificationAuthorsChanged={this.handleChangeMisidentificationAuthors}
+                        onSpeciesInputChange={this.props.onChangeSpecies}
                         onAddRow={this.handleSynonymAddRow}
                         onDeleteRow={this.handleSynonymRemoveRow}
                     />
@@ -117,9 +118,6 @@ class ChecklistDetail extends React.Component {
         }
     };
 
-    handleChangeSpecies = this.props.onChangeSpecies;
-    handleChangeValue = this.props.onChangeValue;
-
     handleSynonymAddRow = async (selected, property, changedProperty) => {
         const accessToken = this.props.accessToken;
         const synonyms = this.props.synonyms;
@@ -127,7 +125,7 @@ class ChecklistDetail extends React.Component {
         const collection = await addSynonymToList(selected, collectionState, accessToken);
 
         synonyms[property] = collection;
-        this.handleChangeValue('synonyms', synonyms);
+        this.props.onChangeValue('synonyms', synonyms);
         this.setState({
             [changedProperty]: true
         });
@@ -138,11 +136,20 @@ class ChecklistDetail extends React.Component {
         const collection = synonyms[property].filter(s => s.id !== id);
 
         synonyms[property] = collection;
-        this.handleChangeValue('synonyms', synonyms);
+        this.props.onChangeValue('synonyms', synonyms);
         this.setState({
             [changedProperty]: true
         });
     };
+
+    handleChangeMisidentificationAuthors = (rowId, value) => {
+        const misidentificationAuthors = this.props.misidentificationAuthors;
+        misidentificationAuthors[rowId] = value;
+        this.props.onChangeValue('misidentificationAuthors', misidentificationAuthors);
+        this.setState({
+            isMisidentificationsChanged: true
+        });
+    }
 
 }
 
