@@ -125,8 +125,8 @@ class Checklist extends Component {
         const fors = await checklistFacade.getBasionymsFor(id, accessToken);
 
         let misidentificationAuthors = {};
-        if (fors.misidentifications) {
-            misidentificationAuthors = fors.misidentifications.reduce((acc, curr) => {
+        if (synonyms.misidentifications) {
+            misidentificationAuthors = synonyms.misidentifications.reduce((acc, curr) => {
                 acc[curr.id] = curr.metadata ? curr.metadata.misidentificationAuthor : undefined;
                 return acc;
             }, {});
