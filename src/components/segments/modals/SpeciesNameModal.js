@@ -52,9 +52,10 @@ class SpeciesNameModal extends Component {
     }
 
     onEnter = async () => {
-        if (this.props.editId) {
+        const id = this.props.editId;
+        if (id) {
             const accessToken = this.props.accessToken;
-            const data = await checklistFacade.getSpeciesById({ id: this.props.id, accessToken });
+            const data = await checklistFacade.getSpeciesById({ id, accessToken });
 
             this.setState({ ...data });
         }

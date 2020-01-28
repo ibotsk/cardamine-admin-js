@@ -161,7 +161,7 @@ class Checklist extends Component {
             <div id='names'>
                 <Grid>
                     <div id="functions">
-                        <Button bsStyle="success" onClick={() => this.showModal('')}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                        <Button bsStyle="success" onClick={this.showModal}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
                     </div>
                     <h2>Names</h2>
                 </Grid>
