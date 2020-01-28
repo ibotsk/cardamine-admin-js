@@ -19,24 +19,11 @@ class ChecklistDetail extends React.Component {
         super(props);
 
         this.state = {
-            listOfSpecies: [],
-
             isNomenclatoricSynonymsChanged: false,
             isTaxonomicSynonymsChanged: false,
             isInvalidDesignationsChanged: false,
             isMisidentificationsChanged: false
         };
-    }
-
-    async componentDidMount() {
-        const speciesListRaw = await checklistFacade.getAllSpecies(this.props.accessToken)
-        const listOfSpecies = speciesListRaw.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
-        this.setState({
-            listOfSpecies
-        });
     }
 
     render() {
@@ -47,6 +34,11 @@ class ChecklistDetail extends React.Component {
                 </Panel>
             );
         }
+        const listOfSpeciesOptions = this.props.listOfSpecies.map(l => ({
+            id: l.id,
+            label: helper.listOfSpeciesString(l)
+        }));
+
         return (
             <React.Fragment>
                 <Form onSubmit={this.submitForm} horizontal>
@@ -57,7 +49,7 @@ class ChecklistDetail extends React.Component {
                     />
                     <ChecklistDetailBody
                         species={this.props.species}
-                        listOfSpeciesOptions={this.state.listOfSpecies}
+                        listOfSpeciesOptions={listOfSpeciesOptions}
                         fors={this.props.fors}
                         synonyms={this.props.synonyms}
                         misidentificationAuthors={this.props.misidentificationAuthors}

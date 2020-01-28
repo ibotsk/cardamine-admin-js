@@ -77,7 +77,6 @@ class Checklist extends Component {
 
         this.state = {
             showModalSpecies: false,
-            editId: undefined,
             listOfSpecies: [], //options for autocomplete fields
             species: {},
             tableRowsSelected: [],
@@ -115,11 +114,7 @@ class Checklist extends Component {
         const accessToken = this.props.accessToken;
 
         const species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
-        const speciesListRaw = await checklistFacade.getAllSpecies(accessToken);
-        const listOfSpecies = speciesListRaw.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
+        const listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
 
         const synonyms = await checklistFacade.getSynonyms(id, accessToken);
         const fors = await checklistFacade.getBasionymsFor(id, accessToken);
@@ -133,7 +128,6 @@ class Checklist extends Component {
         }
 
         this.setState({
-            editId: id,
             species,
             listOfSpecies,
             tableRowsSelected: [id],
@@ -158,10 +152,6 @@ class Checklist extends Component {
         if (selectedId) {
             const selectedIdInt = parseInt(selectedId);
             this.populateDetailsForEdit(selectedIdInt);
-            this.setState({
-                tableRowsSelected: [selectedIdInt],
-                editId: selectedIdInt
-            });
         }
     }
 
@@ -193,6 +183,7 @@ class Checklist extends Component {
                         <Col sm={6} id="species-detail">
                             <ChecklistDetail
                                 species={this.state.species}
+                                listOfSpecies={this.state.listOfSpecies}
                                 fors={this.state.fors}
                                 synonyms={this.state.synonyms}
                                 misidentificationAuthors={this.state.misidentificationAuthors}
@@ -205,7 +196,7 @@ class Checklist extends Component {
                         </Col>
                     </Row>
                 </Grid>
-                <SpeciesNameModal editId={this.state.editId} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <SpeciesNameModal editId={this.state.species.id} show={this.state.showModalSpecies} onHide={this.hideModal} />
                 <NotificationContainer />
             </div>
         );
