@@ -82,6 +82,7 @@ class Checklist extends Component {
             tableRowsSelected: [],
 
             synonyms: {},
+            synonymIdsToDelete: [],
             fors: {},
             misidentificationAuthors: {}
         }
@@ -147,6 +148,15 @@ class Checklist extends Component {
         });
     };
 
+    handleUpdateSynonyms = (synonyms, removed) => {
+        const synonymIdsToDeleteAll = [...this.state.synonymIdsToDelete, ...removed];
+        const synonymIdsToDelete = [...new Set(synonymIdsToDeleteAll)];
+        this.setState({
+            synonyms,
+            synonymIdsToDelete
+        });
+    };
+
     componentDidMount() {
         const selectedId = this.props.match.params.id;
         if (selectedId) {
@@ -187,8 +197,7 @@ class Checklist extends Component {
                                 fors={this.state.fors}
                                 synonyms={this.state.synonyms}
                                 misidentificationAuthors={this.state.misidentificationAuthors}
-                                accessToken={this.props.accessToken}
-                                onShowModal={this.showModal}
+                                onUpdateSynonyms={this.handleUpdateSynonyms}
                                 onChangeSpecies={this.handleSpeciesChange}
                                 onChangeValue={this.handleValueChange}
                                 onDetailsChanged={() => this.props.onTableChange(undefined, {})}

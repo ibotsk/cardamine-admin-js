@@ -10,6 +10,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import AddableList from '../../segments/AddableList';
 import SpeciesNamePlainList from './SpeciesNamePlainList';
 import { NomenclatoricSynonymListItem, TaxonomicSynonymListItem, InvalidSynonymListItem, MisidentifiedSynonymListItem } from './items';
+import config from '../../../config/config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
@@ -93,7 +94,6 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="nomenclatoric-synonyms-autocomplete"
                         data={nomenclatoricSynonyms}
-                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddNomenclatoric(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -113,7 +113,6 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="taxonomic-synonyms-autocomplete"
                         data={taxonomicSynonyms}
-                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddTaxonomic(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -133,7 +132,6 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="invalid-designations-autocomplete"
                         data={invalidDesignations}
-                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddInvalidDesignation(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -153,7 +151,6 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="misidentifications-autocomplete"
                         data={misidentifications}
-                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddMisidentiication(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -204,15 +201,15 @@ function handleChangeTypeAhead(selected, prop, onInputChange) {
     onInputChange(prop, id);
 };
 
-function handleAddNomenclatoric(selected, addFunc) { return addFunc(selected, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged'); }
-function handleAddTaxonomic(selected, addFunc) { return addFunc(selected, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged'); }
-function handleAddInvalidDesignation(selected, addFunc) { return addFunc(selected, 'invalidDesignations', 'isInvalidDesignationsChanged'); }
-function handleAddMisidentiication(selected, addFunc) { return addFunc(selected, 'misidentifications', 'isMisidentificationsChanged'); }
+function handleAddNomenclatoric(selected, addFunc) { return addFunc(selected, 'nomenclatoricSynonyms', config.mappings.synonym.nomenclatoric.numType); }
+function handleAddTaxonomic(selected, addFunc) { return addFunc(selected, 'taxonomicSynonyms', config.mappings.synonym.taxonomic.numType); }
+function handleAddInvalidDesignation(selected, addFunc) { return addFunc(selected, 'invalidDesignations', config.mappings.synonym.invalid.numType); }
+function handleAddMisidentiication(selected, addFunc) { return addFunc(selected, 'misidentifications', config.mappings.synonym.misidentification.numType); }
 
-function handleRemoveNomenclatoric(id, removeFunc) { return removeFunc(id, 'nomenclatoricSynonyms', 'isNomenclatoricSynonymsChanged'); }
-function handleRemoveTaxonomic(id, removeFunc) { return removeFunc(id, 'taxonomicSynonyms', 'isTaxonomicSynonymsChanged'); }
-function handleRemoveInvalidDesignation(id, removeFunc) { return removeFunc(id, 'invalidDesignations', 'isInvalidDesignationsChanged'); }
-function handleRemoveMisidentification(id, removeFunc) { return removeFunc(id, 'misidentifications', 'isMisidentificationsChanged'); }
+function handleRemoveNomenclatoric(id, removeFunc) { return removeFunc(id, 'nomenclatoricSynonyms'); }
+function handleRemoveTaxonomic(id, removeFunc) { return removeFunc(id, 'taxonomicSynonyms'); }
+function handleRemoveInvalidDesignation(id, removeFunc) { return removeFunc(id, 'invalidDesignations'); }
+function handleRemoveMisidentification(id, removeFunc) { return removeFunc(id, 'misidentifications'); }
 
 function handleChangeToTaxonomic(id, fromList, addFunc, removeFunc) {
     const selected = fromList.find(s => s.id === id);

@@ -15,17 +15,6 @@ import ChecklistDetailBody from './ChecklistDetailBody';
 
 class ChecklistDetail extends React.Component {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            isNomenclatoricSynonymsChanged: false,
-            isTaxonomicSynonymsChanged: false,
-            isInvalidDesignationsChanged: false,
-            isMisidentificationsChanged: false
-        };
-    }
-
     render() {
         if (!this.props.species.id) {
             return (
@@ -86,22 +75,10 @@ class ChecklistDetail extends React.Component {
                 nomenclatoricSynonyms,
                 taxonomicSynonyms,
                 invalidDesignations,
-                misidentifications,
-                isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
-                isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
-                isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged,
-                isMisidentificationsChanged: this.state.isMisidentificationsChanged
+                misidentifications
             });
 
             notifications.success('Saved');
-            // this.props.onTableChange(undefined, {});
-
-            this.setState({
-                isNomenclatoricSynonymsChanged: false,
-                isTaxonomicSynonymsChanged: false,
-                isInvalidDesignationsChanged: false,
-                isMisidentificationsChanged: false
-            });
 
             this.props.onDetailsChanged();
         } catch (error) {
@@ -110,28 +87,27 @@ class ChecklistDetail extends React.Component {
         }
     };
 
-    handleSynonymAddRow = async (selected, property, changedProperty) => {
-        const accessToken = this.props.accessToken;
+    handleSynonymAddRow = (selected, property, type) => {
         const synonyms = this.props.synonyms;
-        const collectionState = synonyms[property];
-        const collection = await addSynonymToList(selected, collectionState, accessToken);
+        const specificSynonyms = synonyms[property];
+
+        const collection = this.addSynonymToList(selected, this.props.species.id, specificSynonyms, type);
 
         synonyms[property] = collection;
-        this.props.onChangeValue('synonyms', synonyms);
-        this.setState({
-            [changedProperty]: true
-        });
+        this.props.onUpdateSynonyms(synonyms, []);
     }
 
-    handleSynonymRemoveRow = (id, property, changedProperty) => {
+    handleSynonymRemoveRow = (id, property) => {
         const synonyms = this.props.synonyms;
-        const collection = synonyms[property].filter(s => s.id !== id);
+        const specificSynonyms = synonyms[property];
 
+        const collection = specificSynonyms.filter((s, i) => i !== id);
         synonyms[property] = collection;
-        this.props.onChangeValue('synonyms', synonyms);
-        this.setState({
-            [changedProperty]: true
-        });
+
+        const deleteId = specificSynonyms[id].id;
+        const synonymsToDelete = deleteId ? [deleteId] : [];
+
+        this.props.onUpdateSynonyms(synonyms, synonymsToDelete);
     };
 
     handleChangeMisidentificationAuthors = (rowId, value) => {
@@ -143,20 +119,24 @@ class ChecklistDetail extends React.Component {
         });
     }
 
-}
+    addSynonymToList = (selected, idParent, synonyms, type) => {
+        if (!selected) {
+            return synonyms;
+        }
+        if (synonyms.find(s => s.synonym.id === selected.id)) {
+            notifications.warning('The item already exists in the list');
+            return synonyms;
+        }
 
-async function addSynonymToList(selected, synonyms, accessToken) {
-    if (!selected) {
-        return null;
+        const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
+        const species = this.props.listOfSpecies.find(l => l.id === selected.id);
+        synonymObj.synonym = species;
+
+        synonyms.push(synonymObj);
+        synonyms.sort(helper.listOfSpeciesSorterLex);
+        return synonyms;
     }
-    if (synonyms.find(s => s.id === selected.id)) {
-        notifications.warning('The item is already in the list');
-        return null;
-    }
-    const synonymJson = await checklistFacade.getSpeciesByIdWithFilter(selected.id, accessToken);
-    synonyms.push(synonymJson);
-    synonyms.sort(helper.listOfSpeciesSorterLex);
-    return synonyms;
+
 }
 
 export default ChecklistDetail;

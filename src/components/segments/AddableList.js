@@ -37,7 +37,7 @@ class AddableList extends Component {
     }
 
     render() {
-        // rowId = (data) => return "id"; default is data.id
+        // rowId = (data) => return "id"; default is array index
         const { data = [], itemComponent: ListRow, rowId, onRowDelete, ...restProps } = this.props;
         return (
             <div className="addable-list compact-list">
@@ -45,7 +45,7 @@ class AddableList extends Component {
                     {
                         // ListRow is an injected component that will be rendered as item
                         data.map((d, index) => {
-                            const id = rowId ? rowId(d) : d.id;
+                            const id = rowId ? rowId(d) : index;
                             return (
                                 <ListRow
                                     rowId={id}

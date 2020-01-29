@@ -80,6 +80,14 @@ const saveSpeciesAndSynonyms = async ({
         isInvalidDesignationsChanged,
         isMisidentificationsChanged
     });
+};
+
+function createSynonym(idParent, idSynonym, syntype) {
+    return {
+        idParent,
+        idSynonym,
+        syntype
+    };
 }
 
 async function getMisidentificationsWithMetadata(id, accessToken) {
@@ -167,5 +175,6 @@ export default {
     getSynonyms,
     getBasionymsFor,
     saveSpecies,
-    saveSpeciesAndSynonyms
+    saveSpeciesAndSynonyms,
+    createSynonym
 }

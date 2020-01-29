@@ -19,9 +19,9 @@ const MisidentifiedSynonymListItem = ({ rowId, misidentificationAuthors, onChang
                 <Col xs={8}>
                     <FormControl
                         type="text"
-                        value={misidentificationAuthors[rowId] || ""}
+                        value={props.data.misidentificationAuthor || ""}
                         placeholder="Misidentification Author"
-                        onChange={e => onChangeAuthor(rowId, e.currentTarget.value)}
+                        onChange={e => onChangeAuthor(rowId, e.target.value)}
                     />
                 </Col>
             </FormGroup>
