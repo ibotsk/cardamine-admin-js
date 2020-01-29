@@ -128,27 +128,7 @@ class Checklist extends Component {
         });
     };
 
-    handleValueChange = (prop, val) => this.setState({ [prop]: val });
-
-    handleSpeciesChange = (prop, val) => {
-        const species = { ...this.state.species };
-        species[prop] = val;
-        this.setState({
-            species
-        });
-    };
-
-    handleUpdateSynonyms = (synonyms, removed = []) => {
-        let synonymIdsToDelete = this.state.synonymIdsToDelete;
-        if (removed.length > 0) {
-            const synonymIdsToDeleteAll = [...synonymIdsToDelete, ...removed];
-            synonymIdsToDelete = [...new Set(synonymIdsToDeleteAll)];
-        }
-        this.setState({
-            synonyms,
-            synonymIdsToDelete
-        });
-    };
+    handleValueChange = obj => this.setState(obj);
 
     componentDidMount() {
         const selectedId = this.props.match.params.id;
@@ -188,10 +168,10 @@ class Checklist extends Component {
                                 species={this.state.species}
                                 fors={this.state.fors}
                                 synonyms={this.state.synonyms}
+                                synonymIdsToDelete={this.state.synonymIdsToDelete}
                                 listOfSpecies={this.state.listOfSpecies}
                                 onShowModal={this.showModal}
-                                onUpdateSynonyms={this.handleUpdateSynonyms}
-                                onChangeSpecies={this.handleSpeciesChange}
+                                onValueChange={this.handleValueChange}
                                 onDetailsChanged={() => this.props.onTableChange(undefined, {})}
                             />
                         </Col>

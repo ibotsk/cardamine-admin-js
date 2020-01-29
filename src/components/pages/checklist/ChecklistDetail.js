@@ -13,30 +13,17 @@ import helper from '../../../utils/helper';
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
 
-const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, onShowModal, onChangeSpecies, onUpdateSynonyms, onDetailsChanged, ...props }) => {
+const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSpecies, accessToken, onShowModal, onValueChange, onDetailsChanged, ...props }) => {
 
     const submitForm = async e => {
         e.preventDefault();
+        submit(species, synonyms, accessToken);
+        onDetailsChanged();
+    };
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = synonyms;
-
-        try {
-            await checklistFacade.saveSpeciesAndSynonyms({
-                species,
-                accessToken,
-                nomenclatoricSynonyms,
-                taxonomicSynonyms,
-                invalidDesignations,
-                misidentifications
-            });
-
-            notifications.success('Saved');
-
-            onDetailsChanged();
-        } catch (error) {
-            notifications.error('Error saving');
-            throw error;
-        }
+    const handleSpeciesChange = (prop, val) => {
+        const updatedSpecies = { ...species, [prop]: val };
+        onValueChange({ species: updatedSpecies });
     };
 
     const handleSynonymAddRow = (selected, property, type) => {
@@ -45,7 +32,7 @@ const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, 
         const collection = addSynonymToList(selected, species.id, specificSynonyms, type, listOfSpecies);
 
         synonyms[property] = collection;
-        onUpdateSynonyms(synonyms);
+        onValueChange({ synonyms });
     };
 
     const handleSynonymRemoveRow = (id, property) => {
@@ -55,9 +42,16 @@ const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, 
         synonyms[property] = collection;
 
         const deleteId = specificSynonyms[id].id;
-        const synonymsToDelete = deleteId ? [deleteId] : undefined;
 
-        onUpdateSynonyms(synonyms, synonymsToDelete);
+        const synonymsToDelete = synonymIdsToDelete;
+        if (deleteId) {
+            synonymsToDelete.push(deleteId);
+        }
+
+        onValueChange({
+            synonyms,
+            synonymIdsToDelete: synonymsToDelete
+        });
     };
 
     const handleChangeMisidentificationAuthor = (rowId, value) => {
@@ -65,7 +59,7 @@ const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, 
         misidentifications[rowId].misidentificationAuthor = value;
 
         synonyms.misidentifications = misidentifications;
-        onUpdateSynonyms(synonyms);
+        onValueChange({ synonyms });
     };
 
     if (!species.id) {
@@ -86,16 +80,15 @@ const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, 
                 <ChecklistDetailHeader
                     data={species}
                     onShowModal={onShowModal}
-                    onChangeInput={onChangeSpecies}
+                    onChangeInput={handleSpeciesChange}
                 />
                 <ChecklistDetailBody
                     species={species}
                     listOfSpeciesOptions={listOfSpeciesOptions}
                     fors={fors}
                     synonyms={synonyms}
-                    misidentificationAuthors={props.misidentificationAuthors}
                     onMisidentificationAuthorsChanged={handleChangeMisidentificationAuthor}
-                    onSpeciesInputChange={onChangeSpecies}
+                    onSpeciesInputChange={handleSpeciesChange}
                     onAddRow={handleSynonymAddRow}
                     onDeleteRow={handleSynonymRemoveRow}
                 />
@@ -106,6 +99,26 @@ const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, 
         </React.Fragment>
     );
 
+};
+
+async function submit(species, synonyms, accessToken) {
+    const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = synonyms;
+
+    try {
+        await checklistFacade.saveSpeciesAndSynonyms({
+            species,
+            accessToken,
+            nomenclatoricSynonyms,
+            taxonomicSynonyms,
+            invalidDesignations,
+            misidentifications
+        });
+
+        notifications.success('Saved');
+    } catch (error) {
+        notifications.error('Error saving');
+        throw error;
+    }
 };
 
 function addSynonymToList(selected, idParent, synonyms, type, listOfSpecies) {
