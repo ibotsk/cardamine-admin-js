@@ -96,12 +96,11 @@ const ChecklistDetailBody = ({
                         data={nomenclatoricSynonyms}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddNomenclatoric(selected, onAddRow)}
-                        itemComponent={itemProps =>
-                            <NomenclatoricSynonymListItem {...itemProps}
-                                onRowDelete={id => handleRemoveNomenclatoric(id, onDeleteRow)}
-                                onChangeToTaxonomic={id => handleChangeToTaxonomic(id, nomenclatoricSynonyms, onAddRow, onDeleteRow)}
-                                onChangeToInvalid={id => handleChangeToInvalid(id, nomenclatoricSynonyms, onAddRow, onDeleteRow)}
-                            />}
+                        onRowDelete={id => handleRemoveNomenclatoric(id, onDeleteRow)}
+                        itemComponent={NomenclatoricSynonymListItem}
+                        // props specific to itemComponent
+                        onChangeToTaxonomic={id => handleChangeToTaxonomic(id, nomenclatoricSynonyms, onAddRow, onDeleteRow)}
+                        onChangeToInvalid={id => handleChangeToInvalid(id, nomenclatoricSynonyms, onAddRow, onDeleteRow)}
                     />
                 </Col>
             </FormGroup>
@@ -115,12 +114,11 @@ const ChecklistDetailBody = ({
                         data={taxonomicSynonyms}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddTaxonomic(selected, onAddRow)}
-                        itemComponent={itemProps =>
-                            <TaxonomicSynonymListItem {...itemProps}
-                                onRowDelete={id => handleRemoveTaxonomic(id, onDeleteRow)}
-                                onChangeToNomenclatoric={id => handleChangeToNomenclatoric(id, taxonomicSynonyms, onAddRow, onDeleteRow)}
-                                onChangeToInvalid={id => handleChangeToInvalid(id, taxonomicSynonyms, onAddRow, onDeleteRow)}
-                            />}
+                        onRowDelete={id => handleRemoveTaxonomic(id, onDeleteRow)}
+                        itemComponent={TaxonomicSynonymListItem}
+                        // props specific to itemComponent
+                        onChangeToNomenclatoric={id => handleChangeToNomenclatoric(id, taxonomicSynonyms, onAddRow, onDeleteRow)}
+                        onChangeToInvalid={id => handleChangeToInvalid(id, taxonomicSynonyms, onAddRow, onDeleteRow)}
                     />
                 </Col>
             </FormGroup>
@@ -134,12 +132,11 @@ const ChecklistDetailBody = ({
                         data={invalidDesignations}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddInvalidDesignation(selected, onAddRow)}
-                        itemComponent={itemProps =>
-                            <InvalidSynonymListItem {...itemProps}
-                                onRowDelete={id => handleRemoveInvalidDesignation(id, onDeleteRow)}
-                                onChangeToNomenclatoric={id => handleChangeToNomenclatoric(id, invalidDesignations, onAddRow, onDeleteRow)}
-                                onChangeToTaxonomic={id => handleChangeToTaxonomic(id, invalidDesignations, onAddRow, onDeleteRow)}
-                            />}
+                        onRowDelete={id => handleRemoveInvalidDesignation(id, onDeleteRow)}
+                        itemComponent={InvalidSynonymListItem}
+                        // props specific to itemComponent
+                        onChangeToNomenclatoric={id => handleChangeToNomenclatoric(id, invalidDesignations, onAddRow, onDeleteRow)}
+                        onChangeToTaxonomic={id => handleChangeToTaxonomic(id, invalidDesignations, onAddRow, onDeleteRow)}
                     />
                 </Col>
             </FormGroup>
@@ -153,12 +150,11 @@ const ChecklistDetailBody = ({
                         data={misidentifications}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddMisidentiication(selected, onAddRow)}
-                        itemComponent={itemProps =>
-                            <MisidentifiedSynonymListItem {...itemProps}
-                                onRowDelete={id => handleRemoveMisidentification(id, onDeleteRow)}
-                                misidentificationAuthors={misidentificationAuthors}
-                                onChangeAuthor={onMisidentificationAuthorsChanged}
-                            />}
+                        onRowDelete={id => handleRemoveMisidentification(id, onDeleteRow)}
+                        itemComponent={MisidentifiedSynonymListItem}
+                        // props specific to itemComponent
+                        misidentificationAuthors={misidentificationAuthors}
+                        onChangeAuthor={onMisidentificationAuthorsChanged}
                     />
                 </Col>
             </FormGroup>

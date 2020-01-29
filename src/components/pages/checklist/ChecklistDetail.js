@@ -13,64 +13,16 @@ import helper from '../../../utils/helper';
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
 
-class ChecklistDetail extends React.Component {
+const ChecklistDetail = ({ species, fors, synonyms, listOfSpecies, accessToken, onShowModal, onChangeSpecies, onUpdateSynonyms, onDetailsChanged, ...props }) => {
 
-    render() {
-        if (!this.props.species.id) {
-            return (
-                <Panel>
-                    <Panel.Body>Click row to edit details</Panel.Body>
-                </Panel>
-            );
-        }
-        const listOfSpeciesOptions = this.props.listOfSpecies.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
-
-        return (
-            <React.Fragment>
-                <Form onSubmit={this.submitForm} horizontal>
-                    <ChecklistDetailHeader
-                        data={this.props.species}
-                        onShowModal={this.props.onShowModal}
-                        onChangeInput={this.props.onChangeSpecies}
-                    />
-                    <ChecklistDetailBody
-                        species={this.props.species}
-                        listOfSpeciesOptions={listOfSpeciesOptions}
-                        fors={this.props.fors}
-                        synonyms={this.props.synonyms}
-                        misidentificationAuthors={this.props.misidentificationAuthors}
-                        onMisidentificationAuthorsChanged={this.handleChangeMisidentificationAuthors}
-                        onSpeciesInputChange={this.props.onChangeSpecies}
-                        onAddRow={this.handleSynonymAddRow}
-                        onDeleteRow={this.handleSynonymRemoveRow}
-                    />
-                    <Well>
-                        <Button bsStyle="primary" type='submit' >Save</Button>
-                    </Well>
-                </Form>
-            </React.Fragment>
-        );
-    }
-
-    submitForm = async e => {
+    const submitForm = async e => {
         e.preventDefault();
-        const accessToken = this.props.accessToken;
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = this.props.synonyms;
-
-        misidentifications.forEach(m => {
-            if (!m.metadata) {
-                m.metadata = {};
-            }
-            m.metadata.misidentificationAuthor = this.props.misidentificationAuthors[m.id];
-        });
+        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = synonyms;
 
         try {
             await checklistFacade.saveSpeciesAndSynonyms({
-                species: this.props.species,
+                species,
                 accessToken,
                 nomenclatoricSynonyms,
                 taxonomicSynonyms,
@@ -80,63 +32,98 @@ class ChecklistDetail extends React.Component {
 
             notifications.success('Saved');
 
-            this.props.onDetailsChanged();
+            onDetailsChanged();
         } catch (error) {
             notifications.error('Error saving');
             throw error;
         }
     };
 
-    handleSynonymAddRow = (selected, property, type) => {
-        const synonyms = this.props.synonyms;
+    const handleSynonymAddRow = (selected, property, type) => {
         const specificSynonyms = synonyms[property];
 
-        const collection = this.addSynonymToList(selected, this.props.species.id, specificSynonyms, type);
+        const collection = addSynonymToList(selected, species.id, specificSynonyms, type, listOfSpecies);
 
         synonyms[property] = collection;
-        this.props.onUpdateSynonyms(synonyms, []);
-    }
+        onUpdateSynonyms(synonyms);
+    };
 
-    handleSynonymRemoveRow = (id, property) => {
-        const synonyms = this.props.synonyms;
+    const handleSynonymRemoveRow = (id, property) => {
         const specificSynonyms = synonyms[property];
 
         const collection = specificSynonyms.filter((s, i) => i !== id);
         synonyms[property] = collection;
 
         const deleteId = specificSynonyms[id].id;
-        const synonymsToDelete = deleteId ? [deleteId] : [];
+        const synonymsToDelete = deleteId ? [deleteId] : undefined;
 
-        this.props.onUpdateSynonyms(synonyms, synonymsToDelete);
+        onUpdateSynonyms(synonyms, synonymsToDelete);
     };
 
-    handleChangeMisidentificationAuthors = (rowId, value) => {
-        const misidentificationAuthors = this.props.misidentificationAuthors;
-        misidentificationAuthors[rowId] = value;
-        this.props.onChangeValue('misidentificationAuthors', misidentificationAuthors);
-        this.setState({
-            isMisidentificationsChanged: true
-        });
+    const handleChangeMisidentificationAuthor = (rowId, value) => {
+        const misidentifications = synonyms.misidentifications;
+        misidentifications[rowId].misidentificationAuthor = value;
+
+        synonyms.misidentifications = misidentifications;
+        onUpdateSynonyms(synonyms);
+    };
+
+    if (!species.id) {
+        return (
+            <Panel>
+                <Panel.Body>Click row to edit details</Panel.Body>
+            </Panel>
+        );
     }
+    const listOfSpeciesOptions = listOfSpecies.map(l => ({
+        id: l.id,
+        label: helper.listOfSpeciesString(l)
+    }));
 
-    addSynonymToList = (selected, idParent, synonyms, type) => {
-        if (!selected) {
-            return synonyms;
-        }
-        if (synonyms.find(s => s.synonym.id === selected.id)) {
-            notifications.warning('The item already exists in the list');
-            return synonyms;
-        }
+    return (
+        <React.Fragment>
+            <Form onSubmit={submitForm} horizontal>
+                <ChecklistDetailHeader
+                    data={species}
+                    onShowModal={onShowModal}
+                    onChangeInput={onChangeSpecies}
+                />
+                <ChecklistDetailBody
+                    species={species}
+                    listOfSpeciesOptions={listOfSpeciesOptions}
+                    fors={fors}
+                    synonyms={synonyms}
+                    misidentificationAuthors={props.misidentificationAuthors}
+                    onMisidentificationAuthorsChanged={handleChangeMisidentificationAuthor}
+                    onSpeciesInputChange={onChangeSpecies}
+                    onAddRow={handleSynonymAddRow}
+                    onDeleteRow={handleSynonymRemoveRow}
+                />
+                <Well>
+                    <Button bsStyle="primary" type='submit' >Save</Button>
+                </Well>
+            </Form>
+        </React.Fragment>
+    );
 
-        const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
-        const species = this.props.listOfSpecies.find(l => l.id === selected.id);
-        synonymObj.synonym = species;
+};
 
-        synonyms.push(synonymObj);
-        synonyms.sort(helper.listOfSpeciesSorterLex);
+function addSynonymToList(selected, idParent, synonyms, type, listOfSpecies) {
+    if (!selected) {
+        return synonyms;
+    }
+    if (synonyms.find(s => s.synonym.id === selected.id)) {
+        notifications.warning('The item already exists in the list');
         return synonyms;
     }
 
+    const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
+    const species = listOfSpecies.find(l => l.id === selected.id);
+    synonymObj.synonym = species;
+
+    synonyms.push(synonymObj);
+    synonyms.sort(helper.listOfSpeciesSorterLex);
+    return synonyms;
 }
 
 export default ChecklistDetail;

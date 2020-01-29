@@ -83,8 +83,7 @@ class Checklist extends Component {
 
             synonyms: {},
             synonymIdsToDelete: [],
-            fors: {},
-            misidentificationAuthors: {}
+            fors: {}
         }
     };
 
@@ -120,19 +119,10 @@ class Checklist extends Component {
         const synonyms = await checklistFacade.getSynonyms(id, accessToken);
         const fors = await checklistFacade.getBasionymsFor(id, accessToken);
 
-        let misidentificationAuthors = {};
-        if (synonyms.misidentifications) {
-            misidentificationAuthors = synonyms.misidentifications.reduce((acc, curr) => {
-                acc[curr.id] = curr.metadata ? curr.metadata.misidentificationAuthor : undefined;
-                return acc;
-            }, {});
-        }
-
         this.setState({
             species,
             listOfSpecies,
             tableRowsSelected: [id],
-            misidentificationAuthors,
             fors,
             synonyms
         });
@@ -148,9 +138,12 @@ class Checklist extends Component {
         });
     };
 
-    handleUpdateSynonyms = (synonyms, removed) => {
-        const synonymIdsToDeleteAll = [...this.state.synonymIdsToDelete, ...removed];
-        const synonymIdsToDelete = [...new Set(synonymIdsToDeleteAll)];
+    handleUpdateSynonyms = (synonyms, removed = []) => {
+        let synonymIdsToDelete = this.state.synonymIdsToDelete;
+        if (removed.length > 0) {
+            const synonymIdsToDeleteAll = [...synonymIdsToDelete, ...removed];
+            synonymIdsToDelete = [...new Set(synonymIdsToDeleteAll)];
+        }
         this.setState({
             synonyms,
             synonymIdsToDelete
@@ -193,13 +186,12 @@ class Checklist extends Component {
                         <Col sm={6} id="species-detail">
                             <ChecklistDetail
                                 species={this.state.species}
-                                listOfSpecies={this.state.listOfSpecies}
                                 fors={this.state.fors}
                                 synonyms={this.state.synonyms}
-                                misidentificationAuthors={this.state.misidentificationAuthors}
+                                listOfSpecies={this.state.listOfSpecies}
+                                onShowModal={this.showModal}
                                 onUpdateSynonyms={this.handleUpdateSynonyms}
                                 onChangeSpecies={this.handleSpeciesChange}
-                                onChangeValue={this.handleValueChange}
                                 onDetailsChanged={() => this.props.onTableChange(undefined, {})}
                             />
                         </Col>

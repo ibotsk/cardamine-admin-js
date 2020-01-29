@@ -38,7 +38,7 @@ class AddableList extends Component {
 
     render() {
         // rowId = (data) => return "id"; default is array index
-        const { data = [], itemComponent: ListRow, rowId, onRowDelete, ...restProps } = this.props;
+        const { data = [], itemComponent: ListRow, rowId, onRowDelete, ...props } = this.props;
         return (
             <div className="addable-list compact-list">
                 <ListGroup>
@@ -49,10 +49,10 @@ class AddableList extends Component {
                             return (
                                 <ListRow
                                     rowId={id}
-                                    key={index}
+                                    key={id}
                                     data={d}
                                     onRowDelete={() => onRowDelete(id)}
-                                    {...restProps}
+                                    {...props}
                                 />)
                         })
                     }
