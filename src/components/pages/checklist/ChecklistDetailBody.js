@@ -93,6 +93,7 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="nomenclatoric-synonyms-autocomplete"
                         data={nomenclatoricSynonyms}
+                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddNomenclatoric(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -112,6 +113,7 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="taxonomic-synonyms-autocomplete"
                         data={taxonomicSynonyms}
+                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddTaxonomic(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -131,6 +133,7 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="invalid-designations-autocomplete"
                         data={invalidDesignations}
+                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddInvalidDesignation(selected, onAddRow)}
                         itemComponent={itemProps =>
@@ -150,6 +153,7 @@ const ChecklistDetailBody = ({
                     <AddableList
                         id="misidentifications-autocomplete"
                         data={misidentifications}
+                        rowId={data => data.synonym.id}
                         options={listOfSpeciesOptions}
                         onAddItemToList={selected => handleAddMisidentiication(selected, onAddRow)}
                         itemComponent={itemProps =>
