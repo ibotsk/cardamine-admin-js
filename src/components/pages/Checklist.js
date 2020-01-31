@@ -165,17 +165,19 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6} id="species-detail">
-                            <ChecklistDetail
-                                species={this.state.species}
-                                fors={this.state.fors}
-                                synonyms={this.state.synonyms}
-                                synonymIdsToDelete={this.state.synonymIdsToDelete}
-                                listOfSpecies={this.state.listOfSpecies}
-                                accessToken={this.props.accessToken}
-                                onShowModal={this.showModal}
-                                onValueChange={this.handleValueChange}
-                                onDetailsChanged={() => this.props.onTableChange(undefined, {})}
-                            />
+                            <div className="scrollable">
+                                <ChecklistDetail
+                                    species={this.state.species}
+                                    fors={this.state.fors}
+                                    synonyms={this.state.synonyms}
+                                    synonymIdsToDelete={this.state.synonymIdsToDelete}
+                                    listOfSpecies={this.state.listOfSpecies}
+                                    accessToken={this.props.accessToken}
+                                    onShowModal={this.showModal}
+                                    onValueChange={this.handleValueChange}
+                                    onDetailsChanged={() => this.props.onTableChange(undefined, {})}
+                                />
+                            </div>
                         </Col>
                     </Row>
                 </Grid>
