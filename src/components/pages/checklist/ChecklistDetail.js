@@ -8,155 +8,93 @@ import {
 import checklistFacade from '../../../facades/checklist';
 
 import notifications from '../../../utils/notifications';
-import helper from '../../../utils/helper';
 
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
 
-class ChecklistDetail extends React.Component {
+const ChecklistDetail = ({
+    species,
+    listOfSpecies,
+    synonyms,
+    fors,
+    synonymIdsToDelete,
+    accessToken,
+    onShowModal,
+    onValueChange,
+    onDetailsChanged,
+    ...props }) => {
 
-    constructor(props) {
-        super(props);
+    const submitForm = async e => {
+        e.preventDefault();
+        submit(species, synonyms, synonymIdsToDelete, accessToken);
+        onDetailsChanged();
+    };
 
-        this.state = {
-            isNomenclatoricSynonymsChanged: false,
-            isTaxonomicSynonymsChanged: false,
-            isInvalidDesignationsChanged: false,
-            isMisidentificationsChanged: false
-        };
-    }
+    const handleSpeciesChange = (prop, val) => {
+        const updatedSpecies = { ...species, [prop]: val };
+        onValueChange({ species: updatedSpecies });
+    };
 
-    render() {
-        if (!this.props.species.id) {
-            return (
-                <Panel>
-                    <Panel.Body>Click row to edit details</Panel.Body>
-                </Panel>
-            );
+    const handleSynonymChange = (synonyms, idToDelete = undefined) => {
+        // idToDelete must be added to list
+        let synonymsToDelete = [...synonymIdsToDelete];
+        if (idToDelete) {
+            synonymsToDelete.push(idToDelete);
+            synonymsToDelete = [...new Set(synonymsToDelete)];
         }
-        const listOfSpeciesOptions = this.props.listOfSpecies.map(l => ({
-            id: l.id,
-            label: helper.listOfSpeciesString(l)
-        }));
+        onValueChange({
+            synonyms,
+            synonymIdsToDelete: synonymsToDelete
+        })
+    };
 
+    if (!species.id) {
         return (
-            <React.Fragment>
-                <Form onSubmit={this.submitForm} horizontal>
-                    <ChecklistDetailHeader
-                        data={this.props.species}
-                        onShowModal={this.props.onShowModal}
-                        onChangeInput={this.props.onChangeSpecies}
-                    />
-                    <ChecklistDetailBody
-                        species={this.props.species}
-                        listOfSpeciesOptions={listOfSpeciesOptions}
-                        fors={this.props.fors}
-                        synonyms={this.props.synonyms}
-                        misidentificationAuthors={this.props.misidentificationAuthors}
-                        onMisidentificationAuthorsChanged={this.handleChangeMisidentificationAuthors}
-                        onSpeciesInputChange={this.props.onChangeSpecies}
-                        onAddRow={this.handleSynonymAddRow}
-                        onDeleteRow={this.handleSynonymRemoveRow}
-                    />
-                    <Well>
-                        <Button bsStyle="primary" type='submit' >Save</Button>
-                    </Well>
-                </Form>
-            </React.Fragment>
+            <Panel>
+                <Panel.Body>Click row to edit details</Panel.Body>
+            </Panel>
         );
     }
 
-    submitForm = async e => {
-        e.preventDefault();
-        const accessToken = this.props.accessToken;
+    return (
+        <React.Fragment>
+            <Form onSubmit={submitForm} horizontal>
+                <ChecklistDetailHeader
+                    data={species}
+                    onShowModal={onShowModal}
+                    onChangeInput={handleSpeciesChange}
+                />
+                <ChecklistDetailBody
+                    species={species}
+                    listOfSpecies={listOfSpecies}
+                    fors={fors}
+                    synonyms={synonyms}
+                    onSpeciesInputChange={handleSpeciesChange}
+                    onSynonymsChange={handleSynonymChange}
+                />
+                <Well>
+                    <Button bsStyle="primary" type='submit' >Save</Button>
+                </Well>
+            </Form>
+        </React.Fragment>
+    );
 
-        const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = this.props.synonyms;
+};
 
-        misidentifications.forEach(m => {
-            if (!m.metadata) {
-                m.metadata = {};
-            }
-            m.metadata.misidentificationAuthor = this.props.misidentificationAuthors[m.id];
+async function submit(species, synonyms, deletedSynonyms, accessToken) {
+    try {
+        await checklistFacade.saveSpeciesAndSynonyms({
+            species,
+            accessToken,
+            synonyms,
+            deletedSynonyms
         });
 
-        try {
-            await checklistFacade.saveSpeciesAndSynonyms({
-                species: this.props.species,
-                accessToken,
-                nomenclatoricSynonyms,
-                taxonomicSynonyms,
-                invalidDesignations,
-                misidentifications,
-                isNomenclatoricSynonymsChanged: this.state.isNomenclatoricSynonymsChanged,
-                isTaxonomicSynonymsChanged: this.state.isTaxonomicSynonymsChanged,
-                isInvalidDesignationsChanged: this.state.isInvalidDesignationsChanged,
-                isMisidentificationsChanged: this.state.isMisidentificationsChanged
-            });
-
-            notifications.success('Saved');
-            // this.props.onTableChange(undefined, {});
-
-            this.setState({
-                isNomenclatoricSynonymsChanged: false,
-                isTaxonomicSynonymsChanged: false,
-                isInvalidDesignationsChanged: false,
-                isMisidentificationsChanged: false
-            });
-
-            this.props.onDetailsChanged();
-        } catch (error) {
-            notifications.error('Error saving');
-            throw error;
-        }
-    };
-
-    handleSynonymAddRow = async (selected, property, changedProperty) => {
-        const accessToken = this.props.accessToken;
-        const synonyms = this.props.synonyms;
-        const collectionState = synonyms[property];
-        const collection = await addSynonymToList(selected, collectionState, accessToken);
-
-        synonyms[property] = collection;
-        this.props.onChangeValue('synonyms', synonyms);
-        this.setState({
-            [changedProperty]: true
-        });
+        notifications.success('Saved');
+    } catch (error) {
+        notifications.error('Error saving');
+        throw error;
     }
-
-    handleSynonymRemoveRow = (id, property, changedProperty) => {
-        const synonyms = this.props.synonyms;
-        const collection = synonyms[property].filter(s => s.id !== id);
-
-        synonyms[property] = collection;
-        this.props.onChangeValue('synonyms', synonyms);
-        this.setState({
-            [changedProperty]: true
-        });
-    };
-
-    handleChangeMisidentificationAuthors = (rowId, value) => {
-        const misidentificationAuthors = this.props.misidentificationAuthors;
-        misidentificationAuthors[rowId] = value;
-        this.props.onChangeValue('misidentificationAuthors', misidentificationAuthors);
-        this.setState({
-            isMisidentificationsChanged: true
-        });
-    }
-
-}
-
-async function addSynonymToList(selected, synonyms, accessToken) {
-    if (!selected) {
-        return null;
-    }
-    if (synonyms.find(s => s.id === selected.id)) {
-        notifications.warning('The item is already in the list');
-        return null;
-    }
-    const synonymJson = await checklistFacade.getSpeciesByIdWithFilter(selected.id, accessToken);
-    synonyms.push(synonymJson);
-    synonyms.sort(helper.listOfSpeciesSorterLex);
-    return synonyms;
-}
+};
 
 export default ChecklistDetail;

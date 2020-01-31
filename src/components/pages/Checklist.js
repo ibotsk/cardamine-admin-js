@@ -82,8 +82,8 @@ class Checklist extends Component {
             tableRowsSelected: [],
 
             synonyms: {},
-            fors: {},
-            misidentificationAuthors: {}
+            synonymIdsToDelete: [],
+            fors: {}
         }
     };
 
@@ -119,33 +119,17 @@ class Checklist extends Component {
         const synonyms = await checklistFacade.getSynonyms(id, accessToken);
         const fors = await checklistFacade.getBasionymsFor(id, accessToken);
 
-        let misidentificationAuthors = {};
-        if (synonyms.misidentifications) {
-            misidentificationAuthors = synonyms.misidentifications.reduce((acc, curr) => {
-                acc[curr.id] = curr.metadata ? curr.metadata.misidentificationAuthor : undefined;
-                return acc;
-            }, {});
-        }
-
         this.setState({
             species,
             listOfSpecies,
             tableRowsSelected: [id],
-            misidentificationAuthors,
+            synonymIdsToDelete: [],
             fors,
             synonyms
         });
     };
 
-    handleValueChange = (prop, val) => this.setState({ [prop]: val });
-
-    handleSpeciesChange = (prop, val) => {
-        const species = { ...this.state.species };
-        species[prop] = val;
-        this.setState({
-            species
-        });
-    };
+    handleValueChange = obj => this.setState(obj);
 
     componentDidMount() {
         const selectedId = this.props.match.params.id;
@@ -181,18 +165,19 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6} id="species-detail">
-                            <ChecklistDetail
-                                species={this.state.species}
-                                listOfSpecies={this.state.listOfSpecies}
-                                fors={this.state.fors}
-                                synonyms={this.state.synonyms}
-                                misidentificationAuthors={this.state.misidentificationAuthors}
-                                accessToken={this.props.accessToken}
-                                onShowModal={this.showModal}
-                                onChangeSpecies={this.handleSpeciesChange}
-                                onChangeValue={this.handleValueChange}
-                                onDetailsChanged={() => this.props.onTableChange(undefined, {})}
-                            />
+                            <div className="scrollable">
+                                <ChecklistDetail
+                                    species={this.state.species}
+                                    fors={this.state.fors}
+                                    synonyms={this.state.synonyms}
+                                    synonymIdsToDelete={this.state.synonymIdsToDelete}
+                                    listOfSpecies={this.state.listOfSpecies}
+                                    accessToken={this.props.accessToken}
+                                    onShowModal={this.showModal}
+                                    onValueChange={this.handleValueChange}
+                                    onDetailsChanged={() => this.props.onTableChange(undefined, {})}
+                                />
+                            </div>
                         </Col>
                     </Row>
                 </Grid>
