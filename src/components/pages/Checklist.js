@@ -170,6 +170,7 @@ class Checklist extends Component {
                                 synonyms={this.state.synonyms}
                                 synonymIdsToDelete={this.state.synonymIdsToDelete}
                                 listOfSpecies={this.state.listOfSpecies}
+                                accessToken={this.props.accessToken}
                                 onShowModal={this.showModal}
                                 onValueChange={this.handleValueChange}
                                 onDetailsChanged={() => this.props.onTableChange(undefined, {})}

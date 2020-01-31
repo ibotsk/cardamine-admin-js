@@ -91,6 +91,11 @@ const postSynonym = ({ data, accessToken }) => {
     axios.post(synonymsUri, data);
 }
 
+const putSynonym = ({ data, accessToken }) => {
+    const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
+    axios.put(synonymsUri, data);
+}
+
 const deleteSynonym = ({ id, accessToken }) => {
     const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri).expand({ id, accessToken });
     axios.delete(synonymsByIdUri);
@@ -114,6 +119,7 @@ export default {
     getMisidentificationsOf,
     getAllSynonymsOf,
     postSynonym,
+    putSynonym,
     deleteSynonym,
     putSpecies
 }

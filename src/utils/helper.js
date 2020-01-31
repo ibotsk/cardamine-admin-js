@@ -235,7 +235,9 @@ const listOfSpeciesSorterLex = (losA, losB) => {
         return -1;
     }
     return 0;
-}
+};
+
+const synonymSorterLex = (synA, synB) => listOfSpeciesSorterLex(synA.synonym, synB.synonym);
 
 const parsePublication = ({ type, authors, title, series, volume, issue, publisher, editor, year, pages, journal }) => {
 
@@ -254,7 +256,7 @@ const parsePublication = ({ type, authors, title, series, volume, issue, publish
         pages,
         journal
     });
-}
+};
 
 const makeWhere = (filters) => {
     const whereList = [];
@@ -291,6 +293,7 @@ export default {
     listOfSpeciesForComponent,
     listOfSpeciesString,
     listOfSpeciesSorterLex,
+    synonymSorterLex,
     makeWhere,
     parsePublication,
     publicationCurateFields

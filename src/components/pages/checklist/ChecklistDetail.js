@@ -17,7 +17,7 @@ const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSp
 
     const submitForm = async e => {
         e.preventDefault();
-        submit(species, synonyms, accessToken);
+        submit(species, synonyms, synonymIdsToDelete, accessToken);
         onDetailsChanged();
     };
 
@@ -101,17 +101,13 @@ const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSp
 
 };
 
-async function submit(species, synonyms, accessToken) {
-    const { nomenclatoricSynonyms, taxonomicSynonyms, invalidDesignations, misidentifications } = synonyms;
-
+async function submit(species, synonyms, deletedSynonyms, accessToken) {
     try {
         await checklistFacade.saveSpeciesAndSynonyms({
             species,
             accessToken,
-            nomenclatoricSynonyms,
-            taxonomicSynonyms,
-            invalidDesignations,
-            misidentifications
+            synonyms,
+            deletedSynonyms
         });
 
         notifications.success('Saved');
@@ -135,7 +131,7 @@ function addSynonymToList(selected, idParent, synonyms, type, listOfSpecies) {
     synonymObj.synonym = species;
 
     synonyms.push(synonymObj);
-    synonyms.sort(helper.listOfSpeciesSorterLex);
+    synonyms.sort(helper.synonymSorterLex);
     return synonyms;
 }
 
