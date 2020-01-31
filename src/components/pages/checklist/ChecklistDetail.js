@@ -8,12 +8,21 @@ import {
 import checklistFacade from '../../../facades/checklist';
 
 import notifications from '../../../utils/notifications';
-import helper from '../../../utils/helper';
 
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
 
-const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSpecies, accessToken, onShowModal, onValueChange, onDetailsChanged, ...props }) => {
+const ChecklistDetail = ({
+    species,
+    listOfSpecies,
+    synonyms,
+    fors,
+    synonymIdsToDelete,
+    accessToken,
+    onShowModal,
+    onValueChange,
+    onDetailsChanged,
+    ...props }) => {
 
     const submitForm = async e => {
         e.preventDefault();
@@ -26,40 +35,17 @@ const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSp
         onValueChange({ species: updatedSpecies });
     };
 
-    const handleSynonymAddRow = (selected, property, type) => {
-        const specificSynonyms = synonyms[property];
-
-        const collection = addSynonymToList(selected, species.id, specificSynonyms, type, listOfSpecies);
-
-        synonyms[property] = collection;
-        onValueChange({ synonyms });
-    };
-
-    const handleSynonymRemoveRow = (id, property) => {
-        const specificSynonyms = synonyms[property];
-
-        const collection = specificSynonyms.filter((s, i) => i !== id);
-        synonyms[property] = collection;
-
-        const deleteId = specificSynonyms[id].id;
-
-        const synonymsToDelete = synonymIdsToDelete;
-        if (deleteId) {
-            synonymsToDelete.push(deleteId);
+    const handleSynonymChange = (synonyms, idToDelete = undefined) => {
+        // idToDelete must be added to list
+        let synonymsToDelete = [...synonymIdsToDelete];
+        if (idToDelete) {
+            synonymsToDelete.push(idToDelete);
+            synonymsToDelete = [...new Set(synonymsToDelete)];
         }
-
         onValueChange({
             synonyms,
             synonymIdsToDelete: synonymsToDelete
-        });
-    };
-
-    const handleChangeMisidentificationAuthor = (rowId, value) => {
-        const misidentifications = synonyms.misidentifications;
-        misidentifications[rowId].misidentificationAuthor = value;
-
-        synonyms.misidentifications = misidentifications;
-        onValueChange({ synonyms });
+        })
     };
 
     if (!species.id) {
@@ -69,10 +55,6 @@ const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSp
             </Panel>
         );
     }
-    const listOfSpeciesOptions = listOfSpecies.map(l => ({
-        id: l.id,
-        label: helper.listOfSpeciesString(l)
-    }));
 
     return (
         <React.Fragment>
@@ -84,13 +66,11 @@ const ChecklistDetail = ({ species, fors, synonyms, synonymIdsToDelete, listOfSp
                 />
                 <ChecklistDetailBody
                     species={species}
-                    listOfSpeciesOptions={listOfSpeciesOptions}
+                    listOfSpecies={listOfSpecies}
                     fors={fors}
                     synonyms={synonyms}
-                    onMisidentificationAuthorsChanged={handleChangeMisidentificationAuthor}
                     onSpeciesInputChange={handleSpeciesChange}
-                    onAddRow={handleSynonymAddRow}
-                    onDeleteRow={handleSynonymRemoveRow}
+                    onSynonymsChange={handleSynonymChange}
                 />
                 <Well>
                     <Button bsStyle="primary" type='submit' >Save</Button>
@@ -116,23 +96,5 @@ async function submit(species, synonyms, deletedSynonyms, accessToken) {
         throw error;
     }
 };
-
-function addSynonymToList(selected, idParent, synonyms, type, listOfSpecies) {
-    if (!selected) {
-        return synonyms;
-    }
-    if (synonyms.find(s => s.synonym.id === selected.id)) {
-        notifications.warning('The item already exists in the list');
-        return synonyms;
-    }
-
-    const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
-    const species = listOfSpecies.find(l => l.id === selected.id);
-    synonymObj.synonym = species;
-
-    synonyms.push(synonymObj);
-    synonyms.sort(helper.synonymSorterLex);
-    return synonyms;
-}
 
 export default ChecklistDetail;

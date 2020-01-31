@@ -123,6 +123,7 @@ class Checklist extends Component {
             species,
             listOfSpecies,
             tableRowsSelected: [id],
+            synonymIdsToDelete: [],
             fors,
             synonyms
         });
