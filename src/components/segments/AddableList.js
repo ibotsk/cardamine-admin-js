@@ -37,20 +37,20 @@ class AddableList extends Component {
     }
 
     render() {
-        const data = this.props.data || [];
-        const { itemComponent: ListRow } = this.props;
+        const { data = [], itemComponent: ListRow, onRowDelete, ...restProps } = this.props;
         return (
             <div className="addable-list compact-list">
                 <ListGroup>
                     {
-                        // row must contain id, props is the rest
                         // ListRow is an injected component that will be rendered as item
-                        data.map(({ id, ...props }, index) =>
+                        data.map((d, index) =>
                             <ListRow
-                                rowId={id}
+                                rowId={d.id}
                                 key={index}
-                                data={props}
-                                onRowDelete={() => this.props.onRowDelete(id)} />
+                                data={d}
+                                onRowDelete={() => onRowDelete(d.id)}
+                                {...restProps}
+                            />
                         )
                     }
                     <ListGroupItem>

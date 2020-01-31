@@ -52,9 +52,10 @@ class SpeciesNameModal extends Component {
     }
 
     onEnter = async () => {
-        if (this.props.id) {
+        const id = this.props.editId;
+        if (id) {
             const accessToken = this.props.accessToken;
-            const data = await checklistFacade.getSpeciesById({ id: this.props.id, accessToken });
+            const data = await checklistFacade.getSpeciesById({ id, accessToken });
 
             this.setState({ ...data });
         }
@@ -203,7 +204,7 @@ class SpeciesNameModal extends Component {
         return (
             <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{this.props.id ? 'Edit name' : 'Create new name'}</Modal.Title>
+                    <Modal.Title>{this.props.editId ? 'Edit name' : 'Create new name'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
