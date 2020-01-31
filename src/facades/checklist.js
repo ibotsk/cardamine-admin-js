@@ -79,6 +79,9 @@ async function submitSynonyms({
 
     const typeOfSynonyms = Object.keys(synonyms);
     for (const key of typeOfSynonyms) {
+
+        setSynonymOrder(synonyms[key]);
+
         for (const synonym of synonyms[key]) {
             checklistService.putSynonym({ data: synonym, accessToken });
         }
@@ -87,6 +90,13 @@ async function submitSynonyms({
     // delete
     for (const id of deletedSynonyms) {
         checklistService.deleteSynonym({ id, accessToken });
+    }
+}
+
+// for synonyms of one type
+function setSynonymOrder(synonyms) {
+    for (const [i, s] of synonyms.entries()) {
+        s.rorder = i + 1;
     }
 }
 
