@@ -21,6 +21,7 @@ import config from '../../config/config';
 
 import '../../styles/custom.css';
 import ChecklistDetail from './checklist/ChecklistDetail';
+import DeleteSpeciesModal from '../segments/modals/DeleteSpeciesModal';
 
 const buildNtypesOptions = ntypes => {
     const obj = {};
@@ -41,6 +42,9 @@ const formatTableRow = data => data.map(n => ({
 
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
+
+const MODAL_EDIT_SPECIES = 'modal-edit-species';
+const MODAL_DELETE_SPECIES = 'modal-delete-species';
 
 const columns = [
     {
@@ -77,6 +81,9 @@ class Checklist extends Component {
 
         this.state = {
             showModalSpecies: false,
+            showModalDelete: false,
+            modalSpeciesEditId: undefined,
+
             listOfSpecies: [], //options for autocomplete fields
             species: {},
             tableRowsSelected: [],
@@ -87,16 +94,31 @@ class Checklist extends Component {
         }
     };
 
-    showModal = id => this.setState({
-        showModalSpecies: true
-    });
+    showModal = (name, id) => {
+        switch (name) {
+            case MODAL_EDIT_SPECIES:
+                this.setState({
+                    showModalSpecies: true,
+                    modalSpeciesEditId: id
+                });
+                break;
+            case MODAL_DELETE_SPECIES:
+                this.setState({ showModalDelete: true });
+                break;
+            default:
+                break;
+        }
+    };
 
     hideModal = () => {
         this.props.onTableChange(undefined, {});
         if (this.state.species.id) {
             this.populateDetailsForEdit(this.state.species.id);
         }
-        this.setState({ showModalSpecies: false });
+        this.setState({
+            showModalSpecies: false,
+            showModalDelete: false
+        });
     };
 
     selectRow = {
@@ -145,7 +167,7 @@ class Checklist extends Component {
             <div id='names'>
                 <Grid>
                     <div id="functions">
-                        <Button bsStyle="success" onClick={this.showModal}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                        <Button bsStyle="success" onClick={() => this.showModal(MODAL_EDIT_SPECIES)}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
                     </div>
                     <h2>Names</h2>
                 </Grid>
@@ -173,7 +195,8 @@ class Checklist extends Component {
                                     synonymIdsToDelete={this.state.synonymIdsToDelete}
                                     listOfSpecies={this.state.listOfSpecies}
                                     accessToken={this.props.accessToken}
-                                    onShowModal={this.showModal}
+                                    onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, this.state.species.id)}
+                                    onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
                                     onValueChange={this.handleValueChange}
                                     onDetailsChanged={() => this.props.onTableChange(undefined, {})}
                                 />
@@ -181,7 +204,8 @@ class Checklist extends Component {
                         </Col>
                     </Row>
                 </Grid>
-                <SpeciesNameModal editId={this.state.species.id} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <SpeciesNameModal id={MODAL_EDIT_SPECIES} editId={this.state.modalSpeciesEditId} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <DeleteSpeciesModal id={MODAL_DELETE_SPECIES} show={this.state.showModalDelete} onCancel={this.hideModal} />
                 <NotificationContainer />
             </div>
         );

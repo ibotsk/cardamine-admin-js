@@ -16,14 +16,17 @@ const mainColWidth = 10;
 const ntypes = config.mappings.losType;
 const typifications = config.mappings.typifications;
 
-const ChecklistDetailHeader = ({ data, onShowModal, onChangeInput }) => {
+const ChecklistDetailHeader = ({ data, onShowEditModal, onShowDeleteModal, onChangeInput }) => {
 
     return (
         <Panel id="species-edit-header">
             <Panel.Heading>
-                <Button bsStyle='warning' bsSize='xsmall' onClick={onShowModal}>
+                <Button bsStyle='warning' bsSize='xsmall' onClick={onShowEditModal}>
                     <Glyphicon glyph='edit' /> Edit Name
-                    </Button>
+                </Button>
+                <Button bsStyle='danger' bsSize='xsmall' onClick={onShowDeleteModal} className="pull-right">
+                    <Glyphicon glyph='trash' /> Delete Name
+                </Button>
             </Panel.Heading>
             <Panel.Body>
                 <h4><LosName data={data} /></h4>

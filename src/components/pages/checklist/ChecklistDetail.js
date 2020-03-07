@@ -19,7 +19,8 @@ const ChecklistDetail = ({
     fors,
     synonymIdsToDelete,
     accessToken,
-    onShowModal,
+    onShowEditModal,
+    onShowDeleteModal,
     onValueChange,
     onDetailsChanged,
     ...props }) => {
@@ -61,7 +62,8 @@ const ChecklistDetail = ({
             <Form onSubmit={submitForm} horizontal>
                 <ChecklistDetailHeader
                     data={species}
-                    onShowModal={onShowModal}
+                    onShowEditModal={onShowEditModal}
+                    onShowDeleteModal={onShowDeleteModal}
                     onChangeInput={handleSpeciesChange}
                 />
                 <ChecklistDetailBody
