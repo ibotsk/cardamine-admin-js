@@ -34,7 +34,7 @@ const buildNtypesOptions = ntypes => {
 
 const ntypeFormatter = cell => <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>;
 
-const formatTableRow = data => data.map(n => ({
+const formatTableRow = (data) => data.map(n => ({
     id: n.id,
     ntype: n.ntype,
     speciesName: helper.listOfSpeciesString(n),
@@ -111,11 +111,10 @@ class Checklist extends Component {
         }
     };
 
-    hideModal = () => {
+    hideModal = (repopulate = true) => {
         this.props.onTableChange(undefined, {});
-        if (this.state.species.id) {
-            this.populateDetailsForEdit(this.state.species.id);
-        }
+        const id = repopulate ? this.state.species.id : undefined;
+        this.populateDetailsForEdit(id);
         this.setState({
             showModalSpecies: false,
             showModalDelete: false
@@ -126,7 +125,8 @@ class Checklist extends Component {
         const { accessToken } = this.props;
         try {
             await checklistFacade.deleteSpecies({ id, accessToken });
-            this.hideModal();
+            this.props.history.push(`/names`);
+            this.hideModal(false);
             notifications.success('Succesfully deleted');
         } catch (e) {
             notifications.error('Error deleting record');
@@ -146,18 +146,24 @@ class Checklist extends Component {
     };
 
     populateDetailsForEdit = async id => {
-        const { accessToken } = this.props;
+        let species = {}, listOfSpecies = [], synonyms = {}, fors = {}, tableRowsSelected = [];
 
-        const species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
-        const listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
+        if (id) {
+            const { accessToken } = this.props;
 
-        const synonyms = await checklistFacade.getSynonyms(id, accessToken);
-        const fors = await checklistFacade.getBasionymsFor(id, accessToken);
+            species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
+            listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
+
+            synonyms = await checklistFacade.getSynonyms(id, accessToken);
+            fors = await checklistFacade.getBasionymsFor(id, accessToken);
+
+            tableRowsSelected = [id];
+        }
 
         this.setState({
             species,
             listOfSpecies,
-            tableRowsSelected: [id],
+            tableRowsSelected,
             synonymIdsToDelete: [],
             fors,
             synonyms
