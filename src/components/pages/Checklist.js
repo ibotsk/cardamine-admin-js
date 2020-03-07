@@ -16,11 +16,13 @@ import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 import checklistFacade from '../../facades/checklist';
 
+import notifications from '../../utils/notifications';
 import helper from '../../utils/helper';
 import config from '../../config/config';
 
 import '../../styles/custom.css';
 import ChecklistDetail from './checklist/ChecklistDetail';
+import DeleteSpeciesModal from '../segments/modals/DeleteSpeciesModal';
 
 const buildNtypesOptions = ntypes => {
     const obj = {};
@@ -32,7 +34,7 @@ const buildNtypesOptions = ntypes => {
 
 const ntypeFormatter = cell => <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>;
 
-const formatTableRow = data => data.map(n => ({
+const formatTableRow = (data) => data.map(n => ({
     id: n.id,
     ntype: n.ntype,
     speciesName: helper.listOfSpeciesString(n),
@@ -41,6 +43,9 @@ const formatTableRow = data => data.map(n => ({
 
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
+
+const MODAL_EDIT_SPECIES = 'modal-edit-species';
+const MODAL_DELETE_SPECIES = 'modal-delete-species';
 
 const columns = [
     {
@@ -77,6 +82,9 @@ class Checklist extends Component {
 
         this.state = {
             showModalSpecies: false,
+            showModalDelete: false,
+            modalSpeciesEditId: undefined,
+
             listOfSpecies: [], //options for autocomplete fields
             species: {},
             tableRowsSelected: [],
@@ -87,17 +95,44 @@ class Checklist extends Component {
         }
     };
 
-    showModal = id => this.setState({
-        showModalSpecies: true
-    });
-
-    hideModal = () => {
-        this.props.onTableChange(undefined, {});
-        if (this.state.species.id) {
-            this.populateDetailsForEdit(this.state.species.id);
+    showModal = (name, id) => {
+        switch (name) {
+            case MODAL_EDIT_SPECIES:
+                this.setState({
+                    showModalSpecies: true,
+                    modalSpeciesEditId: id
+                });
+                break;
+            case MODAL_DELETE_SPECIES:
+                this.setState({ showModalDelete: true });
+                break;
+            default:
+                break;
         }
-        this.setState({ showModalSpecies: false });
     };
+
+    hideModal = (repopulate = true) => {
+        this.props.onTableChange(undefined, {});
+        const id = repopulate ? this.state.species.id : undefined;
+        this.populateDetailsForEdit(id);
+        this.setState({
+            showModalSpecies: false,
+            showModalDelete: false
+        });
+    };
+
+    deleteRecord = async (id) => {
+        const { accessToken } = this.props;
+        try {
+            await checklistFacade.deleteSpecies({ id, accessToken });
+            this.props.history.push(`/names`);
+            this.hideModal(false);
+            notifications.success('Succesfully deleted');
+        } catch (e) {
+            notifications.error('Error deleting record');
+            throw e;
+        }
+    }
 
     selectRow = {
         mode: 'radio',
@@ -111,18 +146,24 @@ class Checklist extends Component {
     };
 
     populateDetailsForEdit = async id => {
-        const accessToken = this.props.accessToken;
+        let species = {}, listOfSpecies = [], synonyms = {}, fors = {}, tableRowsSelected = [];
 
-        const species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
-        const listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
+        if (id) {
+            const { accessToken } = this.props;
 
-        const synonyms = await checklistFacade.getSynonyms(id, accessToken);
-        const fors = await checklistFacade.getBasionymsFor(id, accessToken);
+            species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
+            listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
+
+            synonyms = await checklistFacade.getSynonyms(id, accessToken);
+            fors = await checklistFacade.getBasionymsFor(id, accessToken);
+
+            tableRowsSelected = [id];
+        }
 
         this.setState({
             species,
             listOfSpecies,
-            tableRowsSelected: [id],
+            tableRowsSelected,
             synonymIdsToDelete: [],
             fors,
             synonyms
@@ -141,18 +182,19 @@ class Checklist extends Component {
 
     render() {
         const tableRowSelectedProps = { ...this.selectRow, selected: this.state.tableRowsSelected };
+        const { id: speciesId } = this.state.species;
         return (
             <div id='names'>
                 <Grid>
                     <div id="functions">
-                        <Button bsStyle="success" onClick={this.showModal}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+                        <Button bsStyle="success" onClick={() => this.showModal(MODAL_EDIT_SPECIES)}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
                     </div>
                     <h2>Names</h2>
                 </Grid>
                 <Grid fluid={true} >
                     <Row>
                         <Col sm={6} id="species-list">
-                            <div className="scrollable">
+                            <div className="scrollable scrollable-higher">
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
                                     rowClasses='as-pointer'
@@ -165,23 +207,23 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6} id="species-detail">
-                            <div className="scrollable">
-                                <ChecklistDetail
-                                    species={this.state.species}
-                                    fors={this.state.fors}
-                                    synonyms={this.state.synonyms}
-                                    synonymIdsToDelete={this.state.synonymIdsToDelete}
-                                    listOfSpecies={this.state.listOfSpecies}
-                                    accessToken={this.props.accessToken}
-                                    onShowModal={this.showModal}
-                                    onValueChange={this.handleValueChange}
-                                    onDetailsChanged={() => this.props.onTableChange(undefined, {})}
-                                />
-                            </div>
+                            <ChecklistDetail
+                                species={this.state.species}
+                                fors={this.state.fors}
+                                synonyms={this.state.synonyms}
+                                synonymIdsToDelete={this.state.synonymIdsToDelete}
+                                listOfSpecies={this.state.listOfSpecies}
+                                accessToken={this.props.accessToken}
+                                onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, speciesId)}
+                                onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
+                                onValueChange={this.handleValueChange}
+                                onDetailsChanged={() => this.props.onTableChange(undefined, {})}
+                            />
                         </Col>
                     </Row>
                 </Grid>
-                <SpeciesNameModal editId={this.state.species.id} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <SpeciesNameModal id={MODAL_EDIT_SPECIES} editId={this.state.modalSpeciesEditId} show={this.state.showModalSpecies} onHide={this.hideModal} />
+                <DeleteSpeciesModal id={MODAL_DELETE_SPECIES} show={this.state.showModalDelete} onCancel={this.hideModal} onConfirm={() => this.deleteRecord(speciesId)} />
                 <NotificationContainer />
             </div>
         );

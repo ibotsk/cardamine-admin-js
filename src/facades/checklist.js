@@ -47,7 +47,7 @@ const getBasionymsFor = async (id, accessToken) => {
     }
 }
 
-const saveSpecies = ({ data, accessToken }) => checklistService.putSpecies({ data, accessToken });
+const saveSpecies = async ({ data, accessToken }) => checklistService.putSpecies({ data, accessToken });
 
 const saveSpeciesAndSynonyms = async ({
     species,
@@ -63,6 +63,8 @@ const saveSpeciesAndSynonyms = async ({
         deletedSynonyms
     });
 };
+
+const deleteSpecies = async ({ id, accessToken }) => checklistService.deleteSpecies({ id, accessToken });
 
 function createSynonym(idParent, idSynonym, syntype) {
     return {
@@ -108,5 +110,6 @@ export default {
     getBasionymsFor,
     saveSpecies,
     saveSpeciesAndSynonyms,
+    deleteSpecies,
     createSynonym
 }
