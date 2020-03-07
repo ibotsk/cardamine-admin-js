@@ -60,20 +60,22 @@ const ChecklistDetail = ({
     return (
         <React.Fragment>
             <Form onSubmit={submitForm} horizontal>
-                <ChecklistDetailHeader
-                    data={species}
-                    onShowEditModal={onShowEditModal}
-                    onShowDeleteModal={onShowDeleteModal}
-                    onChangeInput={handleSpeciesChange}
-                />
-                <ChecklistDetailBody
-                    species={species}
-                    listOfSpecies={listOfSpecies}
-                    fors={fors}
-                    synonyms={synonyms}
-                    onSpeciesInputChange={handleSpeciesChange}
-                    onSynonymsChange={handleSynonymChange}
-                />
+                <div className="scrollable">
+                    <ChecklistDetailHeader
+                        data={species}
+                        onShowEditModal={onShowEditModal}
+                        onShowDeleteModal={onShowDeleteModal}
+                        onChangeInput={handleSpeciesChange}
+                    />
+                    <ChecklistDetailBody
+                        species={species}
+                        listOfSpecies={listOfSpecies}
+                        fors={fors}
+                        synonyms={synonyms}
+                        onSpeciesInputChange={handleSpeciesChange}
+                        onSynonymsChange={handleSynonymChange}
+                    />
+                </div>
                 <Well>
                     <Button bsStyle="primary" type='submit' >Save</Button>
                 </Well>

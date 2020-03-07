@@ -194,7 +194,7 @@ class Checklist extends Component {
                 <Grid fluid={true} >
                     <Row>
                         <Col sm={6} id="species-list">
-                            <div className="scrollable">
+                            <div className="scrollable scrollable-higher">
                                 <BootstrapTable hover striped condensed
                                     keyField='id'
                                     rowClasses='as-pointer'
@@ -207,20 +207,18 @@ class Checklist extends Component {
                             </div>
                         </Col>
                         <Col sm={6} id="species-detail">
-                            <div className="scrollable">
-                                <ChecklistDetail
-                                    species={this.state.species}
-                                    fors={this.state.fors}
-                                    synonyms={this.state.synonyms}
-                                    synonymIdsToDelete={this.state.synonymIdsToDelete}
-                                    listOfSpecies={this.state.listOfSpecies}
-                                    accessToken={this.props.accessToken}
-                                    onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, speciesId)}
-                                    onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
-                                    onValueChange={this.handleValueChange}
-                                    onDetailsChanged={() => this.props.onTableChange(undefined, {})}
-                                />
-                            </div>
+                            <ChecklistDetail
+                                species={this.state.species}
+                                fors={this.state.fors}
+                                synonyms={this.state.synonyms}
+                                synonymIdsToDelete={this.state.synonymIdsToDelete}
+                                listOfSpecies={this.state.listOfSpecies}
+                                accessToken={this.props.accessToken}
+                                onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, speciesId)}
+                                onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
+                                onValueChange={this.handleValueChange}
+                                onDetailsChanged={() => this.props.onTableChange(undefined, {})}
+                            />
                         </Col>
                     </Row>
                 </Grid>
