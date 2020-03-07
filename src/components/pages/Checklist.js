@@ -16,6 +16,7 @@ import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 import checklistFacade from '../../facades/checklist';
 
+import notifications from '../../utils/notifications';
 import helper from '../../utils/helper';
 import config from '../../config/config';
 
@@ -121,6 +122,18 @@ class Checklist extends Component {
         });
     };
 
+    deleteRecord = async (id) => {
+        const { accessToken } = this.props;
+        try {
+            await checklistFacade.deleteSpecies({ id, accessToken });
+            this.hideModal();
+            notifications.success('Succesfully deleted');
+        } catch (e) {
+            notifications.error('Error deleting record');
+            throw e;
+        }
+    }
+
     selectRow = {
         mode: 'radio',
         clickToSelect: true,
@@ -133,7 +146,7 @@ class Checklist extends Component {
     };
 
     populateDetailsForEdit = async id => {
-        const accessToken = this.props.accessToken;
+        const { accessToken } = this.props;
 
         const species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
         const listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
@@ -163,6 +176,7 @@ class Checklist extends Component {
 
     render() {
         const tableRowSelectedProps = { ...this.selectRow, selected: this.state.tableRowsSelected };
+        const { id: speciesId } = this.state.species;
         return (
             <div id='names'>
                 <Grid>
@@ -195,7 +209,7 @@ class Checklist extends Component {
                                     synonymIdsToDelete={this.state.synonymIdsToDelete}
                                     listOfSpecies={this.state.listOfSpecies}
                                     accessToken={this.props.accessToken}
-                                    onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, this.state.species.id)}
+                                    onShowEditModal={() => this.showModal(MODAL_EDIT_SPECIES, speciesId)}
                                     onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
                                     onValueChange={this.handleValueChange}
                                     onDetailsChanged={() => this.props.onTableChange(undefined, {})}
@@ -205,7 +219,7 @@ class Checklist extends Component {
                     </Row>
                 </Grid>
                 <SpeciesNameModal id={MODAL_EDIT_SPECIES} editId={this.state.modalSpeciesEditId} show={this.state.showModalSpecies} onHide={this.hideModal} />
-                <DeleteSpeciesModal id={MODAL_DELETE_SPECIES} show={this.state.showModalDelete} onCancel={this.hideModal} />
+                <DeleteSpeciesModal id={MODAL_DELETE_SPECIES} show={this.state.showModalDelete} onCancel={this.hideModal} onConfirm={() => this.deleteRecord(speciesId)} />
                 <NotificationContainer />
             </div>
         );

@@ -106,6 +106,11 @@ const putSpecies = ({ data, accessToken }) => {
     axios.put(losUri, data);
 }
 
+const deleteSpecies = ({ id, accessToken }) => {
+    const losUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
+    axios.delete(losUri);
+}
+
 export default {
     getAllSpecies,
     getSpeciesById,
@@ -121,5 +126,6 @@ export default {
     postSynonym,
     putSynonym,
     deleteSynonym,
-    putSpecies
+    putSpecies,
+    deleteSpecies
 }
