@@ -4,9 +4,14 @@ ul {
 
 .scrollable {
     overflow-y: scroll;
-    height: 600px;
+    height: 514px;
     border-bottom: 1px solid #ddd;
     border-top: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.scrollable-higher {
+    height: 600px;
 }
 
 .as-pointer {

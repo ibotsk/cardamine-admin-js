@@ -24,12 +24,13 @@ const constructSubNomenlatoric = (subNomenclatoricList) => {
     );
 }
 
-const SynonymListItem = ({ rowId, data: { prefix, value: losObject }, additions: Additions, ...props }) => {
+const SynonymListItem = ({ rowId, data, prefix, additions: Additions, showSubNomenclatoric = true, ...props }) => {
+    const { synonym: speciesName } = data;
     return (
         <ListGroupItem bsSize='sm'>
             <Row>
                 <Col xs={12}>
-                    {prefix} <LosName data={losObject} />
+                    {prefix} <LosName data={speciesName} />
                     <span className="pull-right">
                         {Additions &&
                             <Additions rowId={rowId} {...props} />
@@ -40,7 +41,8 @@ const SynonymListItem = ({ rowId, data: { prefix, value: losObject }, additions:
                     </span>
                 </Col>
             </Row>
-            {constructSubNomenlatoric(losObject['synonyms-nomenclatoric'])}
+            {props.children}
+            {showSubNomenclatoric && constructSubNomenlatoric(speciesName['synonyms-nomenclatoric-through'])}
         </ListGroupItem>
     );
 

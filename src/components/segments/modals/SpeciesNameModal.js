@@ -25,6 +25,8 @@ const initialValues = {
     var: '',
     subvar: '',
     forma: '',
+    proles: '',
+    unranked: '',
     authors: '',
     genusH: '',
     speciesH: '',
@@ -50,9 +52,10 @@ class SpeciesNameModal extends Component {
     }
 
     onEnter = async () => {
-        if (this.props.id) {
+        const id = this.props.editId;
+        if (id) {
             const accessToken = this.props.accessToken;
-            const data = await checklistFacade.getSpeciesById({ id: this.props.id, accessToken });
+            const data = await checklistFacade.getSpeciesById({ id, accessToken });
 
             this.setState({ ...data });
         }
@@ -107,7 +110,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.genusH}
+                                    value={this.state.genusH || ''}
                                     placeholder="Hybrid Genus"
                                     onChange={this.handleChange}
                                 />
@@ -120,7 +123,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.speciesH}
+                                    value={this.state.speciesH || ''}
                                     placeholder="Hybrid Species"
                                     onChange={this.handleChange}
                                 />
@@ -133,7 +136,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.subspH}
+                                    value={this.state.subspH || ''}
                                     placeholder="Hybrid Subsp"
                                     onChange={this.handleChange}
                                 />
@@ -146,7 +149,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.varH}
+                                    value={this.state.varH || ''}
                                     placeholder="Hybrid Var"
                                     onChange={this.handleChange}
                                 />
@@ -159,7 +162,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.subvarH}
+                                    value={this.state.subvarH || ''}
                                     placeholder="Hybrid Subvar"
                                     onChange={this.handleChange}
                                 />
@@ -172,7 +175,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.formaH}
+                                    value={this.state.formaH || ''}
                                     placeholder="Hybrid Forma"
                                     onChange={this.handleChange}
                                 />
@@ -185,7 +188,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.authorsH}
+                                    value={this.state.authorsH || ''}
                                     placeholder="Hybrid Authors"
                                     onChange={this.handleChange}
                                 />
@@ -201,7 +204,7 @@ class SpeciesNameModal extends Component {
         return (
             <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{this.props.id ? 'Edit name' : 'Create new name'}</Modal.Title>
+                    <Modal.Title>{this.props.editId ? 'Edit name' : 'Create new name'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
@@ -241,7 +244,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.species}
+                                    value={this.state.species || ''}
                                     placeholder="Species"
                                     onChange={this.handleChange}
                                 />
@@ -254,7 +257,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.subsp}
+                                    value={this.state.subsp || ''}
                                     placeholder="Subsp"
                                     onChange={this.handleChange}
                                 />
@@ -267,7 +270,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.var}
+                                    value={this.state.var || ''}
                                     placeholder="Var"
                                     onChange={this.handleChange}
                                 />
@@ -280,7 +283,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.subvar}
+                                    value={this.state.subvar || ''}
                                     placeholder="Subvar"
                                     onChange={this.handleChange}
                                 />
@@ -293,8 +296,34 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.forma}
+                                    value={this.state.forma || ''}
                                     placeholder="Forma"
+                                    onChange={this.handleChange}
+                                />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup controlId="proles" bsSize='sm'>
+                            <Col componentClass={ControlLabel} sm={titleColWidth}>
+                                Proles
+                            </Col>
+                            <Col sm={mainColWidth}>
+                                <FormControl
+                                    type="text"
+                                    value={this.state.proles || ''}
+                                    placeholder="Proles"
+                                    onChange={this.handleChange}
+                                />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup controlId="unranked" bsSize='sm'>
+                            <Col componentClass={ControlLabel} sm={titleColWidth}>
+                                Unranked
+                            </Col>
+                            <Col sm={mainColWidth}>
+                                <FormControl
+                                    type="text"
+                                    value={this.state.unranked || ''}
+                                    placeholder="Unranked"
                                     onChange={this.handleChange}
                                 />
                             </Col>
@@ -306,7 +335,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.authors}
+                                    value={this.state.authors || ''}
                                     placeholder="Authors"
                                     onChange={this.handleChange}
                                 />
@@ -331,7 +360,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.publication}
+                                    value={this.state.publication || ''}
                                     placeholder="Publication"
                                     onChange={this.handleChange}
                                 />
@@ -344,7 +373,7 @@ class SpeciesNameModal extends Component {
                             <Col sm={mainColWidth}>
                                 <FormControl
                                     type="text"
-                                    value={this.state.tribus}
+                                    value={this.state.tribus || ''}
                                     placeholder="Tribus"
                                     onChange={this.handleChange}
                                 />

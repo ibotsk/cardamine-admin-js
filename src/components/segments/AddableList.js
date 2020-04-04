@@ -8,7 +8,6 @@ import {
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
-// import SynonymListItem from './SynonymListItem';
 
 class AddableList extends Component {
 
@@ -38,21 +37,24 @@ class AddableList extends Component {
     }
 
     render() {
-        const data = this.props.data || [];
-        const { itemComponent: ListRow } = this.props;
+        // rowId = (data) => return "id"; default is array index
+        const { data = [], itemComponent: ListRow, rowId, onRowDelete, ...props } = this.props;
         return (
             <div className="addable-list compact-list">
                 <ListGroup>
                     {
-                        // row must contain id, props is the rest
                         // ListRow is an injected component that will be rendered as item
-                        data.map(({ id, ...props }, index) =>
-                            <ListRow
-                                rowId={id}
-                                key={index}
-                                data={props}
-                                onRowDelete={() => this.props.onRowDelete(id)} />
-                        )
+                        data.map((d, index) => {
+                            const id = rowId ? rowId(d) : index;
+                            return (
+                                <ListRow
+                                    rowId={id}
+                                    key={id}
+                                    data={d}
+                                    onRowDelete={() => onRowDelete(id)}
+                                    {...props}
+                                />)
+                        })
                     }
                     <ListGroupItem>
                         <FormGroup>
