@@ -42,8 +42,6 @@ class Import extends React.Component {
     // TODO: handle duplicate references found
     const report = importUtils.createReport(records);
 
-    // console.log({ records });
-
     this.setState({
       submitEnabled: true,
       recordsCount: count,
