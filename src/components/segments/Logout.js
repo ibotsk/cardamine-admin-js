@@ -8,26 +8,26 @@ import { removeState } from '../../services/local-storage';
 
 class Logout extends React.Component {
 
-    async componentWillMount() {
-        const accessToken = this.props.accessToken;
-        await userService.logout(accessToken);
-        this.props.unsetAuthenticated();
-        removeState();
-    }
+  async componentWillMount() {
+    const accessToken = this.props.accessToken;
+    await userService.logout(accessToken);
+    this.props.unsetAuthenticated();
+    removeState();
+  }
 
-    render() {
-        return <Redirect to="/" />;
-    }
+  render() {
+    return <Redirect to="/" />;
+  }
 
 }
 
 const mapStateToProps = state => ({
-    accessToken: state.authentication.accessToken
+  accessToken: state.authentication.accessToken
 });
 
 export default connect(
-    mapStateToProps,
-    {
-        unsetAuthenticated
-    }
+  mapStateToProps,
+  {
+    unsetAuthenticated
+  }
 )(Logout);

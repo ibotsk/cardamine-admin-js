@@ -12,79 +12,79 @@ import ImportReport from './ImportReport';
 
 class Import extends React.Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            submitEnabled: false,
-            records: [],
-            recordsCount: 0,
-            report: {},
-            loadDataPercent: 0
-        };
+    this.state = {
+      submitEnabled: false,
+      records: [],
+      recordsCount: 0,
+      report: {},
+      loadDataPercent: 0
+    };
+  }
+
+  increase = (i, total) => {
+    let newValue = Math.floor(i * 100 / total);
+
+    if (newValue > 100) {
+      newValue = 100;
     }
+    this.setState({
+      recordsCount: i,
+      loadDataPercent: newValue
+    });
+  };
 
-    increase = (i, total) => {
-        let newValue = Math.floor(i * 100 / total);
+  handleOnFileLoad = async (data) => {
+    const { count, records } = await importFacade.loadData(data, this.props.accessToken, this.increase);
 
-        if (newValue > 100) {
-            newValue = 100;
-        }
-        this.setState({
-            recordsCount: i,
-            loadDataPercent: newValue
-        });
-    };
+    // TODO: handle duplicate references found
+    const report = importUtils.createReport(records);
 
-    handleOnFileLoad = async (data) => {
-        const { count, records } = await importFacade.loadData(data, this.props.accessToken, this.increase);
+    // console.log({ records });
 
-        // TODO: handle duplicate references found
-        const report = importUtils.createReport(records);
+    this.setState({
+      submitEnabled: true,
+      recordsCount: count,
+      report,
+      records
+    });
+  };
 
-        // console.log({ records });
+  importRecords = async () => {
+    const records = this.state.records;
 
-        this.setState({
-            submitEnabled: true,
-            recordsCount: count,
-            report,
-            records
-        });
-    };
+    importFacade.importData(records, this.props.accessToken);
+  };
 
-    importRecords = async () => {
-        const records = this.state.records;
+  render() {
+    return (
+      <div id="import">
+        <Grid>
+          <Panel>
+            <Panel.Body>
+              <CSVReader onFileLoaded={this.handleOnFileLoad} />
+            </Panel.Body>
+          </Panel>
+          <Panel>
+            <Panel.Body>
+              <Line percent={this.state.loadDataPercent} />
+              <h4>Records to import: {this.state.recordsCount}</h4>
 
-        importFacade.importData(records, this.props.accessToken);
-    };
-
-    render() {
-        return (
-            <div id="import">
-                <Grid>
-                    <Panel>
-                        <Panel.Body>
-                            <CSVReader onFileLoaded={this.handleOnFileLoad} />
-                        </Panel.Body>
-                    </Panel>
-                    <Panel>
-                        <Panel.Body>
-                            <Line percent={this.state.loadDataPercent} />
-                            <h4>Records to import: {this.state.recordsCount}</h4>
-
-                            <ImportReport report={this.state.report} />
-                        </Panel.Body>
-                    </Panel>
-                    <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
-                </Grid>
-            </div>
-        );
-    }
+              <ImportReport report={this.state.report} />
+            </Panel.Body>
+          </Panel>
+          <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
+        </Grid>
+      </div>
+    );
+  }
 
 };
 
 const mapStateToProps = state => ({
-    accessToken: state.authentication.accessToken
+  accessToken: state.authentication.accessToken
 });
 
 export default connect(mapStateToProps)(Import);

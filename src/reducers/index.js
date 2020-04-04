@@ -4,7 +4,7 @@ import pagination from './pagination';
 import exportData from './exportData';
 
 export default combineReducers({
-    authentication,
-    pagination,
-    exportData
+  authentication,
+  pagination,
+  exportData
 });

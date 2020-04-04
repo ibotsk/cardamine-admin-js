@@ -14,24 +14,24 @@ import Logout from '../segments/Logout';
 import Import from './chromdata/Import';
 
 const Routing = () => (
-    <Switch>
-        <PrivateRoute exact path="/chromosome-data" component={Cdata} />
-        <PrivateRoute exact path="/chromosome-data/new" component={Record} />
-        <PrivateRoute path="/chromosome-data/edit/:recordId" component={Record} />
-        <PrivateRoute exact path="/chromosome-data/import" component={Import} />
-        <PrivateRoute exact path="/publications" component={Publications} />
-        <PrivateRoute exact path="/persons" component={Persons} />
-        <PrivateRoute path='/names/:id?' component={Checklist} />
-        <PrivateRoute exact path='/logout' component={Logout} />
-    </Switch>
+  <Switch>
+    <PrivateRoute exact path="/chromosome-data" component={Cdata} />
+    <PrivateRoute exact path="/chromosome-data/new" component={Record} />
+    <PrivateRoute path="/chromosome-data/edit/:recordId" component={Record} />
+    <PrivateRoute exact path="/chromosome-data/import" component={Import} />
+    <PrivateRoute exact path="/publications" component={Publications} />
+    <PrivateRoute exact path="/persons" component={Persons} />
+    <PrivateRoute path='/names/:id?' component={Checklist} />
+    <PrivateRoute exact path='/logout' component={Logout} />
+  </Switch>
 );
 
 const HomePage = () => (
-    <React.Fragment>
-        <CNavbar />
-        <Routing />
-        <Footer />
-    </React.Fragment>
+  <React.Fragment>
+    <CNavbar />
+    <Routing />
+    <Footer />
+  </React.Fragment>
 );
 
 export default HomePage;

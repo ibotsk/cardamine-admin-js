@@ -4,51 +4,51 @@ import axios from './axios';
 import config from '../config/config';
 
 const getAllSpecies = async (accessToken, format) => {
-    const getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri).expand({ accessToken });
-    const response = await axios.get(getAllListOfSpeciesUri);
+  const getAllListOfSpeciesUri = template.parse(config.uris.listOfSpeciesUri.getAllWOrderUri).expand({ accessToken });
+  const response = await axios.get(getAllListOfSpeciesUri);
 
-    const listOfSpeciess = response.data;
-    if (!format) {
-        return listOfSpeciess;
-    }
+  const listOfSpeciess = response.data;
+  if (!format) {
+    return listOfSpeciess;
+  }
 
-    return listOfSpeciess.map(format);
+  return listOfSpeciess.map(format);
 }
 
 const getSpeciesByIdWithFilter = async ({ id, accessToken }) => {
-    const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id, accessToken });
-    const response = await axios.get(getByIdUri);
-    return response.data;
+  const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdWFilterUri).expand({ id, accessToken });
+  const response = await axios.get(getByIdUri);
+  return response.data;
 }
 
 const getSpeciesById = async ({ id, accessToken }) => {
-    const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
-    const response = await axios.get(getByIdUri);
-    return response.data;
+  const getByIdUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
+  const response = await axios.get(getByIdUri);
+  return response.data;
 }
 
 const getSpeciesByAll = async ({ where, accessToken }) => {
-    const getByAllUri = template.parse(config.uris.listOfSpeciesUri.getAllWFilterUri).expand({ where, accessToken });
-    const response = await axios.get(getByAllUri);
-    return response.data;
+  const getByAllUri = template.parse(config.uris.listOfSpeciesUri.getAllWFilterUri).expand({ where, accessToken });
+  const response = await axios.get(getByAllUri);
+  return response.data;
 }
 
 const getBasionymFor = async ({ id, accessToken }) => {
-    const getBasionymForUri = template.parse(config.uris.listOfSpeciesUri.getBasionymForUri).expand({ id, accessToken });
-    const response = await axios.get(getBasionymForUri);
-    return response.data;
+  const getBasionymForUri = template.parse(config.uris.listOfSpeciesUri.getBasionymForUri).expand({ id, accessToken });
+  const response = await axios.get(getBasionymForUri);
+  return response.data;
 }
 
 const getReplacedFor = async ({ id, accessToken }) => {
-    const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id, accessToken });
-    const response = await axios.get(getReplacedForUri);
-    return response.data;
+  const getReplacedForUri = template.parse(config.uris.listOfSpeciesUri.getReplacedForUri).expand({ id, accessToken });
+  const response = await axios.get(getReplacedForUri);
+  return response.data;
 }
 
 const getNomenNovumFor = async ({ id, accessToken }) => {
-    const getNomenNovumForUri = template.parse(config.uris.listOfSpeciesUri.getNomenNovumForUri).expand({ id, accessToken });
-    const response = await axios.get(getNomenNovumForUri);
-    return response.data;
+  const getNomenNovumForUri = template.parse(config.uris.listOfSpeciesUri.getNomenNovumForUri).expand({ id, accessToken });
+  const response = await axios.get(getNomenNovumForUri);
+  return response.data;
 }
 
 /**
@@ -57,29 +57,29 @@ const getNomenNovumFor = async ({ id, accessToken }) => {
  * @param {*} accessToken 
  */
 const getSynonymsNomenclatoricOf = async ({ id, accessToken }) => {
-    const getSynonymsNomenclatoricUri = template.parse(config.uris.listOfSpeciesUri.getNomenclatoricSynonymsUri).expand({ id, accessToken });
-    const response = await axios.get(getSynonymsNomenclatoricUri);
-    return response.data;
+  const getSynonymsNomenclatoricUri = template.parse(config.uris.listOfSpeciesUri.getNomenclatoricSynonymsUri).expand({ id, accessToken });
+  const response = await axios.get(getSynonymsNomenclatoricUri);
+  return response.data;
 }
 
 // same
 const getSynonymsTaxonomicOf = async ({ id, accessToken }) => {
-    const getSynonymsTaxonomicUri = template.parse(config.uris.listOfSpeciesUri.getTaxonomicSynonymsUri).expand({ id, accessToken });
-    const response = await axios.get(getSynonymsTaxonomicUri);
-    return response.data;
+  const getSynonymsTaxonomicUri = template.parse(config.uris.listOfSpeciesUri.getTaxonomicSynonymsUri).expand({ id, accessToken });
+  const response = await axios.get(getSynonymsTaxonomicUri);
+  return response.data;
 }
 
 //same
 const getInvalidDesignationsOf = async ({ id, accessToken }) => {
-    const getInvalidDesignationsUri = template.parse(config.uris.listOfSpeciesUri.getInvalidSynonymsUri).expand({ id, accessToken });
-    const response = await axios.get(getInvalidDesignationsUri);
-    return response.data;
+  const getInvalidDesignationsUri = template.parse(config.uris.listOfSpeciesUri.getInvalidSynonymsUri).expand({ id, accessToken });
+  const response = await axios.get(getInvalidDesignationsUri);
+  return response.data;
 }
 
 const getMisidentificationsOf = async ({ id, accessToken }) => {
-    const getMisidentificationsUri = template.parse(config.uris.listOfSpeciesUri.getMisidentificationUri).expand({ id, accessToken });
-    const response = await axios.get(getMisidentificationsUri);
-    return response.data;
+  const getMisidentificationsUri = template.parse(config.uris.listOfSpeciesUri.getMisidentificationUri).expand({ id, accessToken });
+  const response = await axios.get(getMisidentificationsUri);
+  return response.data;
 }
 
 /**
@@ -87,52 +87,52 @@ const getMisidentificationsOf = async ({ id, accessToken }) => {
  * @param {{ id: string, filter: string, accessToken: string }} param0 
  */
 const getAllSynonymsOf = async ({ id, filter = "{}", accessToken }) => {
-    const losIsParentOfSynonymsUri = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id, filter, accessToken });
-    const response = await axios.get(losIsParentOfSynonymsUri);
-    return response.data;
+  const losIsParentOfSynonymsUri = template.parse(config.uris.listOfSpeciesUri.getSynonymsOfParent).expand({ id, filter, accessToken });
+  const response = await axios.get(losIsParentOfSynonymsUri);
+  return response.data;
 }
 
 const postSynonym = ({ data, accessToken }) => {
-    const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
-    axios.post(synonymsUri, data);
+  const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
+  axios.post(synonymsUri, data);
 }
 
 const putSynonym = ({ data, accessToken }) => {
-    const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
-    axios.put(synonymsUri, data);
+  const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
+  axios.put(synonymsUri, data);
 }
 
 const deleteSynonym = ({ id, accessToken }) => {
-    const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri).expand({ id, accessToken });
-    axios.delete(synonymsByIdUri);
+  const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri).expand({ id, accessToken });
+  axios.delete(synonymsByIdUri);
 }
 
 const putSpecies = ({ data, accessToken }) => {
-    const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
-    axios.put(losUri, data);
+  const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
+  axios.put(losUri, data);
 }
 
 const deleteSpecies = ({ id, accessToken }) => {
-    const losUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
-    axios.delete(losUri);
+  const losUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
+  axios.delete(losUri);
 }
 
 export default {
-    getAllSpecies,
-    getSpeciesById,
-    getSpeciesByIdWithFilter,
-    getSpeciesByAll,
-    getBasionymFor,
-    getReplacedFor,
-    getNomenNovumFor,
-    getSynonymsNomenclatoricOf,
-    getSynonymsTaxonomicOf,
-    getInvalidDesignationsOf,
-    getMisidentificationsOf,
-    getAllSynonymsOf,
-    postSynonym,
-    putSynonym,
-    deleteSynonym,
-    putSpecies,
-    deleteSpecies
+  getAllSpecies,
+  getSpeciesById,
+  getSpeciesByIdWithFilter,
+  getSpeciesByAll,
+  getBasionymFor,
+  getReplacedFor,
+  getNomenNovumFor,
+  getSynonymsNomenclatoricOf,
+  getSynonymsTaxonomicOf,
+  getInvalidDesignationsOf,
+  getMisidentificationsOf,
+  getAllSynonymsOf,
+  postSynonym,
+  putSynonym,
+  deleteSynonym,
+  putSpecies,
+  deleteSpecies
 }

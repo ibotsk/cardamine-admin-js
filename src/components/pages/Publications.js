@@ -16,89 +16,89 @@ import config from '../../config/config';
 const MODAL_LITERATURE = 'showModalLiterature';
 
 const columns = [
-    {
-        dataField: 'id',
-        text: 'ID'
-    },
-    {
-        dataField: 'action',
-        text: 'Actions'
-    },
-    {
-        dataField: 'type',
-        text: 'Type'
-    },
-    {
-        dataField: 'publication',
-        text: 'Publication'
-    }
+  {
+    dataField: 'id',
+    text: 'ID'
+  },
+  {
+    dataField: 'action',
+    text: 'Actions'
+  },
+  {
+    dataField: 'type',
+    text: 'Type'
+  },
+  {
+    dataField: 'publication',
+    text: 'Publication'
+  }
 ];
 
 class Publications extends Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            [MODAL_LITERATURE]: false,
-            editId: 0
-        }
+    this.state = {
+      [MODAL_LITERATURE]: false,
+      editId: 0
     }
+  }
 
-    showModal = id => {
-        this.setState({
-            [MODAL_LITERATURE]: true,
-            editId: id
-        });
-    }
+  showModal = id => {
+    this.setState({
+      [MODAL_LITERATURE]: true,
+      editId: id
+    });
+  }
 
-    hideModal = async () => {
-        await this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
-        this.setState({ [MODAL_LITERATURE]: false });
-    }
+  hideModal = async () => {
+    await this.props.onTableChange(undefined, { page: this.props.paginationOptions.page, sizePerPage: this.props.paginationOptions.sizePerPage, filters: {} });
+    this.setState({ [MODAL_LITERATURE]: false });
+  }
 
-    formatResult = (data) => {
-        return data.map(l => ({
-            id: l.id,
-            action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(l.id)}>Edit</Button>,
-            type: config.mappings.displayType[l.displayType].name,
-            publication: helper.parsePublication(l)
-        }));
-    }
+  formatResult = (data) => {
+    return data.map(l => ({
+      id: l.id,
+      action: <Button bsSize='xsmall' bsStyle="warning" onClick={() => this.showModal(l.id)}>Edit</Button>,
+      type: config.mappings.displayType[l.displayType].name,
+      publication: helper.parsePublication(l)
+    }));
+  }
 
-    render() {
-        return (
-            <div id='publications'>
-                <Grid id="functions">
-                    <div id="functions">
-                        <Button bsStyle="success" onClick={() => this.showModal('')}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
-                    </div>
-                    <h2>Publications</h2>
-                </Grid>
-                <Grid fluid={true}>
-                    <BootstrapTable hover striped condensed
-                        remote={{ filter: true, pagination: true }}
-                        keyField='id'
-                        data={this.formatResult(this.props.data)}
-                        columns={columns}
-                        filter={filterFactory()}
-                        onTableChange={this.props.onTableChange}
-                        pagination={paginationFactory(this.props.paginationOptions)}
-                    />
-                </Grid>
-                <PublicationModal id={this.state.editId} show={this.state[MODAL_LITERATURE]} onHide={this.hideModal} />
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div id='publications'>
+        <Grid id="functions">
+          <div id="functions">
+            <Button bsStyle="success" onClick={() => this.showModal('')}><Glyphicon glyph="plus"></Glyphicon> Add new</Button>
+          </div>
+          <h2>Publications</h2>
+        </Grid>
+        <Grid fluid={true}>
+          <BootstrapTable hover striped condensed
+            remote={{ filter: true, pagination: true }}
+            keyField='id'
+            data={this.formatResult(this.props.data)}
+            columns={columns}
+            filter={filterFactory()}
+            onTableChange={this.props.onTableChange}
+            pagination={paginationFactory(this.props.paginationOptions)}
+          />
+        </Grid>
+        <PublicationModal id={this.state.editId} show={this.state[MODAL_LITERATURE]} onHide={this.hideModal} />
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = state => ({
-    accessToken: state.authentication.accessToken
+  accessToken: state.authentication.accessToken
 });
 
 export default connect(mapStateToProps)(
-    TabledPage({
-        getAll: config.uris.literaturesUri.getAllWFilterUri,
-        getCount: config.uris.literaturesUri.countUri
-    })(Publications)
+  TabledPage({
+    getAll: config.uris.literaturesUri.getAllWFilterUri,
+    getCount: config.uris.literaturesUri.countUri
+  })(Publications)
 );
