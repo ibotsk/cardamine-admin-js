@@ -11,9 +11,9 @@ import config from '../../../../config/config';
 const InvalidSynonymListItem = ({ rowId, onChangeToNomenclatoric, onChangeToTaxonomic, ...props }) => {
     const Additions = () => (
         <React.Fragment>
-            <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToNomenclatoric(rowId)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
+            <Button bsStyle="primary" bsSize="xsmall" onClick={() => onChangeToNomenclatoric(rowId)} title="Change to nomenclatoric synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.nomenclatoric.prefix}</Button>
             &nbsp;
-            <Button bsStyle="primary" bsSize="xsmall" onClick={() => this.handleChangeToTaxonomic(rowId)} title="Change to taxonomic synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
+            <Button bsStyle="primary" bsSize="xsmall" onClick={() => onChangeToTaxonomic(rowId)} title="Change to taxonomic synonym"><Glyphicon glyph="share-alt" /> {config.mappings.synonym.taxonomic.prefix}</Button>
         </React.Fragment>
     );
     return (
