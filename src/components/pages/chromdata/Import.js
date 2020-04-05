@@ -5,10 +5,13 @@ import { Grid, Button, Panel } from 'react-bootstrap';
 import CSVReader from 'react-csv-reader';
 import { Line } from 'rc-progress';
 
+import ImportReport from './ImportReport';
+import { NotificationContainer } from 'react-notifications';
+
 import importUtils from '../../../utils/import';
+import notifications from '../../../utils/notifications';
 import importFacade from '../../../facades/import';
 
-import ImportReport from './ImportReport';
 
 class Import extends React.Component {
 
@@ -53,7 +56,13 @@ class Import extends React.Component {
   importRecords = async () => {
     const records = this.state.records;
 
-    importFacade.importData(records, this.props.accessToken);
+    try {
+      await importFacade.importData(records, this.props.accessToken);
+      notifications.success("Data successfully imported");
+    } catch (e) {
+      notifications.error('Error importing');
+      throw e;
+    }
   };
 
   render() {
@@ -75,6 +84,7 @@ class Import extends React.Component {
           </Panel>
           <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
         </Grid>
+        <NotificationContainer />
       </div>
     );
   }

@@ -17,7 +17,7 @@ const getPublicationByWhere = async ({ where, offset, limit, accessToken }) => {
 
 const putPublication = async ({ data, accessToken }) => {
   const literaturesUri = template.parse(config.uris.literaturesUri.baseUri).expand({ accessToken });
-  await axios.put(literaturesUri, data);
+  return axios.put(literaturesUri, data);
 }
 
 export default {

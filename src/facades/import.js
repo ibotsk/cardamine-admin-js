@@ -5,6 +5,15 @@ import checklistFacade from './checklist';
 import publicationsFacade from './publications';
 import personsFacade from './persons';
 import world4Facade from './world4';
+import chromRecordFacade from './crecord';
+
+const formatTermAsPersName = (term) => term.persName;
+const formatTermAsPublication = (term) => helper.parsePublication(term);
+const formatTermAsSpeciesName = (term) => helper.listOfSpeciesString(term);
+
+const savePerson = personsFacade.savePerson;
+const savePublication = publicationsFacade.savePublicationCurated;
+const saveSpecies = checklistFacade.saveSpecies;
 
 const loadData = async (data, accessToken, increase = undefined) => {
 
@@ -56,21 +65,30 @@ const loadData = async (data, accessToken, increase = undefined) => {
 
 const importData = async (records, accessToken) => {
 
-  const newlyCreatedRefs = {};
+  // an object to hold references created in this run.
+  // exists for the reason to not call database get for every person, species, publication in every row
+  const newlyCreatedRefs = {
+    persons: {},
+    publications: {},
+    species: {},
+  };
 
   for (const { main, references } of records) {
     const { cdata, material, reference, dna } = main;
     const { species, publication, persons, idWorld4 } = references;
     const { countedBy, collectedBy, identifiedBy, checkedBy } = persons;
 
-    await processCdata(cdata, countedBy, newlyCreatedRefs, accessToken);
-    await processMaterial(material, collectedBy, identifiedBy, checkedBy, undefined, newlyCreatedRefs, accessToken);
+    const cdataToSave = await processCdata(cdata, countedBy, newlyCreatedRefs, accessToken);
+    const materialToSave = await processMaterial(material, collectedBy, identifiedBy, checkedBy, idWorld4, newlyCreatedRefs, accessToken);
+    const referenceToSave = await processReference(reference, species, publication, newlyCreatedRefs, accessToken);
 
-    // TODO: processMaterial - add idWorld4
-    // TODO: processReference - publication id and standardized name id
+    chromRecordFacade.saveUpdateChromrecordWithAll({
+      chromrecord: cdataToSave,
+      material: materialToSave,
+      reference: referenceToSave,
+      dna,
+    }, accessToken);
   }
-
-  // TODO: finish import
 
 };
 
@@ -83,38 +101,83 @@ function getIdOfFound(found) {
 }
 
 async function processCdata(cdata, countedBy, referenceMap, accessToken) {
-  const value = await processPerson(countedBy, referenceMap, accessToken)
-  cdata.countedBy = value;
+  const value = await processReferencedRecord(countedBy, referenceMap.persons, accessToken, savePerson, formatTermAsPersName);
+  return {
+    ...cdata,
+    countedBy: value,
+  }
 }
 
+/**
+ * 
+ * @param {*} material 
+ * @param {*} collectedBy 
+ * @param {*} identifiedBy 
+ * @param {*} checkedBy 
+ * @param {*} idWorld4 if not empty, always take first element, else null
+ * @param {*} referenceMap 
+ * @param {*} accessToken 
+ */
 async function processMaterial(material, collectedBy, identifiedBy, checkedBy, idWorld4, referenceMap, accessToken) {
-  const collectedByValue = await processPerson(collectedBy, referenceMap, accessToken);
-  const identifiedByValue = await processPerson(identifiedBy, referenceMap, accessToken);
-  const checkedByValue = await processPerson(checkedBy, referenceMap, accessToken);
+  const collectedByValue = await processReferencedRecord(collectedBy, referenceMap.persons, accessToken, savePerson, formatTermAsPersName);
+  const identifiedByValue = await processReferencedRecord(identifiedBy, referenceMap.persons, accessToken, savePerson, formatTermAsPersName);
+  const checkedByValue = await processReferencedRecord(checkedBy, referenceMap.persons, accessToken, savePerson, formatTermAsPersName);
 
-  material.collectedBy = collectedByValue;
-  material.identifiedBy = identifiedByValue;
-  material.checkedBy = checkedByValue;
-}
-
-async function processPerson(person, referenceMap, accessToken) {
-  if (!person) {
-    return undefined;
+  let idWorld4Value = null;
+  if (idWorld4) {
+    const { found } = idWorld4;
+    if (found.length > 0) {
+      idWorld4Value = found[0];
+    }
   }
 
-  const { term, found } = person;
+  return {
+    ...material,
+    collectedBy: collectedByValue,
+    identifiedBy: identifiedByValue,
+    checkedBy: checkedByValue,
+    idWorld4: idWorld4Value,
+  }
+}
+
+async function processReference(reference, species, publication, referenceMap, accessToken) {
+  const idPublicationValue = await processReferencedRecord(publication, referenceMap.publications, accessToken, savePublication, formatTermAsPublication);
+  const idStandardisedNameValue = await processReferencedRecord(species, referenceMap.species, accessToken, saveSpecies, formatTermAsSpeciesName);
+
+  return {
+    ...reference,
+    idLiterature: idPublicationValue,
+    idStandardisedName: idStandardisedNameValue,
+  };
+}
+
+/**
+ * If needed, it creates a record referenced by imported rows:
+ * - person, publication, species
+ * @param {*} record 
+ * @param {*} referenceMap is directly changed
+ * @param {*} accessToken 
+ * @param {*} formatTerm function that maps object term to a string
+ */
+async function processReferencedRecord(record, referenceMap, accessToken, saveFunction, formatTerm = (term) => term) {
+  if (!record) {
+    return null;
+  }
+
+  // term contains full object to be created
+  const { term, found } = record;
 
   let value;
   if (found.length === 0) {
-    value = referenceMap[term];
+    const formattedTerm = formatTerm(term);
+    value = referenceMap[formattedTerm];
 
     if (!value) {
-      const { id } = await personsFacade.savePerson({
-        data: {
-          persName: term
-        }, accessToken
+      const { id } = await saveFunction({
+        data: term,
+        accessToken
       });
-      referenceMap[term] = id;
+      referenceMap[formattedTerm] = id;
       value = id;
     }
   } else {

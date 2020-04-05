@@ -142,8 +142,8 @@ function processRowPersonsReport(personsObj, rowNum) {
       continue;
     }
     if (val.found.length === 0) { // report those that will be created
-      const personName = val.term;
-      addToPersonReport(personsReport, personName, rowNum, key);
+      const { persName } = val.term;
+      addToPersonReport(personsReport, persName, rowNum, key);
     }
   }
 

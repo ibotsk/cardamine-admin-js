@@ -2,6 +2,7 @@ import checklistService from '../services/checklist';
 
 import helper from '../utils/helper';
 import whereHelper from '../utils/where';
+import config from '../config/config';
 
 const getAllSpecies = async accessToken => {
   return await checklistService.getAllSpecies(accessToken);
@@ -68,7 +69,14 @@ const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
   }
 }
 
-const saveSpecies = async ({ data, accessToken }) => checklistService.putSpecies({ data, accessToken });
+const saveSpecies = async ({ data, accessToken }) => {
+  let curatedData = { ...data };
+  if (!data.ntype) {
+    curatedData.ntype = config.defaultLosType;
+  }
+  const response = await checklistService.putSpecies({ data: curatedData, accessToken });
+  return response.data;
+};
 
 const saveSpeciesAndSynonyms = async ({
   species,

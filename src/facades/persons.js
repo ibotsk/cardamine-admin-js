@@ -24,7 +24,9 @@ const getPersonsByName = async (names, accessToken, formatFound) => {
       }
 
       result[key] = {
-        term: name,
+        term: {
+          persName: name,
+        },
         found
       };
     }

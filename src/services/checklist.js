@@ -92,27 +92,27 @@ const getAllSynonymsOf = async ({ id, filter = "{}", accessToken }) => {
   return response.data;
 }
 
-const postSynonym = ({ data, accessToken }) => {
+const postSynonym = async ({ data, accessToken }) => {
   const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
   axios.post(synonymsUri, data);
 }
 
-const putSynonym = ({ data, accessToken }) => {
+const putSynonym = async ({ data, accessToken }) => {
   const synonymsUri = template.parse(config.uris.synonymsUri.baseUri).expand({ accessToken });
   axios.put(synonymsUri, data);
 }
 
-const deleteSynonym = ({ id, accessToken }) => {
+const deleteSynonym = async ({ id, accessToken }) => {
   const synonymsByIdUri = template.parse(config.uris.synonymsUri.synonymsByIdUri).expand({ id, accessToken });
   axios.delete(synonymsByIdUri);
 }
 
-const putSpecies = ({ data, accessToken }) => {
+const putSpecies = async ({ data, accessToken }) => {
   const losUri = template.parse(config.uris.listOfSpeciesUri.baseUri).expand({ accessToken });
-  axios.put(losUri, data);
+  return axios.put(losUri, data);
 }
 
-const deleteSpecies = ({ id, accessToken }) => {
+const deleteSpecies = async ({ id, accessToken }) => {
   const losUri = template.parse(config.uris.listOfSpeciesUri.getByIdUri).expand({ id, accessToken });
   axios.delete(losUri);
 }

@@ -28,7 +28,8 @@ const getPublicationByAll = async (literatureData, accessToken, formatFound = un
 
 const savePublicationCurated = async ({ data, accessToken }) => {
   const toBeSaved = helper.publicationCurateFields(data);
-  await publicationsService.putPublication({ data: toBeSaved, accessToken });
+  const response = await publicationsService.putPublication({ data: toBeSaved, accessToken });
+  return response.data;
 }
 
 export default {
