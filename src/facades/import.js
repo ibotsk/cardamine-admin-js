@@ -63,7 +63,7 @@ const loadData = async (data, accessToken, increase = undefined) => {
   };
 };
 
-const importData = async (records, accessToken) => {
+const importData = async (records, accessToken, increase = undefined) => {
 
   // an object to hold references created in this run.
   // exists for the reason to not call database get for every person, species, publication in every row
@@ -72,6 +72,8 @@ const importData = async (records, accessToken) => {
     publications: {},
     species: {},
   };
+
+  let i = 1;
 
   for (const { main, references } of records) {
     const { cdata, material, reference, dna } = main;
@@ -82,12 +84,17 @@ const importData = async (records, accessToken) => {
     const materialToSave = await processMaterial(material, collectedBy, identifiedBy, checkedBy, idWorld4, newlyCreatedRefs, accessToken);
     const referenceToSave = await processReference(reference, species, publication, newlyCreatedRefs, accessToken);
 
-    chromRecordFacade.saveUpdateChromrecordWithAll({
+    await chromRecordFacade.saveUpdateChromrecordWithAll({
       chromrecord: cdataToSave,
       material: materialToSave,
       reference: referenceToSave,
       dna,
     }, accessToken);
+
+    if (increase) {
+      increase(i);
+    }
+    i++;
   }
 
 };

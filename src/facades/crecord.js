@@ -90,7 +90,6 @@ const getWorld4s = async (accessToken, idWorld4) => {
 }
 
 const saveUpdateChromrecordWithAll = async ({ chromrecord, dna, material, reference }, accessToken) => {
-
   const responseChrom = await chromDataService.saveUpdateChromrecord(chromrecord, accessToken);
   const responseMat = await chromDataService.saveUpdateMaterial({ ...material, idCdata: responseChrom.data.id }, accessToken);
   await chromDataService.saveUpdateReference({ ...reference, idMaterial: responseMat.data.id }, accessToken);

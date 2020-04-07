@@ -2,11 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Grid, Col, Row,
-  Button, Panel
+  Button, Panel, Well,
 } from 'react-bootstrap';
 
 import CSVReader from 'react-csv-reader';
-import { Line } from 'rc-progress';
+import { Line, Circle } from 'rc-progress';
 
 import ImportReport from './ImportReport';
 import { NotificationContainer } from 'react-notifications';
@@ -19,9 +19,10 @@ const initialState = {
   submitEnabled: false,
   showImportProgress: false,
   records: [],
-  recordsCount: 0,
+  loadDataCount: 0,
+  loadDataPercent: 0,
+  importDataPercent: 0,
   report: {},
-  loadDataPercent: 0
 };
 
 class Import extends React.Component {
@@ -36,15 +37,25 @@ class Import extends React.Component {
 
   increase = (i, total) => {
     let newValue = Math.floor(i * 100 / total);
-
     if (newValue > 100) {
       newValue = 100;
     }
     this.setState({
-      recordsCount: i,
-      loadDataPercent: newValue
+      loadDataCount: i,
+      loadDataPercent: newValue,
     });
   };
+
+  increaseImport = (i) => {
+    const { loadDataCount } = this.state;
+    let newValue = Math.floor(i * 100 / loadDataCount);
+    if (newValue > 100) {
+      newValue = 100;
+    }
+    this.setState({
+      importDataPercent: newValue,
+    });
+  }
 
   handleOnFileLoad = async (data) => {
     const { count, records } = await importFacade.loadData(data, this.props.accessToken, this.increase);
@@ -54,21 +65,22 @@ class Import extends React.Component {
 
     this.setState({
       submitEnabled: true,
-      recordsCount: count,
+      loadDataCount: count,
       report,
       records
     });
   };
 
   importRecords = async () => {
-    const records = this.state.records;
+    const { records } = this.state;
 
     try {
-      await importFacade.importData(records, this.props.accessToken);
+      await importFacade.importData(records, this.props.accessToken, this.increaseImport);
       notifications.success("Data successfully imported");
 
       this.setState({
-        ...initialState
+        ...initialState,
+        importDataPercent: 100
       });
     } catch (e) {
       notifications.error('Error importing');
@@ -79,9 +91,21 @@ class Import extends React.Component {
   handleCancel = () => this.setState({ ...initialState });
 
   render() {
+    const {
+      loadDataCount, loadDataPercent, report, importDataPercent,
+    } = this.state;
+
     return (
       <div id="import">
         <Grid>
+          <h2>Chromosome data import</h2>
+          <Well>
+            <ol>
+              <li>Select CSV file to import</li>
+              <li>Check Warnings and Info</li>
+              <li>Click Import</li>
+            </ol>
+          </Well>
           <Panel>
             <Panel.Body>
               <CSVReader onFileLoaded={this.handleOnFileLoad} />
@@ -89,17 +113,31 @@ class Import extends React.Component {
           </Panel>
           <Panel>
             <Panel.Body>
-              <Line percent={this.state.loadDataPercent} />
-              <h4>Records to import: {this.state.recordsCount}</h4>
-
-              <ImportReport report={this.state.report} />
+              <Line percent={loadDataPercent} />
+              <h4>Records to import: {loadDataCount}</h4>
+              <ImportReport report={report} />
             </Panel.Body>
           </Panel>
           <Row>
-            <Col sm={5} smOffset={2}>
+            <Col sm={4} smOffset={4}>
+              <div className="text-center">
+                <h3>Importing: {importDataPercent} %</h3>
+              </ div>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={2} smOffset={5}>
+              <Circle percent={importDataPercent} strokeWidth={4} strokeColor={{
+                '0%': '#108ee9',
+                '100%': '#87d068',
+              }} />
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={2}>
               <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
             </Col>
-            <Col sm={5}>
+            <Col sm={2} smOffset={8}>
               <Button bsStyle="default" onClick={this.handleCancel} >Start over</Button>
             </Col>
           </Row>
