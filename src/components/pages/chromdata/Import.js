@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Grid, Button, Panel } from 'react-bootstrap';
+import {
+  Grid, Col, Row,
+  Button, Panel
+} from 'react-bootstrap';
 
 import CSVReader from 'react-csv-reader';
 import { Line } from 'rc-progress';
@@ -14,6 +17,7 @@ import importFacade from '../../../facades/import';
 
 const initialState = {
   submitEnabled: false,
+  showImportProgress: false,
   records: [],
   recordsCount: 0,
   report: {},
@@ -62,11 +66,17 @@ class Import extends React.Component {
     try {
       await importFacade.importData(records, this.props.accessToken);
       notifications.success("Data successfully imported");
+
+      this.setState({
+        ...initialState
+      });
     } catch (e) {
       notifications.error('Error importing');
       throw e;
     }
   };
+
+  handleCancel = () => this.setState({ ...initialState });
 
   render() {
     return (
@@ -85,7 +95,14 @@ class Import extends React.Component {
               <ImportReport report={this.state.report} />
             </Panel.Body>
           </Panel>
-          <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
+          <Row>
+            <Col sm={5} smOffset={2}>
+              <Button bsStyle='info' disabled={!this.state.submitEnabled} onClick={this.importRecords}>Import</Button>
+            </Col>
+            <Col sm={5}>
+              <Button bsStyle="default" onClick={this.handleCancel} >Start over</Button>
+            </Col>
+          </Row>
         </Grid>
         <NotificationContainer />
       </div>
