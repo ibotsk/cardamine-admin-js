@@ -12,6 +12,13 @@ import importUtils from '../../../utils/import';
 import notifications from '../../../utils/notifications';
 import importFacade from '../../../facades/import';
 
+const initialState = {
+  submitEnabled: false,
+  records: [],
+  recordsCount: 0,
+  report: {},
+  loadDataPercent: 0
+};
 
 class Import extends React.Component {
 
@@ -19,11 +26,7 @@ class Import extends React.Component {
     super(props);
 
     this.state = {
-      submitEnabled: false,
-      records: [],
-      recordsCount: 0,
-      report: {},
-      loadDataPercent: 0
+      ...initialState
     };
   }
 

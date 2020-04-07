@@ -32,7 +32,7 @@ export default {
     formatted: "formatted",
     plain: "plain"
   },
-  defaultLosType: "A",
+  defaultLosType: "N",
   mappings: {
     displayType: {
       nullableFields: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "publisher", "year", "pages", "journalName", "note"],
@@ -89,6 +89,10 @@ export default {
         text: "Designation not validly published",
         colour: "#ff6666"
       },
+      N: {
+        text: "Unassigned",
+        colour: "#8b8b8b"
+      }
     },
     synonym: {
       nomenclatoric: {
