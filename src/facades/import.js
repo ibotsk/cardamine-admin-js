@@ -18,39 +18,41 @@ const saveSpecies = checklistFacade.saveSpecies;
 const loadData = async (data, accessToken, increase = undefined) => {
 
   const dataToImport = importUtils.importCSV(data);
-
   const records = [];
 
-  const total = data.length - 1;
+  const total = dataToImport.length;
   let i = 1;
   for (const row of dataToImport) {
-    const { literature: refLiterature, standardizedName: refStandardizedName, idWorld4: refWorld4, ...refPersons } = row.references;
+    if (row) { // skip null rows -> ignored
+      const { literature: refLiterature, standardizedName: refStandardizedName, idWorld4: refWorld4, ...refPersons } = row.references;
 
-    let idWorld4 = null;
-    if (refWorld4) {
-      // world 4 must be present in the database, if not, it will not be created
-      idWorld4 = await world4Facade.getOneByDescription(refWorld4, accessToken, getIdOfFound);
+      let idWorld4 = null;
+      if (refWorld4) {
+        // world 4 must be present in the database, if not, it will not be created
+        idWorld4 = await world4Facade.getOneByDescription(refWorld4, accessToken, getIdOfFound);
+      }
+
+      const species = await checklistFacade.getSpeciesByAll(refStandardizedName, accessToken, getIdOfFound);
+
+      const literatureData = helper.publicationCurateStringDisplayType(refLiterature);
+      const publication = await publicationsFacade.getPublicationByAll(literatureData, accessToken, getIdOfFound);
+
+      const persons = await personsFacade.getPersonsByName(refPersons, accessToken, getIdOfFound);
+
+      const record = {
+        main: row.main,
+        references: {
+          species,
+          publication,
+          persons,
+          idWorld4
+        }
+      };
+
+      records.push(record);
     }
 
-    const species = await checklistFacade.getSpeciesByAll(refStandardizedName, accessToken, getIdOfFound);
-
-    const literatureData = helper.publicationCurateStringDisplayType(refLiterature);
-    const publication = await publicationsFacade.getPublicationByAll(literatureData, accessToken, getIdOfFound);
-
-    const persons = await personsFacade.getPersonsByName(refPersons, accessToken, getIdOfFound);
-
-    const record = {
-      main: row.main,
-      references: {
-        species,
-        publication,
-        persons,
-        idWorld4
-      }
-    };
-
-    records.push(record);
-
+    // but count ignored rows anyway
     if (increase) {
       increase(i, total);
     }
@@ -58,8 +60,8 @@ const loadData = async (data, accessToken, increase = undefined) => {
   }
 
   return {
-    count: dataToImport.length,
-    records
+    records,
+    total,
   };
 };
 

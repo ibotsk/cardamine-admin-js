@@ -1,6 +1,7 @@
 
 export default {
   ignoredRows: [0],
+  ignoredRowSign: '>',
   referenceColumns: {
     standardizedName: {
       genus: 11,

@@ -15,11 +15,14 @@ import importUtils from '../../../utils/import';
 import notifications from '../../../utils/notifications';
 import importFacade from '../../../facades/import';
 
+import importConfig from '../../../config/import';
+
 const initialState = {
   submitEnabled: false,
   showImportProgress: false,
   records: [],
   loadDataCount: 0,
+  loadDataCountTotal: 0,
   loadDataPercent: 0,
   importDataPercent: 0,
   report: {},
@@ -41,7 +44,7 @@ class Import extends React.Component {
       newValue = 100;
     }
     this.setState({
-      loadDataCount: i,
+      loadDataCountTotal: i,
       loadDataPercent: newValue,
     });
   };
@@ -58,14 +61,15 @@ class Import extends React.Component {
   }
 
   handleOnFileLoad = async (data) => {
-    const { count, records } = await importFacade.loadData(data, this.props.accessToken, this.increase);
+    const { records, total } = await importFacade.loadData(data, this.props.accessToken, this.increase);
 
     // TODO: handle duplicate references found
     const report = importUtils.createReport(records);
 
     this.setState({
       submitEnabled: true,
-      loadDataCount: count,
+      loadDataCount: records.length,
+      loadDataCountTotal: total,
       report,
       records
     });
@@ -92,8 +96,9 @@ class Import extends React.Component {
 
   render() {
     const {
-      loadDataCount, loadDataPercent, report, importDataPercent,
+      loadDataCount, loadDataCountTotal, loadDataPercent, report, importDataPercent,
     } = this.state;
+    const ignored = loadDataCount > 0 && loadDataCountTotal > loadDataCount ? loadDataCountTotal - loadDataCount : 0;
 
     return (
       <div id="import">
@@ -101,7 +106,12 @@ class Import extends React.Component {
           <h2>Chromosome data import</h2>
           <Well>
             <ol>
-              <li>Select CSV file to import</li>
+              <li>
+                Select CSV file to import
+                <ul>
+                  <li>Rows with '{importConfig.ignoredRowSign}' at the beginning will be ignored</li>
+                </ul>
+              </li>
               <li>Check Warnings and Info</li>
               <li>Click Import</li>
             </ol>
@@ -114,7 +124,9 @@ class Import extends React.Component {
           <Panel>
             <Panel.Body>
               <Line percent={loadDataPercent} />
-              <h4>Records to import: {loadDataCount}</h4>
+              <h4>Total records: {loadDataCountTotal}</h4>
+              <h4>Records to import: <span className='bg-success'>{loadDataCount}</span></h4>
+              <h4>Ignored: <span className='bg-warning'>{ignored}</span></h4>
               <ImportReport report={report} />
             </Panel.Body>
           </Panel>

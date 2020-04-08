@@ -4,12 +4,17 @@ import importConfig from '../config/import';
 
 import merge from 'lodash.merge';
 
+/**
+ * Prepare rows to import without label rows.
+ * Ignored rows are null in the result.
+ * @param {*} data 
+ */
 function importCSV(data) {
-
   const dataToImport = [];
+  const { ignoredRows } = importConfig;
 
   for (let i = 0; i < data.length; i++) {
-    if (i === 0) {
+    if (ignoredRows.includes(i)) { // skip ignored rows, row 0 are labels
       continue;
     }
     const row = data[i];
@@ -52,6 +57,9 @@ function createReport(records) {
 // -----------------------------------------//
 
 function processRow(row) {
+  if (row[0] === importConfig.ignoredRowSign) {
+    return null;
+  }
 
   const cdata = createObject(importConfig.dataColumns.cdata, row);
   const material = createObject(importConfig.dataColumns.material, row);
