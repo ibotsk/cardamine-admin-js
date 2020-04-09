@@ -4,8 +4,8 @@ import InvalidSynonymListItem from './InvalidSynonymListItem';
 import MisidentifiedSynonymListItem from './MisidentifiedSynonymListItem';
 
 export {
-    NomenclatoricSynonymListItem,
-    TaxonomicSynonymListItem,
-    InvalidSynonymListItem,
-    MisidentifiedSynonymListItem
+  NomenclatoricSynonymListItem,
+  TaxonomicSynonymListItem,
+  InvalidSynonymListItem,
+  MisidentifiedSynonymListItem
 };

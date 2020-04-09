@@ -1,3 +1,6 @@
+ul {
+    list-style-type: square;
+}
 
 .scrollable {
     overflow-y: scroll;
@@ -46,15 +49,15 @@
 }
 
 #export-data-modal .tab-content {
-    height: 300px;
-    overflow-y: scroll;
-    padding: 20px 10px;
+  height: 300px;
+  overflow-y: scroll;
+  padding: 20px 10px;
 }
 
 #export-data-modal h6 {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #export-data-modal .checkbox {
-    font-size: smaller;
+  font-size: smaller;
 }

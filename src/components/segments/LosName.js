@@ -3,14 +3,14 @@ import helper from '../../utils/helper';
 
 const LosName = props => {
 
-    const name = props.data;
-    if (!name) {
-        return '';
-    }
+  const name = props.data;
+  if (!name) {
+    return '';
+  }
 
-    const format = props.format || 'plain';
+  const format = props.format || 'plain';
 
-    return helper.listOfSpeciesForComponent(name, format);
+  return helper.listOfSpeciesForComponent(name, format);
 
 }
 
