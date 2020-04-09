@@ -5,16 +5,13 @@ import rootReducer from '../reducers';
 
 const persistedState = loadState();
 
-const store = createStore(
-  rootReducer,
-  persistedState
-);
+const store = createStore(rootReducer, persistedState);
 
 store.subscribe(() => {
   saveState({
     authentication: store.getState().authentication,
     pagination: store.getState().pagination,
-    exportData: store.getState().exportData
+    exportData: store.getState().exportData,
   });
 });
 

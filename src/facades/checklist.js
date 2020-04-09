@@ -4,50 +4,69 @@ import helper from '../utils/helper';
 import whereHelper from '../utils/where';
 import config from '../config/config';
 
-const getAllSpecies = async accessToken => {
+const getAllSpecies = async (accessToken) => {
   return await checklistService.getAllSpecies(accessToken);
-}
+};
 
 const getSpeciesByIdWithFilter = async (id, accessToken) => {
   return await checklistService.getSpeciesByIdWithFilter({ id, accessToken });
-}
+};
 
 const getSpeciesById = async ({ id, accessToken }) => {
   return await checklistService.getSpeciesById({ id, accessToken });
-}
+};
 
 const getSynonyms = async (id, accessToken) => {
-
-  const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf({ id, accessToken });
+  const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf(
+    { id, accessToken }
+  );
   nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
 
-  const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({ id, accessToken });
+  const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({
+    id,
+    accessToken,
+  });
   taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
 
-  const invalidDesignations = await checklistService.getInvalidDesignationsOf({ id, accessToken });
+  const invalidDesignations = await checklistService.getInvalidDesignationsOf({
+    id,
+    accessToken,
+  });
   invalidDesignations.sort(helper.listOfSpeciesSorterLex);
 
-  const misidentifications = await checklistService.getMisidentificationsOf({ id, accessToken });
+  const misidentifications = await checklistService.getMisidentificationsOf({
+    id,
+    accessToken,
+  });
   misidentifications.sort(helper.listOfSpeciesSorterLex);
 
   return {
     nomenclatoricSynonyms,
     taxonomicSynonyms,
     invalidDesignations,
-    misidentifications
+    misidentifications,
   };
-}
+};
 
 const getBasionymsFor = async (id, accessToken) => {
-  const basionymFor = await checklistService.getBasionymFor({ id, accessToken });
-  const replacedFor = await checklistService.getReplacedFor({ id, accessToken });
-  const nomenNovumFor = await checklistService.getNomenNovumFor({ id, accessToken });
+  const basionymFor = await checklistService.getBasionymFor({
+    id,
+    accessToken,
+  });
+  const replacedFor = await checklistService.getReplacedFor({
+    id,
+    accessToken,
+  });
+  const nomenNovumFor = await checklistService.getNomenNovumFor({
+    id,
+    accessToken,
+  });
   return {
     basionymFor,
     replacedFor,
-    nomenNovumFor
-  }
-}
+    nomenNovumFor,
+  };
+};
 
 const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
   const where = whereHelper.whereDataAll(data);
@@ -56,7 +75,10 @@ const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
     return null;
   }
 
-  const species = await checklistService.getSpeciesByAll({ where: JSON.stringify(where), accessToken });
+  const species = await checklistService.getSpeciesByAll({
+    where: JSON.stringify(where),
+    accessToken,
+  });
 
   let found = species;
   if (formatFound) {
@@ -65,16 +87,19 @@ const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
 
   return {
     term: data,
-    found
-  }
-}
+    found,
+  };
+};
 
 const saveSpecies = async ({ data, accessToken }) => {
-  let curatedData = { ...data };
+  const curatedData = { ...data };
   if (!data.ntype) {
     curatedData.ntype = config.defaultLosType;
   }
-  const response = await checklistService.putSpecies({ data: curatedData, accessToken });
+  const response = await checklistService.putSpecies({
+    data: curatedData,
+    accessToken,
+  });
   return response.data;
 };
 
@@ -82,35 +107,30 @@ const saveSpeciesAndSynonyms = async ({
   species,
   accessToken,
   synonyms,
-  deletedSynonyms = []
+  deletedSynonyms = [],
 }) => {
-
   checklistService.putSpecies({ data: species, accessToken });
   submitSynonyms({
     accessToken,
     synonyms,
-    deletedSynonyms
+    deletedSynonyms,
   });
 };
 
-const deleteSpecies = async ({ id, accessToken }) => checklistService.deleteSpecies({ id, accessToken });
+const deleteSpecies = async ({ id, accessToken }) =>
+  checklistService.deleteSpecies({ id, accessToken });
 
 function createSynonym(idParent, idSynonym, syntype) {
   return {
     idParent,
     idSynonym,
-    syntype
+    syntype,
   };
 }
 
-async function submitSynonyms({
-  synonyms,
-  deletedSynonyms,
-  accessToken }) {
-
+async function submitSynonyms({ synonyms, deletedSynonyms, accessToken }) {
   const typeOfSynonyms = Object.keys(synonyms);
   for (const key of typeOfSynonyms) {
-
     setSynonymOrder(synonyms[key]);
 
     for (const synonym of synonyms[key]) {
@@ -141,5 +161,5 @@ export default {
   saveSpecies,
   saveSpeciesAndSynonyms,
   deleteSpecies,
-  createSynonym
-}
+  createSynonym,
+};

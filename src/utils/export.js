@@ -1,18 +1,17 @@
-import helper from './helper';
 import get from 'lodash.get';
+import helper from './helper';
 
-const VALUE_NA = "-";
+const VALUE_NA = '-';
 
 const createCsvData = (dataToExport, fields, configfields) => {
-
-  const headers = fields.map(f => {
-    return ({
+  const headers = fields.map((f) => {
+    return {
       label: configfields[f].name,
-      key: f
-    })
+      key: f,
+    };
   });
 
-  const data = dataToExport.map(d => {
+  const data = dataToExport.map((d) => {
     const obj = {};
     for (const f of fields) {
       const info = configfields[f];
@@ -24,13 +23,12 @@ const createCsvData = (dataToExport, fields, configfields) => {
 
   return {
     data,
-    headers
+    headers,
   };
-
-}
+};
 
 /**
- * 
+ *
  * @param {*} data value of field, can be json
  * @param {*} fieldInfo field from config
  */
@@ -60,14 +58,14 @@ function createLosName(name) {
 function getValue(data, column) {
   const fieldValue = get(data, column, VALUE_NA);
   if (fieldValue === false) {
-    return "FALSE";
+    return 'FALSE';
   }
-  if (!fieldValue || fieldValue === "") {
+  if (!fieldValue || fieldValue === '') {
     return VALUE_NA;
   }
   return fieldValue;
 }
 
 export default {
-  createCsvData
-}
+  createCsvData,
+};

@@ -7,5 +7,5 @@ export {
   NomenclatoricSynonymListItem,
   TaxonomicSynonymListItem,
   InvalidSynonymListItem,
-  MisidentifiedSynonymListItem
+  MisidentifiedSynonymListItem,
 };

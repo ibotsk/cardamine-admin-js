@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  Button,
-  Panel, Form, Well
-} from 'react-bootstrap';
+import { Button, Panel, Form, Well } from 'react-bootstrap';
 
 import checklistFacade from '../../../facades/checklist';
 
@@ -23,9 +20,9 @@ const ChecklistDetail = ({
   onShowDeleteModal,
   onValueChange,
   onDetailsChanged,
-  ...props }) => {
-
-  const submitForm = async e => {
+  ...props
+}) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     submit(species, synonyms, synonymIdsToDelete, accessToken);
     onDetailsChanged();
@@ -45,8 +42,8 @@ const ChecklistDetail = ({
     }
     onValueChange({
       synonyms,
-      synonymIdsToDelete: synonymsToDelete
-    })
+      synonymIdsToDelete: synonymsToDelete,
+    });
   };
 
   if (!species.id) {
@@ -58,7 +55,7 @@ const ChecklistDetail = ({
   }
 
   return (
-    <React.Fragment>
+    <>
       <Form onSubmit={submitForm} horizontal>
         <div className="scrollable">
           <ChecklistDetailHeader
@@ -77,12 +74,13 @@ const ChecklistDetail = ({
           />
         </div>
         <Well>
-          <Button bsStyle="primary" type='submit' >Save</Button>
+          <Button bsStyle="primary" type="submit">
+            Save
+          </Button>
         </Well>
       </Form>
-    </React.Fragment>
+    </>
   );
-
 };
 
 async function submit(species, synonyms, deletedSynonyms, accessToken) {
@@ -91,7 +89,7 @@ async function submit(species, synonyms, deletedSynonyms, accessToken) {
       species,
       accessToken,
       synonyms,
-      deletedSynonyms
+      deletedSynonyms,
     });
 
     notifications.success('Saved');
@@ -99,6 +97,6 @@ async function submit(species, synonyms, deletedSynonyms, accessToken) {
     notifications.error('Error saving');
     throw error;
   }
-};
+}
 
 export default ChecklistDetail;

@@ -9,15 +9,15 @@ const exportData = (state = initialState, action) => {
         ...state,
         ...{
           cdata: action.ids,
-        }
+        },
       };
     case RESET_EXPORT_CDATA:
       return {
         ...state,
-        ...initialState
+        ...initialState,
       };
     default:
-      return state
+      return state;
   }
 };
 

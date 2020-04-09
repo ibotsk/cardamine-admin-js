@@ -3,10 +3,16 @@ import checklistService from '../services/checklist';
 import helper from '../utils/helper';
 
 const getChromosomeRecord = async (accessToken, idRecord) => {
-
-  let chromrecord = {}, material = {}, reference = {}, dna = {}, histories = [];
+  let chromrecord = {};
+  let material = {};
+  let reference = {};
+  let dna = {};
+  let histories = [];
   if (idRecord) {
-    chromrecord = await chromDataService.getChromosomeRecordById(idRecord, accessToken);
+    chromrecord = await chromDataService.getChromosomeRecordById(
+      idRecord,
+      accessToken
+    );
 
     material = chromrecord.material || {};
     dna = chromrecord.dna || {};
@@ -19,82 +25,109 @@ const getChromosomeRecord = async (accessToken, idRecord) => {
     delete material.reference;
   }
 
-  return ({
+  return {
     chromrecord,
     dna,
     material,
     reference,
-    histories
-  });
-}
+    histories,
+  };
+};
 
 const getLiteratures = async (accessToken, idLiterature) => {
-  const literatures = await chromDataService.getAllLiteratures(accessToken, l => ({
-    id: l.id,
-    label: helper.parsePublication(l)
-  }));
-  const literatureInitial = literatures.find(l => l.id === idLiterature);
+  const literatures = await chromDataService.getAllLiteratures(
+    accessToken,
+    (l) => ({
+      id: l.id,
+      label: helper.parsePublication(l),
+    })
+  );
+  const literatureInitial = literatures.find((l) => l.id === idLiterature);
 
-  return ({
+  return {
     literatures,
-    idLiteratureSelected: literatureInitial ? [literatureInitial] : null
-  });
-}
+    idLiteratureSelected: literatureInitial ? [literatureInitial] : null,
+  };
+};
 
-const getPersons = async (accessToken, { countedBy, collectedBy, identifiedBy, checkedBy }) => {
-  const persons = await chromDataService.getAllPersons(accessToken, p => ({
+const getPersons = async (
+  accessToken,
+  { countedBy, collectedBy, identifiedBy, checkedBy }
+) => {
+  const persons = await chromDataService.getAllPersons(accessToken, (p) => ({
     id: p.id,
-    label: `${p.persName}`
+    label: `${p.persName}`,
   }));
-  const countedByInitial = persons.find(p => p.id === countedBy);
-  const collectedByInitial = persons.find(p => p.id === collectedBy);
-  const identifiedByInitial = persons.find(p => p.id === identifiedBy);
-  const checkedByInitial = persons.find(p => p.id === checkedBy);
+  const countedByInitial = persons.find((p) => p.id === countedBy);
+  const collectedByInitial = persons.find((p) => p.id === collectedBy);
+  const identifiedByInitial = persons.find((p) => p.id === identifiedBy);
+  const checkedByInitial = persons.find((p) => p.id === checkedBy);
 
-  return ({
+  return {
     persons,
     countedBySelected: countedByInitial ? [countedByInitial] : null,
     collectedBySelected: collectedByInitial ? [collectedByInitial] : null,
     identifiedBySelected: identifiedByInitial ? [identifiedByInitial] : null,
-    checkedBySelected: checkedByInitial ? [checkedByInitial] : null
-  });
-}
+    checkedBySelected: checkedByInitial ? [checkedByInitial] : null,
+  };
+};
 
 const getSpecies = async (accessToken, idStandardisedName) => {
-  const listOfSpecies = await checklistService.getAllSpecies(accessToken, l => ({
-    id: l.id,
-    label: helper.listOfSpeciesString(l)
-  }));
+  const listOfSpecies = await checklistService.getAllSpecies(
+    accessToken,
+    (l) => ({
+      id: l.id,
+      label: helper.listOfSpeciesString(l),
+    })
+  );
 
-  const originalIdentificationInitial = listOfSpecies.find(l => l.id === idStandardisedName);
+  const originalIdentificationInitial = listOfSpecies.find(
+    (l) => l.id === idStandardisedName
+  );
 
-  return ({
+  return {
     listOfSpecies,
-    idStandardisedNameSelected: originalIdentificationInitial ? [originalIdentificationInitial] : null
-  });
-}
+    idStandardisedNameSelected: originalIdentificationInitial
+      ? [originalIdentificationInitial]
+      : null,
+  };
+};
 
 const getWorld4s = async (accessToken, idWorld4) => {
-
-  const world4s = await chromDataService.getAllWorld4s(accessToken, w => ({
+  const world4s = await chromDataService.getAllWorld4s(accessToken, (w) => ({
     id: w.id,
     label: w.description,
-    idWorld3: w.idParent
+    idWorld3: w.idParent,
   }));
-  const world4Initial = world4s.find(w => w.id === idWorld4);
+  const world4Initial = world4s.find((w) => w.id === idWorld4);
 
-  return ({
+  return {
     world4s,
-    idWorld4Selected: world4Initial ? [world4Initial] : null
-  });
-}
+    idWorld4Selected: world4Initial ? [world4Initial] : null,
+  };
+};
 
-const saveUpdateChromrecordWithAll = async ({ chromrecord, dna, material, reference }, accessToken) => {
-  const responseChrom = await chromDataService.saveUpdateChromrecord(chromrecord, accessToken);
-  const responseMat = await chromDataService.saveUpdateMaterial({ ...material, idCdata: responseChrom.data.id }, accessToken);
-  await chromDataService.saveUpdateReference({ ...reference, idMaterial: responseMat.data.id }, accessToken);
-  await chromDataService.saveUpdateDna({ ...dna, idCdata: responseChrom.data.id }, accessToken);
-}
+const saveUpdateChromrecordWithAll = async (
+  { chromrecord, dna, material, reference },
+  accessToken
+) => {
+  const responseChrom = await chromDataService.saveUpdateChromrecord(
+    chromrecord,
+    accessToken
+  );
+  const responseMat = await chromDataService.saveUpdateMaterial(
+    { ...material, idCdata: responseChrom.data.id },
+    accessToken
+  );
+  await chromDataService.saveUpdateReference(
+    { ...reference, idMaterial: responseMat.data.id },
+    accessToken
+  );
+  await chromDataService.saveUpdateDna(
+    { ...dna, idCdata: responseChrom.data.id },
+    accessToken
+  );
+};
 
 export default {
   getChromosomeRecord,
@@ -102,5 +135,5 @@ export default {
   getPersons,
   getSpecies,
   getWorld4s,
-  saveUpdateChromrecordWithAll
+  saveUpdateChromrecordWithAll,
 };

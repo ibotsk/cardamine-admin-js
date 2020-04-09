@@ -1,26 +1,30 @@
-import React from "react";
+import React from 'react';
 import {
-  Nav, Navbar, NavDropdown, NavItem,
+  Nav,
+  Navbar,
+  NavDropdown,
+  NavItem,
   MenuItem,
-  Glyphicon
+  Glyphicon,
 } from 'react-bootstrap';
 
 import { LinkContainer } from 'react-router-bootstrap';
 
-const CNavbar = props => {
-
+const CNavbar = (props) => {
   return (
     <div id="navigation">
       <Navbar collapseOnSelect>
         <Navbar.Header>
-          <Navbar.Brand>
-            Cardamine Admin
-                </Navbar.Brand>
+          <Navbar.Brand>Cardamine Admin</Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav>
-            <NavDropdown eventKey={1} title="Chromosome data" id="basic-nav-dropdown">
+            <NavDropdown
+              eventKey={1}
+              title="Chromosome data"
+              id="basic-nav-dropdown"
+            >
               <LinkContainer exact to="/chromosome-data">
                 <MenuItem eventKey={1.1}>All data</MenuItem>
               </LinkContainer>
@@ -42,18 +46,17 @@ const CNavbar = props => {
           <Nav pullRight>
             <NavItem eventKey={3} href="#">
               Users
-                        </NavItem>
+            </NavItem>
             <LinkContainer to="/logout">
               <NavItem eventKey={3.1}>
                 <Glyphicon glyph="log-out" /> Logout
-                            </NavItem>
+              </NavItem>
             </LinkContainer>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
     </div>
   );
-
-}
+};
 
 export default CNavbar;

@@ -1,7 +1,6 @@
+import Mustache from 'mustache';
 import config from '../config/config';
 import formatter from './formatter';
-
-import Mustache from 'mustache';
 
 const configName = config.nomenclature.name;
 const ff = config.format.formatted;
@@ -12,20 +11,20 @@ const o = (string, format) => {
   if (string) {
     s = string.trim();
   }
-  return { string: s, format: format };
-}
+  return { string: s, format };
+};
 
 const Formatted = (string) => o(string, ff);
 const Plain = (string) => o(string, plf);
 
 const sl = (string) => {
-  const sl = configName.sl;
+  const { sl } = configName;
   if (string && string.includes(sl)) {
-    let modString = string.replace(sl, '');
+    const modString = string.replace(sl, '');
     return { s: modString, hasSl: true };
   }
   return { s: string, hasSl: false };
-}
+};
 
 /*
     For every property in config.nomenclature.name.infra
@@ -48,7 +47,7 @@ const infraTaxa = (nomenclature) => {
   }
 
   return infs;
-}
+};
 
 const invalidDesignation = (name, syntype) => {
   if (syntype === '1') {
@@ -59,19 +58,19 @@ const invalidDesignation = (name, syntype) => {
     return newname;
   }
   return name;
-}
+};
 
 const listOfSpeciesFormat = (nomenclature, options = {}) => {
-
-  let opts = Object.assign({}, {
+  const opts = {
     isPublication: false,
     isTribus: false,
-  }, options);
+    ...options,
+  };
 
   let isAuthorLast = true;
 
   let name = [];
-  let slResult = sl(nomenclature.species);
+  const slResult = sl(nomenclature.species);
 
   name.push(Formatted(nomenclature.genus));
   name.push(Formatted(slResult.s));
@@ -82,9 +81,11 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
   const infras = infraTaxa(nomenclature);
 
-  if (nomenclature.species === nomenclature.subsp ||
+  if (
+    nomenclature.species === nomenclature.subsp ||
     nomenclature.species === nomenclature.var ||
-    nomenclature.species === nomenclature.forma) {
+    nomenclature.species === nomenclature.forma
+  ) {
     if (nomenclature.authors) {
       name.push(Plain(nomenclature.authors));
     }
@@ -98,7 +99,7 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
   }
 
   if (nomenclature.hybrid) {
-    let h = {
+    const h = {
       genus: nomenclature.genusH,
       species: nomenclature.speciesH,
       subsp: nomenclature.subspH,
@@ -108,7 +109,7 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
       nothosubsp: nomenclature.nothosubspH,
       nothoforma: nomenclature.nothoformaH,
       authors: nomenclature.authorsH,
-    }
+    };
     name.push(Plain(configName.hybrid));
     name = name.concat(listOfSpeciesFormat(h));
   }
@@ -123,105 +124,119 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
   }
 
   return name;
-
-}
+};
 
 const listOfSpeciesForComponent = (name, formatString, options = {}) => {
-
   const nameArr = listOfSpeciesFormat(name, options);
 
-  const formattedNameArr = nameArr.map(t => {
+  const formattedNameArr = nameArr.map((t) => {
     if (t.format === ff) {
       return formatter.format(t.string, formatString);
-    } else {
-      return t.string;
     }
+    return t.string;
   });
 
-  return formattedNameArr.reduce((acc, el) => acc.concat(el, ' '), []).slice(0, -1);
-}
+  return formattedNameArr
+    .reduce((acc, el) => acc.concat(el, ' '), [])
+    .slice(0, -1);
+};
 
 const listOfSpeciesString = (name, options) => {
   return listOfSpeciesForComponent(name, 'plain', options).join('');
-}
+};
 
 const listOfSpeciesSorterLex = (losA, losB) => {
   // a > b = 1
   if (losA.genus > losB.genus) {
     return 1;
-  } else if (losA.genus < losB.genus) {
+  }
+  if (losA.genus < losB.genus) {
     return -1;
   }
   if (losA.species > losB.species) {
     return 1;
-  } else if (losA.species < losB.species) {
+  }
+  if (losA.species < losB.species) {
     return -1;
   }
   if (losA.subsp > losB.subsp) {
     return 1;
-  } else if (losA.subsp < losB.subsp) {
+  }
+  if (losA.subsp < losB.subsp) {
     return -1;
   }
   if (losA.var > losB.var) {
     return 1;
-  } else if (losA.var < losB.var) {
+  }
+  if (losA.var < losB.var) {
     return -1;
   }
   if (losA.forma > losB.forma) {
     return 1;
-  } else if (losA.forma < losB.forma) {
+  }
+  if (losA.forma < losB.forma) {
     return -1;
   }
   if (losA.subvar > losB.subvar) {
     return 1;
-  } else if (losA.subvar < losB.subvar) {
+  }
+  if (losA.subvar < losB.subvar) {
     return -1;
   }
   if (losA.authors > losB.authors) {
     return 1;
-  } else if (losA.authors < losB.authors) {
+  }
+  if (losA.authors < losB.authors) {
     return -1;
   }
   // hybrid fields next
   if (losA.genusH > losB.genusH) {
     return 1;
-  } else if (losA.genusH < losB.genusH) {
+  }
+  if (losA.genusH < losB.genusH) {
     return -1;
   }
   if (losA.speciesH > losB.speciesH) {
     return 1;
-  } else if (losA.speciesH < losB.speciesH) {
+  }
+  if (losA.speciesH < losB.speciesH) {
     return -1;
   }
   if (losA.subspH > losB.subspH) {
     return 1;
-  } else if (losA.subspH < losB.subspH) {
+  }
+  if (losA.subspH < losB.subspH) {
     return -1;
   }
   if (losA.varH > losB.varH) {
     return 1;
-  } else if (losA.varH < losB.varH) {
+  }
+  if (losA.varH < losB.varH) {
     return -1;
   }
   if (losA.formaH > losB.formaH) {
     return 1;
-  } else if (losA.formaH < losB.formaH) {
+  }
+  if (losA.formaH < losB.formaH) {
     return -1;
   }
   if (losA.subvarH > losB.subvarH) {
     return 1;
-  } else if (losA.subvarH < losB.subvarH) {
+  }
+  if (losA.subvarH < losB.subvarH) {
     return -1;
   }
   if (losA.authorsH > losB.authorsH) {
     return 1;
-  } else if (losA.authorsH < losB.authorsH) {
+  }
+  if (losA.authorsH < losB.authorsH) {
     return -1;
   }
   return 0;
 };
 
-const synonymSorterLex = (synA, synB) => listOfSpeciesSorterLex(synA.synonym, synB.synonym);
+const synonymSorterLex = (synA, synB) =>
+  listOfSpeciesSorterLex(synA.synonym, synB.synonym);
 
 const parsePublication = (publication) => {
   const typeMapping = config.mappings.displayType[publication.displayType].name;
@@ -237,30 +252,36 @@ const parsePublication = (publication) => {
     editor: publication.editor,
     year: publication.year,
     pages: publication.pages,
-    journal: publication.journalName
+    journal: publication.journalName,
   });
 };
 
 // useful when changing type of publication, so the unused fields are set to empty
 const publicationCurateFields = (publication) => {
-  const usedFields = config.mappings.displayType[publication.displayType].columns;
-  const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(el => !usedFields.includes(el));
+  const usedFields =
+    config.mappings.displayType[publication.displayType].columns;
+  const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(
+    (el) => !usedFields.includes(el)
+  );
 
   const curatedPubl = { ...publication };
   for (const field of fieldsToBeEmpty) {
     curatedPubl[field] = '';
   }
   return curatedPubl;
-}
+};
 
-const publicationCurateStringDisplayType = publication => {
-  const nonEmptyProps = Object.keys(publication).filter(prop => !!publication[prop]);
+const publicationCurateStringDisplayType = (publication) => {
+  const nonEmptyProps = Object.keys(publication).filter(
+    (prop) => !!publication[prop]
+  );
   if (nonEmptyProps.length === 0) {
     return publication;
   }
 
   const displayTypeString = publication.displayType;
-  const displayTypeId = config.mappings.displayTypeStringToId[displayTypeString];
+  const displayTypeId =
+    config.mappings.displayTypeStringToId[displayTypeString];
 
   if (!displayTypeId) {
     throw new Error(`Unknown display type "${displayTypeString}"`);
@@ -268,7 +289,7 @@ const publicationCurateStringDisplayType = publication => {
   publication.displayType = displayTypeId;
 
   return publication;
-}
+};
 
 export default {
   listOfSpeciesForComponent,

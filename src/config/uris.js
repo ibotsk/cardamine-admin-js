@@ -6,7 +6,7 @@ const R = '%7D';
 export default {
   usersUri: {
     loginUri: `${backendBase}/api/cardamine-users/login`,
-    logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={accessToken}`
+    logoutUri: `${backendBase}/api/cardamine-users/logout?access_token={accessToken}`,
   },
   chromosomeDataUri: {
     baseUri: `${backendBase}/api/cdata?access_token={accessToken}`,
@@ -56,16 +56,16 @@ export default {
                 %7D
             ]%7D`,
     exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":[${L}"reference":["literature","original-identification"]${R},"collected-by","identified-by","world-l4"]${R},"latest-revision","dna","counted-by"]${R}`,
-    countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`
+    countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`,
   },
   dnaUri: {
-    baseUri: `${backendBase}/api/dnas?access_token={accessToken}`
+    baseUri: `${backendBase}/api/dnas?access_token={accessToken}`,
   },
   materialUri: {
-    baseUri: `${backendBase}/api/materials?access_token={accessToken}`
+    baseUri: `${backendBase}/api/materials?access_token={accessToken}`,
   },
   referenceUri: {
-    baseUri: `${backendBase}/api/references?access_token={accessToken}`
+    baseUri: `${backendBase}/api/references?access_token={accessToken}`,
   },
   listOfSpeciesUri: {
     baseUri: `${backendBase}/api/list-of-species?access_token={accessToken}`,
@@ -81,14 +81,14 @@ export default {
     getReplacedForUri: `${backendBase}/api/list-of-species/{id}/replaced-for?access_token={accessToken}`,
     getNomenNovumForUri: `${backendBase}/api/list-of-species/{id}/nomen-novum-for?access_token={accessToken}`,
     getSynonymsOfParent: `${backendBase}/api/list-of-species/{id}/parent-of-synonyms?filter={filter}&access_token={accessToken}`,
-    countUri: `${backendBase}/api/list-of-species/count?access_token={accessToken}`
+    countUri: `${backendBase}/api/list-of-species/count?access_token={accessToken}`,
   },
   literaturesUri: {
     baseUri: `${backendBase}/api/literature?access_token={accessToken}`,
     getAllWFilterUri: `${backendBase}/api/literature?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["paperAuthor","paperTitle","year","id"]%7D&access_token={accessToken}`,
     getAllWOrderUri: `${backendBase}/api/literature?filter=%7B"order":["paperAuthor", "paperTitle", "year", "id"]%7D&access_token={accessToken}`,
     getByIdUri: `${backendBase}/api/literature/{id}?access_token={accessToken}`,
-    countUri: `${backendBase}/api/literature/count?access_token={accessToken}`
+    countUri: `${backendBase}/api/literature/count?access_token={accessToken}`,
   },
   personsUri: {
     baseUri: `${backendBase}/api/persons?access_token={accessToken}`,
@@ -96,14 +96,14 @@ export default {
     getByNameUri: `${backendBase}/api/persons?filter=%7B"where":%7B"persName":"{name}"%7D%7D&access_token={accessToken}`,
     getAllWFilterUri: `${backendBase}/api/persons?filter=%7B"offset":{offset},"where":{where},"limit":{limit},"order":["persName","id"]%7D&access_token={accessToken}`,
     getAllWOrderUri: `${backendBase}/api/persons?filter=%7B"order":["persName","id"]%7D&access_token={accessToken}`,
-    countUri: `${backendBase}/api/persons/count?access_token={accessToken}`
+    countUri: `${backendBase}/api/persons/count?access_token={accessToken}`,
   },
   synonymsUri: {
     baseUri: `${backendBase}/api/synonyms?access_token={accessToken}`,
-    synonymsByIdUri: `${backendBase}/api/synonyms/{id}?access_token={accessToken}`
+    synonymsByIdUri: `${backendBase}/api/synonyms/{id}?access_token={accessToken}`,
   },
   worldl4Uri: {
     getAllWFilterUri: `${backendBase}/api/world-l4s?filter=%7B"order":["description","id"]%7D&access_token={accessToken}`,
-    getByDescription: `${backendBase}/api/world-l4s?filter=%7B"where":%7B"description":"{description}"%7D%7D&access_token={accessToken}`
-  }
-}
+    getByDescription: `${backendBase}/api/world-l4s?filter=%7B"where":%7B"description":"{description}"%7D%7D&access_token={accessToken}`,
+  },
+};

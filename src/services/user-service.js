@@ -8,14 +8,16 @@ const login = async (username, password) => {
 
   const response = await axios.post(loginUri, {
     username,
-    password
+    password,
   });
   return response.data;
-}
+};
 
-const logout = async accessToken => {
-  const logoutUri = template.parse(config.uris.usersUri.logoutUri).expand({ accessToken });
+const logout = async (accessToken) => {
+  const logoutUri = template
+    .parse(config.uris.usersUri.logoutUri)
+    .expand({ accessToken });
   await axios.post(logoutUri);
-}
+};
 
 export default { login, logout };

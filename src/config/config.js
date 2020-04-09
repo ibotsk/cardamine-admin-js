@@ -2,7 +2,6 @@ import exportConfig from './export';
 import urisConfig from './uris';
 
 export default {
-
   nomenclature: {
     name: {
       sl: 's.l.',
@@ -16,119 +15,180 @@ export default {
         nothosubsp: 'nothosubsp.',
         nothoforma: 'nothoforma',
         proles: "'prol.'",
-        unranked: '[unranked]'
-      }
+        unranked: '[unranked]',
+      },
     },
     publication: {
-      paper: "{{authors}} ({{year}}) {{title}}. {{journal}}, {{volume}}{{issue}}:{{pages}}",
-      book: "{{authors}} ({{year}}) {{title}}. {{publisher}}. {{pages}}",
-      manuscript: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
-      chapter: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}",
-      report: "{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}"
-    }
+      paper:
+        '{{authors}} ({{year}}) {{title}}. {{journal}}, {{volume}}{{issue}}:{{pages}}',
+      book: '{{authors}} ({{year}}) {{title}}. {{publisher}}. {{pages}}',
+      manuscript:
+        '{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}',
+      chapter:
+        '{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{publisher}}. {{pages}}',
+      report:
+        '{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}',
+    },
   },
   export: exportConfig,
   format: {
-    formatted: "formatted",
-    plain: "plain"
+    formatted: 'formatted',
+    plain: 'plain',
   },
-  defaultLosType: "N",
+  defaultLosType: 'N',
   mappings: {
     displayType: {
-      nullableFields: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "publisher", "year", "pages", "journalName", "note"],
+      nullableFields: [
+        'paperAuthor',
+        'paperTitle',
+        'seriesSource',
+        'volume',
+        'issue',
+        'editor',
+        'publisher',
+        'year',
+        'pages',
+        'journalName',
+        'note',
+      ],
       1: {
-        name: "paper",
-        columns: ["paperAuthor", "paperTitle", "volume", "issue", "year", "pages", "journalName", "note"]
+        name: 'paper',
+        columns: [
+          'paperAuthor',
+          'paperTitle',
+          'volume',
+          'issue',
+          'year',
+          'pages',
+          'journalName',
+          'note',
+        ],
       },
       2: {
-        name: "book",
-        columns: ["paperAuthor", "paperTitle", "publisher", "year", "pages", "note"]
+        name: 'book',
+        columns: [
+          'paperAuthor',
+          'paperTitle',
+          'publisher',
+          'year',
+          'pages',
+          'note',
+        ],
       },
       3: {
-        name: "manuscript",
-        columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+        name: 'manuscript',
+        columns: [
+          'paperAuthor',
+          'paperTitle',
+          'seriesSource',
+          'publisher',
+          'editor',
+          'year',
+          'pages',
+          'note',
+        ],
       },
       4: {
-        name: "chapter",
-        columns: ["paperAuthor", "paperTitle", "seriesSource", "publisher", "editor", "year", "pages", "note"]
+        name: 'chapter',
+        columns: [
+          'paperAuthor',
+          'paperTitle',
+          'seriesSource',
+          'publisher',
+          'editor',
+          'year',
+          'pages',
+          'note',
+        ],
       },
       5: {
-        name: "report",
-        columns: ["paperAuthor", "paperTitle", "seriesSource", "volume", "issue", "editor", "year", "pages", "journalName", "note"]
-      }
+        name: 'report',
+        columns: [
+          'paperAuthor',
+          'paperTitle',
+          'seriesSource',
+          'volume',
+          'issue',
+          'editor',
+          'year',
+          'pages',
+          'journalName',
+          'note',
+        ],
+      },
     },
     displayTypeStringToId: {
       paper: 1,
       book: 2,
       manuscript: 3,
       chapter: 4,
-      report: 5
+      report: 5,
     },
     losType: {
       A: {
-        text: "Accepted name",
-        colour: "#57ab27"
+        text: 'Accepted name',
+        colour: '#57ab27',
       },
       PA: {
-        text: "Provisionally accepted",
-        colour: "#ee7f00"
+        text: 'Provisionally accepted',
+        colour: '#ee7f00',
       },
       S: {
-        text: "Synonym",
-        colour: "#008fc8"
+        text: 'Synonym',
+        colour: '#008fc8',
       },
       DS: {
-        text: "Doubtful synonym",
-        colour: "#0089a0"
+        text: 'Doubtful synonym',
+        colour: '#0089a0',
       },
       U: {
-        text: "Unresolved",
-        colour: "#bb9d00"
+        text: 'Unresolved',
+        colour: '#bb9d00',
       },
       I: {
-        text: "Designation not validly published",
-        colour: "#ff6666"
+        text: 'Designation not validly published',
+        colour: '#ff6666',
       },
       N: {
-        text: "Unassigned",
-        colour: "#8b8b8b"
-      }
+        text: 'Unassigned',
+        colour: '#8b8b8b',
+      },
     },
     synonym: {
       nomenclatoric: {
         numType: 3,
-        prefix: '≡'
+        prefix: '≡',
       },
       taxonomic: {
         numType: 2,
-        prefix: '='
+        prefix: '=',
       },
       invalid: {
         numType: 1,
-        prefix: '–'
+        prefix: '–',
       },
       misidentification: {
         numType: 4,
-        prefix: '–'
+        prefix: '–',
       },
       doubtful: {
-        prefix: '?='
-      }
+        prefix: '?=',
+      },
     },
     typifications: {
       holotype: {
-        text: "HOLOTYPE"
+        text: 'HOLOTYPE',
       },
       neotype: {
-        text: "NEOTYPE"
+        text: 'NEOTYPE',
       },
       lectotype: {
-        text: "LECTOTYPE"
+        text: 'LECTOTYPE',
       },
       originalMaterial: {
-        text: "ORIGINAL MATERIAL"
-      }
-    }
+        text: 'ORIGINAL MATERIAL',
+      },
+    },
   },
   pagination: {
     paginationSize: 7,
@@ -150,18 +210,20 @@ export default {
     sizePerPageList: [
       {
         text: '25',
-        value: 25
-      }, {
+        value: 25,
+      },
+      {
         text: '50',
-        value: 50
-      }, {
+        value: 50,
+      },
+      {
         text: '100',
-        value: 100
-      }] // A numeric array is also available. the purpose of above example is custom the text
+        value: 100,
+      },
+    ], // A numeric array is also available. the purpose of above example is custom the text
   },
   uris: urisConfig,
   logging: {
-    level: `${process.env.REACT_APP_LOGGING_LEVEL}`
-  }
-
+    level: `${process.env.REACT_APP_LOGGING_LEVEL}`,
+  },
 };

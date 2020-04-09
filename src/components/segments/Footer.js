@@ -1,12 +1,7 @@
 import React from 'react';
 
-const Footer = props => {
-
-  return (
-    <div style={{ "marginTop": "30px" }}>
-    </div>
-  );
-
-}
+const Footer = (props) => {
+  return <div style={{ marginTop: '30px' }} />;
+};
 
 export default Footer;

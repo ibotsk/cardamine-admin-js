@@ -1,4 +1,7 @@
-import { SET_AUTHENTICATED, UNSET_AUTHENTICATED } from '../actions/action-types';
+import {
+  SET_AUTHENTICATED,
+  UNSET_AUTHENTICATED,
+} from '../actions/action-types';
 
 const initialState = { accessToken: '', isAuthenticated: false };
 
@@ -9,14 +12,14 @@ const authentication = (state = initialState, action) => {
         ...state,
         ...{
           accessToken: action.accessToken,
-          isAuthenticated: action.isAuthenticated
-        }
+          isAuthenticated: action.isAuthenticated,
+        },
       };
     case UNSET_AUTHENTICATED:
       return {};
     default:
-      return state
+      return state;
   }
-}
+};
 
 export default authentication;
