@@ -7,6 +7,7 @@ import {
 
 import CSVReader from 'react-csv-reader';
 import { Line, Circle } from 'rc-progress';
+import { Link } from 'react-router-dom';
 
 import ImportReport from './ImportReport';
 import { NotificationContainer } from 'react-notifications';
@@ -63,7 +64,7 @@ class Import extends React.Component {
   handleOnFileLoad = async (data) => {
     const { records, total } = await importFacade.loadData(data, this.props.accessToken, this.increase);
 
-    // TODO: handle duplicate references found
+    // TODO: handle duplicate references found, currently taken first
     const report = importUtils.createReport(records);
 
     this.setState({
@@ -109,7 +110,13 @@ class Import extends React.Component {
               <li>
                 Select CSV file to import
                 <ul>
+                  <li><Link to="/files/import_template.csv" target="_blank" download>Download template</Link></li>
+                  <li>The file must be in UTF-8 encoding</li>
                   <li>Rows with '{importConfig.ignoredRowSign}' at the beginning will be ignored</li>
+                  <li className='text-danger'>
+                    Columns "Newest genus", "Newest species", "Newest subsp", "Newest var", "Newest authors"
+                    are NOT currently processed!
+                  </li>
                 </ul>
               </li>
               <li>Check Warnings and Info</li>
