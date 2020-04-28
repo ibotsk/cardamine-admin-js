@@ -21,6 +21,39 @@ import config from '../../../config/config';
 const titleColWidth = 2;
 const mainColWidth = 10;
 
+const getSelectedName = (id, options) => {
+  return options.filter((l) => l.id === id);
+};
+
+const handleChangeTypeAhead = (selected, prop, onInputChange) => {
+  const id = selected[0] ? selected[0].id : undefined;
+  onInputChange(prop, id);
+};
+
+const addNewSynonymToList = (
+  selected,
+  idParent,
+  synonyms,
+  type,
+  listOfSpecies
+) => {
+  if (!selected) {
+    return synonyms;
+  }
+  if (synonyms.find((s) => s.synonym.id === selected.id)) {
+    notifications.warning('The item already exists in the list');
+    return synonyms;
+  }
+
+  const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
+  const species = listOfSpecies.find((l) => l.id === selected.id);
+  synonymObj.synonym = species;
+
+  synonyms.push(synonymObj);
+  synonyms.sort(helper.synonymSorterLex);
+  return synonyms;
+}
+
 const ChecklistDetailBody = ({
   species,
   listOfSpecies,
@@ -42,19 +75,22 @@ const ChecklistDetailBody = ({
       type,
       listOfSpecies
     );
-    synonyms[synonymName] = collection;
-    onSynonymsChange(synonyms);
+    const newSynonyms = { ...synonyms };
+    newSynonyms[synonymName] = collection;
+    onSynonymsChange(newSynonyms);
   };
 
   const handleSynonymRemoveRow = (rowId, synonymName) => {
     const specificSynonyms = synonyms[synonymName];
 
     const collection = specificSynonyms.filter((s, i) => i !== rowId);
-    synonyms[synonymName] = collection;
+
+    const newSynonyms = { ...synonyms };
+    newSynonyms[synonymName] = collection;
 
     const deleteId = specificSynonyms[rowId].id;
 
-    onSynonymsChange(synonyms, deleteId);
+    onSynonymsChange(newSynonyms, deleteId);
   };
 
   const handleSynonymTransition = (
@@ -74,18 +110,20 @@ const ChecklistDetailBody = ({
 
     const fromListWithoutRemoved = fromList.filter((s, i) => i !== rowId);
 
-    synonyms[fromListName] = fromListWithoutRemoved;
-    synonyms[toListName] = toList;
+    const newSynonyms = { ...synonyms };
+    newSynonyms[fromListName] = fromListWithoutRemoved;
+    newSynonyms[toListName] = toList;
 
-    onSynonymsChange(synonyms);
+    onSynonymsChange(newSynonyms);
   };
 
   const handleChangeMisidentificationAuthor = (rowId, value) => {
     const { misidentifications } = synonyms;
     misidentifications[rowId].misidentificationAuthor = value;
 
-    synonyms.misidentifications = misidentifications;
-    onSynonymsChange(synonyms);
+    const newSynonyms = { ...synonyms };
+    newSynonyms.misidentifications = misidentifications;
+    onSynonymsChange(newSynonyms);
   };
 
   const {
@@ -118,7 +156,8 @@ const ChecklistDetailBody = ({
                 selected,
                 'idAcceptedName',
                 onSpeciesInputChange
-              )}
+              )
+            }
             placeholder="Start by typing a species present in the database"
           />
         </Col>
@@ -137,7 +176,8 @@ const ChecklistDetailBody = ({
                 selected,
                 'idBasionym',
                 onSpeciesInputChange
-              )}
+              )
+            }
             placeholder="Start by typing a species present in the database"
           />
         </Col>
@@ -156,7 +196,8 @@ const ChecklistDetailBody = ({
                 selected,
                 'idReplaced',
                 onSpeciesInputChange
-              )}
+              )
+            }
             placeholder="Start by typing a species present in the database"
           />
         </Col>
@@ -178,7 +219,8 @@ const ChecklistDetailBody = ({
                 selected,
                 'idNomenNovum',
                 onSpeciesInputChange
-              )}
+              )
+            }
             placeholder="Start by typing a species present in the database"
           />
         </Col>
@@ -198,9 +240,11 @@ const ChecklistDetailBody = ({
                 selected,
                 'nomenclatoricSynonyms',
                 config.mappings.synonym.nomenclatoric.numType
-              )}
+              )
+            }
             onRowDelete={(id) =>
-              handleSynonymRemoveRow(id, 'nomenclatoricSynonyms')}
+              handleSynonymRemoveRow(id, 'nomenclatoricSynonyms')
+            }
             itemComponent={NomenclatoricSynonymListItem}
             // props specific to itemComponent
             onChangeToTaxonomic={(rowId) =>
@@ -209,14 +253,16 @@ const ChecklistDetailBody = ({
                 'nomenclatoricSynonyms',
                 'taxonomicSynonyms',
                 config.mappings.synonym.taxonomic.numType
-              )}
+              )
+            }
             onChangeToInvalid={(rowId) =>
               handleSynonymTransition(
                 rowId,
                 'nomenclatoricSynonyms',
                 'invalidDesignations',
                 config.mappings.synonym.invalid.numType
-              )}
+              )
+            }
           />
         </Col>
       </FormGroup>
@@ -234,9 +280,11 @@ const ChecklistDetailBody = ({
                 selected,
                 'taxonomicSynonyms',
                 config.mappings.synonym.taxonomic.numType
-              )}
+              )
+            }
             onRowDelete={(id) =>
-              handleSynonymRemoveRow(id, 'taxonomicSynonyms')}
+              handleSynonymRemoveRow(id, 'taxonomicSynonyms')
+            }
             itemComponent={TaxonomicSynonymListItem}
             // props specific to itemComponent
             onChangeToNomenclatoric={(rowId) =>
@@ -245,14 +293,16 @@ const ChecklistDetailBody = ({
                 'taxonomicSynonyms',
                 'nomenclatoricSynonyms',
                 config.mappings.synonym.nomenclatoric.numType
-              )}
+              )
+            }
             onChangeToInvalid={(rowId) =>
               handleSynonymTransition(
                 rowId,
                 'taxonomicSynonyms',
                 'invalidDesignations',
                 config.mappings.synonym.invalid.numType
-              )}
+              )
+            }
           />
         </Col>
       </FormGroup>
@@ -270,9 +320,11 @@ const ChecklistDetailBody = ({
                 selected,
                 'invalidDesignations',
                 config.mappings.synonym.invalid.numType
-              )}
+              )
+            }
             onRowDelete={(id) =>
-              handleSynonymRemoveRow(id, 'invalidDesignations')}
+              handleSynonymRemoveRow(id, 'invalidDesignations')
+            }
             itemComponent={InvalidSynonymListItem}
             // props specific to itemComponent
             onChangeToNomenclatoric={(rowId) =>
@@ -281,14 +333,16 @@ const ChecklistDetailBody = ({
                 'invalidDesignations',
                 'nomenclatoricSynonyms',
                 config.mappings.synonym.nomenclatoric.numType
-              )}
+              )
+            }
             onChangeToTaxonomic={(rowId) =>
               handleSynonymTransition(
                 rowId,
                 'invalidDesignations',
                 'taxonomicSynonyms',
                 config.mappings.synonym.taxonomic.numType
-              )}
+              )
+            }
           />
         </Col>
       </FormGroup>
@@ -306,9 +360,11 @@ const ChecklistDetailBody = ({
                 selected,
                 'misidentifications',
                 config.mappings.synonym.misidentification.numType
-              )}
+              )
+            }
             onRowDelete={(id) =>
-              handleSynonymRemoveRow(id, 'misidentifications')}
+              handleSynonymRemoveRow(id, 'misidentifications')
+            }
             itemComponent={MisidentifiedSynonymListItem}
             // props specific to itemComponent
             onChangeAuthor={handleChangeMisidentificationAuthor}
@@ -343,38 +399,5 @@ const ChecklistDetailBody = ({
     </Well>
   );
 };
-
-function getSelectedName(id, options) {
-  return options.filter((l) => l.id === id);
-}
-
-function handleChangeTypeAhead(selected, prop, onInputChange) {
-  const id = selected[0] ? selected[0].id : undefined;
-  onInputChange(prop, id);
-}
-
-function addNewSynonymToList(
-  selected,
-  idParent,
-  synonyms,
-  type,
-  listOfSpecies
-) {
-  if (!selected) {
-    return synonyms;
-  }
-  if (synonyms.find((s) => s.synonym.id === selected.id)) {
-    notifications.warning('The item already exists in the list');
-    return synonyms;
-  }
-
-  const synonymObj = checklistFacade.createSynonym(idParent, selected.id, type);
-  const species = listOfSpecies.find((l) => l.id === selected.id);
-  synonymObj.synonym = species;
-
-  synonyms.push(synonymObj);
-  synonyms.sort(helper.synonymSorterLex);
-  return synonyms;
-}
 
 export default ChecklistDetailBody;

@@ -24,24 +24,28 @@ const infoReportCategory = (data, label) => {
     content: (
       <Well bsSize="small">
         <h4>
-          {label} 
-{' '}
-<Badge>{nonEmptyKeysEntriesLength}</Badge>
+          {label}
+          {' '}
+          <Badge>{nonEmptyKeysEntriesLength}</Badge>
         </h4>
         <ListGroup>
           {nonEmptyKeysEntries.map(([key, value]) => {
             const rows = Object.keys(value);
             return (
               <ListGroupItem key={key}>
-                <strong>{key}</strong> - used in rows:
+                <strong>{key}</strong>
+                {' '}
+                - used in rows:
                 {Array.isArray(value) ? (
                   ` ${value.join(', ')} `
                 ) : (
                   <ul>
                     {rows.map((r) => (
                       <li key={r}>
-                        {r} - in column:
-{' '}
+                        {r}
+                        {' '}
+                        - in column:
+                        {' '}
                         {value[r].map((v) => `"${v}"`).join(', ')}
                       </li>
                     ))}
@@ -83,18 +87,18 @@ const warningsReport = (speciesReport, publicationReport) => {
         {emptySpecies && (
           <ListGroupItem>
             <strong>Standard name</strong>
-{' '}
-empty in rows:
-{' '}
+            {' '}
+            empty in rows:
+            {' '}
             {emptySpecies.join(', ')}
           </ListGroupItem>
         )}
         {emptyPublication && (
           <ListGroupItem>
             <strong>Publication</strong>
-{' '}
-empty in rows:
-{' '}
+            {' '}
+            empty in rows:
+            {' '}
             {emptyPublication.join(', ')}
           </ListGroupItem>
         )}
@@ -109,7 +113,9 @@ const ReportPanel = ({ panelClass, label, count = 0, children }) => {
     <Panel bsStyle={panelClass}>
       <Panel.Heading>
         <Panel.Title componentClass="h4" toggle>
-          {label} {count !== undefined && <Badge>{count}</Badge>}
+          {label}
+          {' '}
+          {count !== undefined && <Badge>{count}</Badge>}
         </Panel.Title>
       </Panel.Heading>
       <Panel.Collapse>

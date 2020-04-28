@@ -32,9 +32,9 @@ const DeleteSpeciesModal = ({ show, onCancel, onConfirm }) => {
           <li>
             if this record has synonyms, all bindings to these synonyms are
             <b>deleted</b>
-{' '}
-(the checklist records themselves
-<b>remain</b>
+            {' '}
+            (the checklist records themselves
+            <b>remain</b>
           </li>
         </ul>
       </Modal.Body>

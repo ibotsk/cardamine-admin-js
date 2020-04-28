@@ -4,19 +4,44 @@ import helper from '../utils/helper';
 import whereHelper from '../utils/where';
 import config from '../config/config';
 
-const getAllSpecies = async (accessToken) => {
-  return await checklistService.getAllSpecies(accessToken);
+// for synonyms of one type
+const setSynonymOrder = (synonyms) => {
+  for (const [i, s] of synonyms.entries()) {
+    s.rorder = i + 1;
+  }
 };
 
-const getSpeciesByIdWithFilter = async (id, accessToken) => {
-  return await checklistService.getSpeciesByIdWithFilter({ id, accessToken });
+const submitSynonyms = async ({ synonyms, deletedSynonyms, accessToken }) => {
+  const typeOfSynonyms = Object.keys(synonyms);
+  for (const key of typeOfSynonyms) {
+    setSynonymOrder(synonyms[key]);
+
+    for (const synonym of synonyms[key]) {
+      checklistService.putSynonym({ data: synonym, accessToken });
+    }
+  }
+
+  // delete
+  for (const id of deletedSynonyms) {
+    checklistService.deleteSynonym({ id, accessToken });
+  }
 };
 
-const getSpeciesById = async ({ id, accessToken }) => {
-  return await checklistService.getSpeciesById({ id, accessToken });
-};
+// -------------------------------------------------------- //
 
-const getSynonyms = async (id, accessToken) => {
+async function getAllSpecies(accessToken) {
+  return checklistService.getAllSpecies(accessToken);
+}
+
+async function getSpeciesByIdWithFilter(id, accessToken) {
+  return checklistService.getSpeciesByIdWithFilter({ id, accessToken });
+}
+
+async function getSpeciesById({ id, accessToken }) {
+  return checklistService.getSpeciesById({ id, accessToken });
+}
+
+async function getSynonyms(id, accessToken) {
   const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf(
     { id, accessToken }
   );
@@ -46,9 +71,9 @@ const getSynonyms = async (id, accessToken) => {
     invalidDesignations,
     misidentifications,
   };
-};
+}
 
-const getBasionymsFor = async (id, accessToken) => {
+async function getBasionymsFor(id, accessToken) {
   const basionymFor = await checklistService.getBasionymFor({
     id,
     accessToken,
@@ -66,9 +91,9 @@ const getBasionymsFor = async (id, accessToken) => {
     replacedFor,
     nomenNovumFor,
   };
-};
+}
 
-const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
+async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
   const where = whereHelper.whereDataAll(data);
 
   if (!where) {
@@ -89,9 +114,9 @@ const getSpeciesByAll = async (data, accessToken, formatFound = undefined) => {
     term: data,
     found,
   };
-};
+}
 
-const saveSpecies = async ({ data, accessToken }) => {
+async function saveSpecies({ data, accessToken }) {
   const curatedData = { ...data };
   if (!data.ntype) {
     curatedData.ntype = config.defaultLosType;
@@ -101,24 +126,25 @@ const saveSpecies = async ({ data, accessToken }) => {
     accessToken,
   });
   return response.data;
-};
+}
 
-const saveSpeciesAndSynonyms = async ({
+async function saveSpeciesAndSynonyms({
   species,
   accessToken,
   synonyms,
   deletedSynonyms = [],
-}) => {
+}) {
   checklistService.putSpecies({ data: species, accessToken });
   submitSynonyms({
     accessToken,
     synonyms,
     deletedSynonyms,
   });
-};
+}
 
-const deleteSpecies = async ({ id, accessToken }) =>
+async function deleteSpecies({ id, accessToken }) {
   checklistService.deleteSpecies({ id, accessToken });
+}
 
 function createSynonym(idParent, idSynonym, syntype) {
   return {
@@ -126,29 +152,6 @@ function createSynonym(idParent, idSynonym, syntype) {
     idSynonym,
     syntype,
   };
-}
-
-async function submitSynonyms({ synonyms, deletedSynonyms, accessToken }) {
-  const typeOfSynonyms = Object.keys(synonyms);
-  for (const key of typeOfSynonyms) {
-    setSynonymOrder(synonyms[key]);
-
-    for (const synonym of synonyms[key]) {
-      checklistService.putSynonym({ data: synonym, accessToken });
-    }
-  }
-
-  // delete
-  for (const id of deletedSynonyms) {
-    checklistService.deleteSynonym({ id, accessToken });
-  }
-}
-
-// for synonyms of one type
-function setSynonymOrder(synonyms) {
-  for (const [i, s] of synonyms.entries()) {
-    s.rorder = i + 1;
-  }
 }
 
 export default {

@@ -3,7 +3,7 @@ import { ListGroup, ListGroupItem } from 'react-bootstrap';
 
 import LosName from '../../segments/LosName';
 
-const SpeciesNamePlainList = ({ list }) => {
+const SpeciesNamePlainList = ({ list = [] }) => {
   if (!list || list.length === 0) {
     return <ListGroupItem />;
   }

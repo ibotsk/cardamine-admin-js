@@ -8,9 +8,10 @@ import config from '../../../../config/config';
 
 const InvalidSynonymListItem = ({
   rowId,
+  data,
+  onRowDelete,
   onChangeToNomenclatoric,
   onChangeToTaxonomic,
-  ...props
 }) => {
   const Additions = () => (
     <>
@@ -20,7 +21,8 @@ const InvalidSynonymListItem = ({
         onClick={() => onChangeToNomenclatoric(rowId)}
         title="Change to nomenclatoric synonym"
       >
-        <Glyphicon glyph="share-alt" />{' '}
+        <Glyphicon glyph="share-alt" />
+        {' '}
         {config.mappings.synonym.nomenclatoric.prefix}
       </Button>
       &nbsp;
@@ -30,17 +32,20 @@ const InvalidSynonymListItem = ({
         onClick={() => onChangeToTaxonomic(rowId)}
         title="Change to taxonomic synonym"
       >
-        <Glyphicon glyph="share-alt" />{' '}
+        <Glyphicon glyph="share-alt" />
+        {' '}
         {config.mappings.synonym.taxonomic.prefix}
       </Button>
     </>
   );
   return (
     <SynonymListItem
-      {...props}
       rowId={rowId}
+      data={data}
       prefix={config.mappings.synonym.invalid.prefix}
       additions={Additions}
+      showSubNomenclatoric={false}
+      onRowDelete={onRowDelete}
     />
   );
 };

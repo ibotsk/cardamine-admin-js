@@ -1,12 +1,13 @@
+/* eslint-disable no-await-in-loop */
 import personsService from '../services/persons';
 import utils from '../utils/utils';
 
-const getPersonsByIdCurated = async ({ id, accessToken }) => {
+async function getPersonsByIdCurated({ id, accessToken }) {
   const data = await personsService.getPersonById({ id, accessToken });
   return utils.nullToEmpty(data);
-};
+}
 
-const getPersonsByName = async (names, accessToken, formatFound) => {
+async function getPersonsByName(names, accessToken, formatFound) {
   const keys = Object.keys(names);
 
   const result = {};
@@ -32,12 +33,12 @@ const getPersonsByName = async (names, accessToken, formatFound) => {
     }
   }
   return result;
-};
+}
 
-const savePerson = async ({ data, accessToken }) => {
+async function savePerson({ data, accessToken }) {
   const response = await personsService.putPerson({ data, accessToken });
   return response.data;
-};
+}
 
 export default {
   getPersonsByIdCurated,

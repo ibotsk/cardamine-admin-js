@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-import { handleAxiosError } from './response-handler';
+import responseHandler from './response-handler';
 
 axios.interceptors.response.use(
   (res) => res,
   (error) => {
-    handleAxiosError(error);
+    responseHandler.handleAxiosError(error);
     return Promise.reject(error);
   }
 );

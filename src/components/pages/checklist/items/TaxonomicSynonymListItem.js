@@ -8,10 +8,10 @@ import config from '../../../../config/config';
 
 const TaxonomicSynonymListItem = ({
   rowId,
-  fromList,
+  data,
+  onRowDelete,
   onChangeToNomenclatoric,
   onChangeToInvalid,
-  ...props
 }) => {
   const Additions = () => (
     <>
@@ -37,10 +37,12 @@ const TaxonomicSynonymListItem = ({
   );
   return (
     <SynonymListItem
-      {...props}
       rowId={rowId}
+      data={data}
       prefix={config.mappings.synonym.taxonomic.prefix}
       additions={Additions}
+      showSubNomenclatoric={false}
+      onRowDelete={onRowDelete}
     />
   );
 };

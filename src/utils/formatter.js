@@ -4,8 +4,8 @@ const italic = (subject) => {
   return <i>{subject}</i>;
 };
 
-const format = (subject, format) => {
-  switch (format) {
+const format = (subject, formatString) => {
+  switch (formatString) {
     case 'italic':
       return italic(subject);
     default:
@@ -28,4 +28,7 @@ const eda = ({ ambiguous = false, doubtful = false, erroneous = false }) => {
   return result.join('/');
 };
 
-export default { format, eda };
+export default {
+  format,
+  eda,
+};

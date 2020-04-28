@@ -1,12 +1,12 @@
 import chromService from '../services/chromosome-data';
 
-const getForExport = async (ids, accessToken) => {
+async function getForExport(ids, accessToken) {
   const where = {
     or: ids.map((id) => ({ id })),
   };
   const whereString = JSON.stringify(where);
-  return await chromService.getForExport(whereString, accessToken);
-};
+  return chromService.getForExport(whereString, accessToken);
+}
 
 export default {
   getForExport,

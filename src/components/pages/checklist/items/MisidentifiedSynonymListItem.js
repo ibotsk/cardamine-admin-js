@@ -6,13 +6,20 @@ import SynonymListItem from '../../../segments/SynonymListItem';
 
 import config from '../../../../config/config';
 
-const MisidentifiedSynonymListItem = ({ rowId, onChangeAuthor, ...props }) => {
+const MisidentifiedSynonymListItem = ({
+  rowId,
+  onChangeAuthor,
+  data,
+  onRowDelete,
+}) => {
+  const { misidentificationAuthor } = data;
   return (
     <SynonymListItem
       rowId={rowId}
-      showSubNomenclatoric={false}
+      data={data}
       prefix={config.mappings.synonym.misidentification.prefix}
-      {...props}
+      showSubNomenclatoric={false}
+      onRowDelete={onRowDelete}
     >
       <FormGroup bsSize="sm">
         <Col componentClass={ControlLabel} sm={2}>
@@ -21,7 +28,7 @@ const MisidentifiedSynonymListItem = ({ rowId, onChangeAuthor, ...props }) => {
         <Col xs={8}>
           <FormControl
             type="text"
-            value={props.data.misidentificationAuthor || ''}
+            value={misidentificationAuthor || ''}
             placeholder="Misidentification Author"
             onChange={(e) => onChangeAuthor(rowId, e.target.value)}
           />

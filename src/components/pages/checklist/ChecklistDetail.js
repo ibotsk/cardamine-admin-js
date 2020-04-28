@@ -9,6 +9,22 @@ import notifications from '../../../utils/notifications';
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
 
+const submit = async (species, synonyms, deletedSynonyms, accessToken) => {
+  try {
+    await checklistFacade.saveSpeciesAndSynonyms({
+      species,
+      accessToken,
+      synonyms,
+      deletedSynonyms,
+    });
+
+    notifications.success('Saved');
+  } catch (error) {
+    notifications.error('Error saving');
+    throw error;
+  }
+};
+
 const ChecklistDetail = ({
   species,
   listOfSpecies,
@@ -18,9 +34,9 @@ const ChecklistDetail = ({
   accessToken,
   onShowEditModal,
   onShowDeleteModal,
-  onValueChange,
+  onSynonymsChange,
+  onSpeciesChange,
   onDetailsChanged,
-  ...props
 }) => {
   const submitForm = async (e) => {
     e.preventDefault();
@@ -30,20 +46,17 @@ const ChecklistDetail = ({
 
   const handleSpeciesChange = (prop, val) => {
     const updatedSpecies = { ...species, [prop]: val };
-    onValueChange({ species: updatedSpecies });
+    onSpeciesChange(updatedSpecies);
   };
 
-  const handleSynonymChange = (synonyms, idToDelete = undefined) => {
+  const handleSynonymChange = (newSynonyms, idToDelete = undefined) => {
     // idToDelete must be added to list
     let synonymsToDelete = [...synonymIdsToDelete];
     if (idToDelete) {
       synonymsToDelete.push(idToDelete);
       synonymsToDelete = [...new Set(synonymsToDelete)];
     }
-    onValueChange({
-      synonyms,
-      synonymIdsToDelete: synonymsToDelete,
-    });
+    onSynonymsChange(newSynonyms, synonymsToDelete);
   };
 
   if (!species.id) {
@@ -82,21 +95,5 @@ const ChecklistDetail = ({
     </>
   );
 };
-
-async function submit(species, synonyms, deletedSynonyms, accessToken) {
-  try {
-    await checklistFacade.saveSpeciesAndSynonyms({
-      species,
-      accessToken,
-      synonyms,
-      deletedSynonyms,
-    });
-
-    notifications.success('Saved');
-  } catch (error) {
-    notifications.error('Error saving');
-    throw error;
-  }
-}
 
 export default ChecklistDetail;

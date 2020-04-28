@@ -1,71 +1,34 @@
+/* eslint-disable no-param-reassign */
 import merge from 'lodash.merge';
 import helper from './helper';
 
 import importConfig from '../config/import';
 
-/**
- * Prepare rows to import without label rows.
- * Ignored rows are null in the result.
- * @param {*} data
- */
-function importCSV(data) {
-  const dataToImport = [];
-  const { ignoredRows } = importConfig;
+const createObject = (configTemplate, rowData) => {
+  const object = {};
 
-  for (let i = 0; i < data.length; i++) {
-    if (ignoredRows.includes(i)) {
-      // skip ignored rows, row 0 are labels
-      continue;
-    }
-    const row = data[i];
-    if (row.length === 1) {
-      // empty line -> end
-      break;
-    }
-    const rowObjects = processRow(row);
-    dataToImport.push(rowObjects);
+  if (Number.isInteger(configTemplate)) {
+    const value = rowData[configTemplate];
+    return value.trim();
   }
 
-  return dataToImport;
-}
-
-function createReport(records) {
-  const speciesReport = {};
-  const publicationReport = {};
-  let personsReport = {};
-
-  for (const [i, { references }] of records.entries()) {
-    const rowNum = i + 2; // 1st row in the file is header
-
-    processSimpleReport(
-      speciesReport,
-      references.species,
-      rowNum,
-      helper.listOfSpeciesString
-    );
-    processSimpleReport(
-      publicationReport,
-      references.publication,
-      rowNum,
-      helper.parsePublication
-    );
-
-    const personsOneRow = processRowPersonsReport(references.persons, rowNum);
-    personsReport = merge(personsReport, personsOneRow);
+  for (const prop of Object.keys(configTemplate)) {
+    const index = configTemplate[prop];
+    const value = rowData[index];
+    object[prop] = value.trim();
   }
+  return object;
+};
 
-  return {
-    speciesReport,
-    publicationReport,
-    personsReport,
-  };
-}
+const makeNameAsPublished = (rowData) => {
+  const nameObj = createObject(
+    importConfig.dataColumns.nameAsPublished,
+    rowData
+  );
+  return helper.listOfSpeciesString(nameObj);
+};
 
-// -----------------------------------------//
-// -----------------------------------------//
-// -----------------------------------------//
-
-function processRow(row) {
+const processRow = (row) => {
   if (row[0] === importConfig.ignoredRowSign) {
     return null;
   }
@@ -115,33 +78,9 @@ function processRow(row) {
       idWorld4,
     },
   };
-}
+};
 
-function createObject(configTemplate, rowData) {
-  const object = {};
-
-  if (Number.isInteger(configTemplate)) {
-    const value = rowData[configTemplate];
-    return value.trim();
-  }
-
-  for (const prop of Object.keys(configTemplate)) {
-    const index = configTemplate[prop];
-    const value = rowData[index];
-    object[prop] = value.trim();
-  }
-  return object;
-}
-
-function makeNameAsPublished(rowData) {
-  const nameObj = createObject(
-    importConfig.dataColumns.nameAsPublished,
-    rowData
-  );
-  return helper.listOfSpeciesString(nameObj);
-}
-
-function processSimpleReport(report, data, rowNum, formatKey = undefined) {
+const processSimpleReport = (report, data, rowNum, formatKey = undefined) => {
   if (!data) {
     const empty = report[''] || [];
     empty.push(rowNum);
@@ -159,9 +98,21 @@ function processSimpleReport(report, data, rowNum, formatKey = undefined) {
     inReportRows.push(rowNum);
     report[name] = inReportRows;
   }
-}
+};
 
-function processRowPersonsReport(personsObj, rowNum) {
+const addToPersonReport = (report, name, rowNum, role) => {
+  const existingName = report[name] || {};
+
+  const roles = existingName[rowNum] || [];
+  roles.push(role);
+
+  report[name] = {
+    ...existingName,
+    [rowNum]: roles,
+  };
+};
+
+const processRowPersonsReport = (personsObj, rowNum) => {
   const keys = Object.keys(personsObj); // countedBy, identifiedBy atd
 
   const personsReport = {};
@@ -179,17 +130,65 @@ function processRowPersonsReport(personsObj, rowNum) {
   }
 
   return personsReport;
+};
+
+// -------------------------------------------------------- //
+
+/**
+ * Prepare rows to import without label rows.
+ * Ignored rows are null in the result.
+ * @param {*} data
+ */
+function importCSV(data) {
+  const dataToImport = [];
+  const { ignoredRows } = importConfig;
+
+  for (let i = 0; i < data.length; i += 1) {
+    if (ignoredRows.includes(i)) {
+      // skip ignored rows, row 0 are labels
+      continue;
+    }
+    const row = data[i];
+    if (row.length === 1) {
+      // empty line -> end
+      break;
+    }
+    const rowObjects = processRow(row);
+    dataToImport.push(rowObjects);
+  }
+
+  return dataToImport;
 }
 
-function addToPersonReport(report, name, rowNum, role) {
-  const existingName = report[name] || {};
+function createReport(records) {
+  const speciesReport = {};
+  const publicationReport = {};
+  let personsReport = {};
 
-  const roles = existingName[rowNum] || [];
-  roles.push(role);
+  for (const [i, { references }] of records.entries()) {
+    const rowNum = i + 2; // 1st row in the file is header
 
-  report[name] = {
-    ...existingName,
-    [rowNum]: roles,
+    processSimpleReport(
+      speciesReport,
+      references.species,
+      rowNum,
+      helper.listOfSpeciesString
+    );
+    processSimpleReport(
+      publicationReport,
+      references.publication,
+      rowNum,
+      helper.parsePublication
+    );
+
+    const personsOneRow = processRowPersonsReport(references.persons, rowNum);
+    personsReport = merge(personsReport, personsOneRow);
+  }
+
+  return {
+    speciesReport,
+    publicationReport,
+    personsReport,
   };
 }
 

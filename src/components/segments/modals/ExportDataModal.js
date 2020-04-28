@@ -147,7 +147,7 @@ class ExportDataModal extends React.Component {
                     onChange={e => this.onChangeCheckbox(e, 'chromdata')}
                   >
                     All
-                                    </Checkbox>
+                  </Checkbox>
 
                   <h6>Identification:</h6>
                   {this.makeCheckboxes('chromdata', 'identification')}

@@ -23,7 +23,7 @@ const constructSubNomenlatoric = (subNomenclatoricList) => {
         <ListGroupItem key={subNomen.id} bsSize="sm">
           <small>
             {config.mappings.synonym.nomenclatoric.prefix}
-{' '}
+            {' '}
             <LosName data={subNomen} />
           </small>
         </ListGroupItem>
@@ -38,21 +38,24 @@ const SynonymListItem = ({
   prefix,
   additions: Additions,
   showSubNomenclatoric = true,
-  ...props
+  children,
+  onRowDelete
 }) => {
   const { synonym: speciesName } = data;
   return (
     <ListGroupItem bsSize="sm">
       <Row>
         <Col xs={12}>
-          {prefix} <LosName data={speciesName} />
+          {prefix}
+          {' '}
+          <LosName data={speciesName} />
           <span className="pull-right">
-            {Additions && <Additions rowId={rowId} {...props} />}
+            {Additions && <Additions />}
             <span className="remove-list-item">
               <Button
                 bsStyle="danger"
                 bsSize="xsmall"
-                onClick={() => props.onRowDelete(rowId)}
+                onClick={() => onRowDelete(rowId)}
                 title="Remove from this list"
               >
                 <Glyphicon glyph="remove" />
@@ -61,7 +64,7 @@ const SynonymListItem = ({
           </span>
         </Col>
       </Row>
-      {props.children}
+      {children}
       {showSubNomenclatoric &&
         constructSubNomenlatoric(speciesName['synonyms-nomenclatoric-through'])}
     </ListGroupItem>

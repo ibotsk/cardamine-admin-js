@@ -3,7 +3,7 @@ import axios from './axios';
 
 import config from '../config/config';
 
-const login = async (username, password) => {
+async function login(username, password) {
   const loginUri = template.parse(config.uris.usersUri.loginUri).expand();
 
   const response = await axios.post(loginUri, {
@@ -11,13 +11,16 @@ const login = async (username, password) => {
     password,
   });
   return response.data;
-};
+}
 
-const logout = async (accessToken) => {
+async function logout(accessToken) {
   const logoutUri = template
     .parse(config.uris.usersUri.logoutUri)
     .expand({ accessToken });
   await axios.post(logoutUri);
-};
+}
 
-export default { login, logout };
+export default {
+  login,
+  logout,
+};

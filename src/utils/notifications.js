@@ -18,4 +18,9 @@ const error = (message) => {
   return NotificationManager.error(message);
 };
 
-export default { info, success, warning, error };
+export default {
+  info,
+  success,
+  warning,
+  error,
+};

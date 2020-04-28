@@ -10,7 +10,7 @@ import {
 
 import { LinkContainer } from 'react-router-bootstrap';
 
-const CNavbar = (props) => {
+const CNavbar = () => {
   return (
     <div id="navigation">
       <Navbar collapseOnSelect>
@@ -49,7 +49,9 @@ const CNavbar = (props) => {
             </NavItem>
             <LinkContainer to="/logout">
               <NavItem eventKey={3.1}>
-                <Glyphicon glyph="log-out" /> Logout
+                <Glyphicon glyph="log-out" />
+                {' '}
+                Logout
               </NavItem>
             </LinkContainer>
           </Nav>

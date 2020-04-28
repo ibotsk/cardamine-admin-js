@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 
-import { unsetAuthenticated } from '../../actions/index';
+import { unsetAuthenticated as unsetAuthenticatedAction } from '../../actions/index';
 import userService from '../../services/user-service';
 import { removeState } from '../../services/local-storage';
 
 class Logout extends React.Component {
   async componentWillMount() {
-    const { accessToken } = this.props;
+    const { accessToken, unsetAuthenticated } = this.props;
     await userService.logout(accessToken);
-    this.props.unsetAuthenticated();
+    unsetAuthenticated();
     removeState();
   }
 
@@ -24,5 +24,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  unsetAuthenticated,
+  unsetAuthenticated: unsetAuthenticatedAction,
 })(Logout);

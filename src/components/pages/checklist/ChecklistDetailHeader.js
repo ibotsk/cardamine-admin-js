@@ -30,7 +30,9 @@ const ChecklistDetailHeader = ({
     <Panel id="species-edit-header">
       <Panel.Heading>
         <Button bsStyle="warning" bsSize="xsmall" onClick={onShowEditModal}>
-          <Glyphicon glyph="edit" /> Edit Name
+          <Glyphicon glyph="edit" />
+          {' '}
+          Edit Name
         </Button>
         <Button
           bsStyle="danger"
@@ -38,7 +40,9 @@ const ChecklistDetailHeader = ({
           onClick={onShowDeleteModal}
           className="pull-right"
         >
-          <Glyphicon glyph="trash" /> Delete Name
+          <Glyphicon glyph="trash" />
+          {' '}
+          Delete Name
         </Button>
       </Panel.Heading>
       <Panel.Body>

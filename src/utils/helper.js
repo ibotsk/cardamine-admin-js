@@ -17,7 +17,7 @@ const o = (string, format) => {
 const Formatted = (string) => o(string, ff);
 const Plain = (string) => o(string, plf);
 
-const sl = (string) => {
+const makeSl = (string) => {
   const { sl } = configName;
   if (string && string.includes(sl)) {
     const modString = string.replace(sl, '');
@@ -60,6 +60,8 @@ const invalidDesignation = (name, syntype) => {
   return name;
 };
 
+// -------------------------------------------------------- //
+
 const listOfSpeciesFormat = (nomenclature, options = {}) => {
   const opts = {
     isPublication: false,
@@ -70,7 +72,7 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
   let isAuthorLast = true;
 
   let name = [];
-  const slResult = sl(nomenclature.species);
+  const slResult = makeSl(nomenclature.species);
 
   name.push(Formatted(nomenclature.genus));
   name.push(Formatted(slResult.s));
@@ -126,7 +128,7 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
   return name;
 };
 
-const listOfSpeciesForComponent = (name, formatString, options = {}) => {
+function listOfSpeciesForComponent(name, formatString, options = {}) {
   const nameArr = listOfSpeciesFormat(name, options);
 
   const formattedNameArr = nameArr.map((t) => {
@@ -139,13 +141,13 @@ const listOfSpeciesForComponent = (name, formatString, options = {}) => {
   return formattedNameArr
     .reduce((acc, el) => acc.concat(el, ' '), [])
     .slice(0, -1);
-};
+}
 
-const listOfSpeciesString = (name, options) => {
+function listOfSpeciesString(name, options) {
   return listOfSpeciesForComponent(name, 'plain', options).join('');
-};
+}
 
-const listOfSpeciesSorterLex = (losA, losB) => {
+function listOfSpeciesSorterLex(losA, losB) {
   // a > b = 1
   if (losA.genus > losB.genus) {
     return 1;
@@ -233,12 +235,13 @@ const listOfSpeciesSorterLex = (losA, losB) => {
     return -1;
   }
   return 0;
-};
+}
 
-const synonymSorterLex = (synA, synB) =>
-  listOfSpeciesSorterLex(synA.synonym, synB.synonym);
+function synonymSorterLex(synA, synB) {
+  return listOfSpeciesSorterLex(synA.synonym, synB.synonym);
+}
 
-const parsePublication = (publication) => {
+function parsePublication(publication) {
   const typeMapping = config.mappings.displayType[publication.displayType].name;
   const template = config.nomenclature.publication[typeMapping];
 
@@ -254,10 +257,10 @@ const parsePublication = (publication) => {
     pages: publication.pages,
     journal: publication.journalName,
   });
-};
+}
 
 // useful when changing type of publication, so the unused fields are set to empty
-const publicationCurateFields = (publication) => {
+function publicationCurateFields(publication) {
   const usedFields =
     config.mappings.displayType[publication.displayType].columns;
   const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(
@@ -269,9 +272,9 @@ const publicationCurateFields = (publication) => {
     curatedPubl[field] = '';
   }
   return curatedPubl;
-};
+}
 
-const publicationCurateStringDisplayType = (publication) => {
+function publicationCurateStringDisplayType(publication) {
   const nonEmptyProps = Object.keys(publication).filter(
     (prop) => !!publication[prop]
   );
@@ -286,10 +289,12 @@ const publicationCurateStringDisplayType = (publication) => {
   if (!displayTypeId) {
     throw new Error(`Unknown display type "${displayTypeString}"`);
   }
-  publication.displayType = displayTypeId;
 
-  return publication;
-};
+  return {
+    ...publication,
+    displayType: displayTypeId,
+  };
+}
 
 export default {
   listOfSpeciesForComponent,
@@ -297,6 +302,6 @@ export default {
   listOfSpeciesSorterLex,
   publicationCurateFields,
   publicationCurateStringDisplayType,
-  parsePublication,
   synonymSorterLex,
+  parsePublication,
 };

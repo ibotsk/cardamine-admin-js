@@ -2,7 +2,7 @@ import chromDataService from '../services/chromosome-data';
 import checklistService from '../services/checklist';
 import helper from '../utils/helper';
 
-const getChromosomeRecord = async (accessToken, idRecord) => {
+async function getChromosomeRecord(accessToken, idRecord) {
   let chromrecord = {};
   let material = {};
   let reference = {};
@@ -32,9 +32,9 @@ const getChromosomeRecord = async (accessToken, idRecord) => {
     reference,
     histories,
   };
-};
+}
 
-const getLiteratures = async (accessToken, idLiterature) => {
+async function getLiteratures(accessToken, idLiterature) {
   const literatures = await chromDataService.getAllLiteratures(
     accessToken,
     (l) => ({
@@ -48,12 +48,12 @@ const getLiteratures = async (accessToken, idLiterature) => {
     literatures,
     idLiteratureSelected: literatureInitial ? [literatureInitial] : null,
   };
-};
+}
 
-const getPersons = async (
+async function getPersons(
   accessToken,
   { countedBy, collectedBy, identifiedBy, checkedBy }
-) => {
+) {
   const persons = await chromDataService.getAllPersons(accessToken, (p) => ({
     id: p.id,
     label: `${p.persName}`,
@@ -70,9 +70,9 @@ const getPersons = async (
     identifiedBySelected: identifiedByInitial ? [identifiedByInitial] : null,
     checkedBySelected: checkedByInitial ? [checkedByInitial] : null,
   };
-};
+}
 
-const getSpecies = async (accessToken, idStandardisedName) => {
+async function getSpecies(accessToken, idStandardisedName) {
   const listOfSpecies = await checklistService.getAllSpecies(
     accessToken,
     (l) => ({
@@ -91,9 +91,9 @@ const getSpecies = async (accessToken, idStandardisedName) => {
       ? [originalIdentificationInitial]
       : null,
   };
-};
+}
 
-const getWorld4s = async (accessToken, idWorld4) => {
+async function getWorld4s(accessToken, idWorld4) {
   const world4s = await chromDataService.getAllWorld4s(accessToken, (w) => ({
     id: w.id,
     label: w.description,
@@ -105,12 +105,12 @@ const getWorld4s = async (accessToken, idWorld4) => {
     world4s,
     idWorld4Selected: world4Initial ? [world4Initial] : null,
   };
-};
+}
 
-const saveUpdateChromrecordWithAll = async (
+async function saveUpdateChromrecordWithAll(
   { chromrecord, dna, material, reference },
   accessToken
-) => {
+) {
   const responseChrom = await chromDataService.saveUpdateChromrecord(
     chromrecord,
     accessToken
@@ -127,7 +127,7 @@ const saveUpdateChromrecordWithAll = async (
     { ...dna, idCdata: responseChrom.data.id },
     accessToken
   );
-};
+}
 
 export default {
   getChromosomeRecord,

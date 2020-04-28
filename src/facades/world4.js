@@ -1,10 +1,10 @@
 import world4Service from '../services/world4';
 
-const getOneByDescription = async (
+async function getOneByDescription(
   description,
   accessToken,
   formatFound = undefined
-) => {
+) {
   const data = await world4Service.getByDescription(
     description.trim(),
     accessToken
@@ -26,7 +26,7 @@ const getOneByDescription = async (
     term: description,
     found,
   };
-};
+}
 
 export default {
   getOneByDescription,
