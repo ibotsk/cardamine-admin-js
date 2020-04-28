@@ -1,7 +1,7 @@
 export default {
   options: {
     separator: ';',
-    enclosingCharacter: `"`,
+    enclosingCharacter: '"',
   },
   chromdata: {
     nameAsPublished: {

@@ -37,7 +37,7 @@ const processReferencedRecord = async (
   referenceMap,
   accessToken,
   saveFunction,
-  formatTerm = (term) => term
+  formatTerm = (term) => term,
 ) => {
   if (!record) {
     return null;
@@ -74,7 +74,7 @@ const processCdata = async (cdata, countedBy, referenceMap, accessToken) => {
     referenceMap.persons,
     accessToken,
     savePerson,
-    formatTermAsPersName
+    formatTermAsPersName,
   );
   return {
     ...cdata,
@@ -99,28 +99,28 @@ const processMaterial = async (
   checkedBy,
   idWorld4,
   referenceMap,
-  accessToken
+  accessToken,
 ) => {
   const collectedByValue = await processReferencedRecord(
     collectedBy,
     referenceMap.persons,
     accessToken,
     savePerson,
-    formatTermAsPersName
+    formatTermAsPersName,
   );
   const identifiedByValue = await processReferencedRecord(
     identifiedBy,
     referenceMap.persons,
     accessToken,
     savePerson,
-    formatTermAsPersName
+    formatTermAsPersName,
   );
   const checkedByValue = await processReferencedRecord(
     checkedBy,
     referenceMap.persons,
     accessToken,
     savePerson,
-    formatTermAsPersName
+    formatTermAsPersName,
   );
 
   let idWorld4Value = null;
@@ -146,21 +146,21 @@ const processReference = async (
   species,
   publication,
   referenceMap,
-  accessToken
+  accessToken,
 ) => {
   const idPublicationValue = await processReferencedRecord(
     publication,
     referenceMap.publications,
     accessToken,
     savePublication,
-    formatTermAsPublication
+    formatTermAsPublication,
   );
   const idStandardisedNameValue = await processReferencedRecord(
     species,
     referenceMap.species,
     accessToken,
     saveSpecies,
-    formatTermAsSpeciesName
+    formatTermAsSpeciesName,
   );
 
   return {
@@ -194,29 +194,29 @@ async function loadData(data, accessToken, increase = undefined) {
         idWorld4 = await world4Facade.getOneByDescription(
           refWorld4,
           accessToken,
-          getIdOfFound
+          getIdOfFound,
         );
       }
 
       const species = await checklistFacade.getSpeciesByAll(
         refStandardizedName,
         accessToken,
-        getIdOfFound
+        getIdOfFound,
       );
 
       const literatureData = helper.publicationCurateStringDisplayType(
-        refLiterature
+        refLiterature,
       );
       const publication = await publicationsFacade.getPublicationByAll(
         literatureData,
         accessToken,
-        getIdOfFound
+        getIdOfFound,
       );
 
       const persons = await personsFacade.getPersonsByName(
         refPersons,
         accessToken,
-        getIdOfFound
+        getIdOfFound,
       );
 
       const record = {
@@ -257,15 +257,21 @@ async function importData(records, accessToken, increase = undefined) {
   let i = 1;
 
   for (const { main, references } of records) {
-    const { cdata, material, reference, dna } = main;
-    const { species, publication, persons, idWorld4 } = references;
-    const { countedBy, collectedBy, identifiedBy, checkedBy } = persons;
+    const {
+      cdata, material, reference, dna,
+    } = main;
+    const {
+      species, publication, persons, idWorld4,
+    } = references;
+    const {
+      countedBy, collectedBy, identifiedBy, checkedBy,
+    } = persons;
 
     const cdataToSave = await processCdata(
       cdata,
       countedBy,
       newlyCreatedRefs,
-      accessToken
+      accessToken,
     );
     const materialToSave = await processMaterial(
       material,
@@ -274,14 +280,14 @@ async function importData(records, accessToken, increase = undefined) {
       checkedBy,
       idWorld4,
       newlyCreatedRefs,
-      accessToken
+      accessToken,
     );
     const referenceToSave = await processReference(
       reference,
       species,
       publication,
       newlyCreatedRefs,
-      accessToken
+      accessToken,
     );
 
     await chromRecordFacade.saveUpdateChromrecordWithAll(
@@ -291,7 +297,7 @@ async function importData(records, accessToken, increase = undefined) {
         reference: referenceToSave,
         dna,
       },
-      accessToken
+      accessToken,
     );
 
     if (increase) {

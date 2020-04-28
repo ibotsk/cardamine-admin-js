@@ -42,9 +42,10 @@ async function getSpeciesById({ id, accessToken }) {
 }
 
 async function getSynonyms(id, accessToken) {
-  const nomenclatoricSynonyms = await checklistService.getSynonymsNomenclatoricOf(
-    { id, accessToken }
-  );
+  const nomenclatoricSynonyms = await checklistService
+    .getSynonymsNomenclatoricOf(
+      { id, accessToken },
+    );
   nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
 
   const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({

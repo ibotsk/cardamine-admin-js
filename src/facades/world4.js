@@ -3,11 +3,11 @@ import world4Service from '../services/world4';
 async function getOneByDescription(
   description,
   accessToken,
-  formatFound = undefined
+  formatFound = undefined,
 ) {
   const data = await world4Service.getByDescription(
     description.trim(),
-    accessToken
+    accessToken,
   );
 
   if (data.length < 1) {

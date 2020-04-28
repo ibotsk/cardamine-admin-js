@@ -61,26 +61,24 @@ class Publications extends Component {
     this.setState({ showModalLiterature: false });
   };
 
-  formatResult = (data) => {
-    return data.map((l) => ({
-      id: l.id,
-      action: (
-        <Button
-          bsSize="xsmall"
-          bsStyle="warning"
-          onClick={() => this.showModal(l.id)}
-        >
-          Edit
-        </Button>
-      ),
-      type: config.mappings.displayType[l.displayType].name,
-      publication: helper.parsePublication(l),
-    }));
-  };
+  formatResult = (data) => data.map((l) => ({
+    id: l.id,
+    action: (
+      <Button
+        bsSize="xsmall"
+        bsStyle="warning"
+        onClick={() => this.showModal(l.id)}
+      >
+        Edit
+      </Button>
+    ),
+    type: config.mappings.displayType[l.displayType].name,
+    publication: helper.parsePublication(l),
+  }));
 
   render() {
     const { data, onTableChange, paginationOptions } = this.props;
-    const { editId, showModalLiterature  } = this.state;
+    const { editId, showModalLiterature } = this.state;
     return (
       <div id="publications">
         <Grid id="functions">
@@ -125,5 +123,5 @@ export default connect(mapStateToProps)(
   TabledPage({
     getAll: config.uris.literaturesUri.getAllWFilterUri,
     getCount: config.uris.literaturesUri.countUri,
-  })(Publications)
+  })(Publications),
 );

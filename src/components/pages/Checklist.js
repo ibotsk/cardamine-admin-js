@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Grid, Col, Row, Button, Glyphicon } from 'react-bootstrap';
+import {
+  Grid, Col, Row, Button, Glyphicon,
+} from 'react-bootstrap';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, {
@@ -36,13 +38,12 @@ const ntypeFormatter = (cell) => (
   <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>
 );
 
-const formatTableRow = (data) =>
-  data.map((n) => ({
-    id: n.id,
-    ntype: n.ntype,
-    speciesName: helper.listOfSpeciesString(n),
-    extra: <Glyphicon glyph="chevron-right" style={{ color: '#cecece' }} />,
-  }));
+const formatTableRow = (data) => data.map((n) => ({
+  id: n.id,
+  ntype: n.ntype,
+  speciesName: helper.listOfSpeciesString(n),
+  extra: <Glyphicon glyph="chevron-right" style={{ color: '#cecece' }} />,
+}));
 
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
@@ -109,9 +110,10 @@ class Checklist extends Component {
   }
 
   componentDidMount() {
-    const selectedId = this.props.match.params.id;
+    const { match } = this.props;
+    const selectedId = match.params.id;
     if (selectedId) {
-      const selectedIdInt = parseInt(selectedId);
+      const selectedIdInt = parseInt(selectedId, 10);
       this.populateDetailsForEdit(selectedIdInt);
     }
   }
@@ -149,7 +151,7 @@ class Checklist extends Component {
     const { accessToken, history } = this.props;
     try {
       await checklistFacade.deleteSpecies({ id, accessToken });
-      history.push(`/names`);
+      history.push('/names');
       this.hideModal(false);
       notifications.success('Succesfully deleted');
     } catch (e) {
@@ -187,14 +189,14 @@ class Checklist extends Component {
     });
   };
 
-  handleSpeciesChange = (updatedSpecies) =>
-    this.setState({ species: updatedSpecies });
+  handleSpeciesChange = (updatedSpecies) => this.setState({
+    species: updatedSpecies,
+  });
 
-  handleSynonymsChange = (newSynonyms, synonymIdsToDelete) =>
-    this.setState({
-      synonyms: newSynonyms,
-      synonymIdsToDelete,
-    });
+  handleSynonymsChange = (newSynonyms, synonymIdsToDelete) => this.setState({
+    synonyms: newSynonyms,
+    synonymIdsToDelete,
+  });
 
   render() {
     const { data, onTableChange, history } = this.props;
@@ -225,7 +227,9 @@ class Checklist extends Component {
               bsStyle="success"
               onClick={() => this.showModal(MODAL_EDIT_SPECIES)}
             >
-              <Glyphicon glyph="plus" /> Add new
+              <Glyphicon glyph="plus" />
+              {' '}
+              Add new
             </Button>
           </div>
           <h2>Names</h2>
@@ -256,9 +260,10 @@ class Checklist extends Component {
                 synonymIdsToDelete={synonymIdsToDelete}
                 listOfSpecies={listOfSpecies}
                 accessToken={accessToken}
-                onShowEditModal={() =>
-                  this.showModal(MODAL_EDIT_SPECIES, speciesId)
-                }
+                onShowEditModal={() => this.showModal(
+                  MODAL_EDIT_SPECIES,
+                  speciesId,
+                )}
                 onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
                 onSpeciesChange={this.handleSpeciesChange}
                 onSynonymsChange={this.handleSynonymsChange}
@@ -293,5 +298,5 @@ export default connect(mapStateToProps)(
   TabledPage({
     getAll: config.uris.listOfSpeciesUri.getAllWOrderUri,
     getCount: config.uris.listOfSpeciesUri.countUri,
-  })(Checklist)
+  })(Checklist),
 );

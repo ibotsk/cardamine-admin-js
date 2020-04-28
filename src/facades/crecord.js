@@ -11,7 +11,7 @@ async function getChromosomeRecord(accessToken, idRecord) {
   if (idRecord) {
     chromrecord = await chromDataService.getChromosomeRecordById(
       idRecord,
-      accessToken
+      accessToken,
     );
 
     material = chromrecord.material || {};
@@ -40,7 +40,7 @@ async function getLiteratures(accessToken, idLiterature) {
     (l) => ({
       id: l.id,
       label: helper.parsePublication(l),
-    })
+    }),
   );
   const literatureInitial = literatures.find((l) => l.id === idLiterature);
 
@@ -52,7 +52,9 @@ async function getLiteratures(accessToken, idLiterature) {
 
 async function getPersons(
   accessToken,
-  { countedBy, collectedBy, identifiedBy, checkedBy }
+  {
+    countedBy, collectedBy, identifiedBy, checkedBy,
+  },
 ) {
   const persons = await chromDataService.getAllPersons(accessToken, (p) => ({
     id: p.id,
@@ -78,11 +80,11 @@ async function getSpecies(accessToken, idStandardisedName) {
     (l) => ({
       id: l.id,
       label: helper.listOfSpeciesString(l),
-    })
+    }),
   );
 
   const originalIdentificationInitial = listOfSpecies.find(
-    (l) => l.id === idStandardisedName
+    (l) => l.id === idStandardisedName,
   );
 
   return {
@@ -108,24 +110,26 @@ async function getWorld4s(accessToken, idWorld4) {
 }
 
 async function saveUpdateChromrecordWithAll(
-  { chromrecord, dna, material, reference },
-  accessToken
+  {
+    chromrecord, dna, material, reference,
+  },
+  accessToken,
 ) {
   const responseChrom = await chromDataService.saveUpdateChromrecord(
     chromrecord,
-    accessToken
+    accessToken,
   );
   const responseMat = await chromDataService.saveUpdateMaterial(
     { ...material, idCdata: responseChrom.data.id },
-    accessToken
+    accessToken,
   );
   await chromDataService.saveUpdateReference(
     { ...reference, idMaterial: responseMat.data.id },
-    accessToken
+    accessToken,
   );
   await chromDataService.saveUpdateDna(
     { ...dna, idCdata: responseChrom.data.id },
-    accessToken
+    accessToken,
   );
 }
 

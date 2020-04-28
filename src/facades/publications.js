@@ -14,7 +14,7 @@ async function getPublicationByIdCurated({ id, accessToken }) {
 async function getPublicationByAll(
   literatureData,
   accessToken,
-  formatFound = undefined
+  formatFound = undefined,
 ) {
   const where = whereHelper.whereDataAll(literatureData);
   if (!where) {

@@ -1,8 +1,6 @@
 import React from 'react';
 
-const italic = (subject) => {
-  return <i>{subject}</i>;
-};
+const italic = (subject) => <i>{subject}</i>;
 
 const format = (subject, formatString) => {
   switch (formatString) {

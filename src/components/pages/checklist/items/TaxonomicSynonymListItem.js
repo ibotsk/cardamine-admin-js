@@ -21,7 +21,8 @@ const TaxonomicSynonymListItem = ({
         onClick={() => onChangeToNomenclatoric(rowId)}
         title="Change to nomenclatoric synonym"
       >
-        <Glyphicon glyph="share-alt" />{' '}
+        <Glyphicon glyph="share-alt" />
+        {' '}
         {config.mappings.synonym.nomenclatoric.prefix}
       </Button>
       &nbsp;
@@ -31,7 +32,9 @@ const TaxonomicSynonymListItem = ({
         onClick={() => onChangeToInvalid(rowId)}
         title="Change to invalid designation"
       >
-        <Glyphicon glyph="share-alt" /> {config.mappings.synonym.invalid.prefix}
+        <Glyphicon glyph="share-alt" />
+        {' '}
+        {config.mappings.synonym.invalid.prefix}
       </Button>
     </>
   );

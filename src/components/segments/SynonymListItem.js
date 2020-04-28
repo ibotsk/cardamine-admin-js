@@ -9,6 +9,8 @@ import {
   ListGroupItem,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+
 import LosName from './LosName';
 
 import config from '../../config/config';
@@ -39,7 +41,7 @@ const SynonymListItem = ({
   additions: Additions,
   showSubNomenclatoric = true,
   children,
-  onRowDelete
+  onRowDelete,
 }) => {
   const { synonym: speciesName } = data;
   return (
@@ -65,10 +67,30 @@ const SynonymListItem = ({
         </Col>
       </Row>
       {children}
-      {showSubNomenclatoric &&
-        constructSubNomenlatoric(speciesName['synonyms-nomenclatoric-through'])}
+      {showSubNomenclatoric
+      && constructSubNomenlatoric(
+        speciesName['synonyms-nomenclatoric-through'],
+      )}
     </ListGroupItem>
   );
 };
 
 export default SynonymListItem;
+
+SynonymListItem.propTypes = {
+  rowId: PropTypes.number.isRequired,
+  data: PropTypes.shape({
+    synonym: PropTypes.object.isRequired,
+  }).isRequired,
+  prefix: PropTypes.string.isRequired,
+  additions: PropTypes.func,
+  showSubNomenclatoric: PropTypes.bool,
+  children: PropTypes.element,
+  onRowDelete: PropTypes.func.isRequired,
+};
+
+SynonymListItem.defaultProps = {
+  additions: undefined,
+  showSubNomenclatoric: true,
+  children: undefined,
+};

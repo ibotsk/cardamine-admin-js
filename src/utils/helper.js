@@ -84,9 +84,9 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
   const infras = infraTaxa(nomenclature);
 
   if (
-    nomenclature.species === nomenclature.subsp ||
-    nomenclature.species === nomenclature.var ||
-    nomenclature.species === nomenclature.forma
+    nomenclature.species === nomenclature.subsp
+    || nomenclature.species === nomenclature.var
+    || nomenclature.species === nomenclature.forma
   ) {
     if (nomenclature.authors) {
       name.push(Plain(nomenclature.authors));
@@ -261,10 +261,10 @@ function parsePublication(publication) {
 
 // useful when changing type of publication, so the unused fields are set to empty
 function publicationCurateFields(publication) {
-  const usedFields =
-    config.mappings.displayType[publication.displayType].columns;
+  const { displayType } = publication;
+  const usedFields = config.mappings.displayType[displayType].columns;
   const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(
-    (el) => !usedFields.includes(el)
+    (el) => !usedFields.includes(el),
   );
 
   const curatedPubl = { ...publication };
@@ -276,18 +276,17 @@ function publicationCurateFields(publication) {
 
 function publicationCurateStringDisplayType(publication) {
   const nonEmptyProps = Object.keys(publication).filter(
-    (prop) => !!publication[prop]
+    (prop) => !!publication[prop],
   );
   if (nonEmptyProps.length === 0) {
     return publication;
   }
 
-  const displayTypeString = publication.displayType;
-  const displayTypeId =
-    config.mappings.displayTypeStringToId[displayTypeString];
+  const displayTypeStr = publication.displayType;
+  const displayTypeId = config.mappings.displayTypeStringToId[displayTypeStr];
 
   if (!displayTypeId) {
-    throw new Error(`Unknown display type "${displayTypeString}"`);
+    throw new Error(`Unknown display type "${displayTypeStr}"`);
   }
 
   return {

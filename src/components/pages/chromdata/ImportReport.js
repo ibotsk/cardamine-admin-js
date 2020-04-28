@@ -1,5 +1,7 @@
 import React from 'react';
-import { Panel, ListGroup, ListGroupItem, Well, Badge } from 'react-bootstrap';
+import {
+  Panel, ListGroup, ListGroupItem, Well, Badge,
+} from 'react-bootstrap';
 
 const infoReportCategory = (data, label) => {
   if (!data) {
@@ -9,7 +11,7 @@ const infoReportCategory = (data, label) => {
     };
   }
   const nonEmptyKeysEntries = Object.entries(data).filter(
-    ([key]) => key !== ''
+    ([key]) => key !== '',
   );
 
   const nonEmptyKeysEntriesLength = nonEmptyKeysEntries.length;
@@ -78,9 +80,8 @@ const warningsReport = (speciesReport, publicationReport) => {
     };
   }
 
-  const count =
-    (emptySpecies ? emptySpecies.length : 0) +
-    (emptyPublication ? emptyPublication.length : 0);
+  const count = (emptySpecies ? emptySpecies.length : 0)
+    + (emptyPublication ? emptyPublication.length : 0);
   return {
     content: (
       <ListGroup>
@@ -108,37 +109,37 @@ const warningsReport = (speciesReport, publicationReport) => {
   };
 };
 
-const ReportPanel = ({ panelClass, label, count = 0, children }) => {
-  return (
-    <Panel bsStyle={panelClass}>
-      <Panel.Heading>
-        <Panel.Title componentClass="h4" toggle>
-          {label}
-          {' '}
-          {count !== undefined && <Badge>{count}</Badge>}
-        </Panel.Title>
-      </Panel.Heading>
-      <Panel.Collapse>
-        <Panel.Body>{children}</Panel.Body>
-      </Panel.Collapse>
-    </Panel>
-  );
-};
+const ReportPanel = ({
+  panelClass, label, count = 0, children,
+}) => (
+  <Panel bsStyle={panelClass}>
+    <Panel.Heading>
+      <Panel.Title componentClass="h4" toggle>
+        {label}
+        {' '}
+        {count !== undefined && <Badge>{count}</Badge>}
+      </Panel.Title>
+    </Panel.Heading>
+    <Panel.Collapse>
+      <Panel.Body>{children}</Panel.Body>
+    </Panel.Collapse>
+  </Panel>
+);
 
 const ImportReport = ({ report }) => {
   const { speciesReport, publicationReport, personsReport } = report;
   const { content: warnings, count: warningsCount } = warningsReport(
     speciesReport,
-    publicationReport
+    publicationReport,
   );
 
   const { content: infoPersons, count: infoCountPersons } = infoReportCategory(
     personsReport,
-    'Persons to be created'
+    'Persons to be created',
   );
   const { content: infoSpecies, count: infoCountSpecies } = infoReportCategory(
     speciesReport,
-    'Species to be created'
+    'Species to be created',
   );
   const {
     content: infoPublication,

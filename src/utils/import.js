@@ -23,7 +23,7 @@ const createObject = (configTemplate, rowData) => {
 const makeNameAsPublished = (rowData) => {
   const nameObj = createObject(
     importConfig.dataColumns.nameAsPublished,
-    rowData
+    rowData,
   );
   return helper.listOfSpeciesString(nameObj);
 };
@@ -43,20 +43,20 @@ const processRow = (row) => {
 
   const literature = createObject(
     importConfig.referenceColumns.literature,
-    row
+    row,
   );
   const standardizedName = createObject(
     importConfig.referenceColumns.standardizedName,
-    row
+    row,
   );
   const countedBy = createObject(importConfig.referenceColumns.countedBy, row);
   const collectedBy = createObject(
     importConfig.referenceColumns.collectedBy,
-    row
+    row,
   );
   const identifiedBy = createObject(
     importConfig.referenceColumns.identifiedBy,
-    row
+    row,
   );
   const checkedBy = createObject(importConfig.referenceColumns.checkedBy, row);
   const idWorld4 = createObject(importConfig.referenceColumns.idWorld4, row);
@@ -172,13 +172,13 @@ function createReport(records) {
       speciesReport,
       references.species,
       rowNum,
-      helper.listOfSpeciesString
+      helper.listOfSpeciesString,
     );
     processSimpleReport(
       publicationReport,
       references.publication,
       rowNum,
-      helper.parsePublication
+      helper.parsePublication,
     );
 
     const personsOneRow = processRowPersonsReport(references.persons, rowNum);

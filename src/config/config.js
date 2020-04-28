@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import exportConfig from './export';
 import urisConfig from './uris';
 

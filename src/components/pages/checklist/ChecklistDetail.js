@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Button, Panel, Form, Well } from 'react-bootstrap';
+import {
+  Button, Panel, Form, Well,
+} from 'react-bootstrap';
 
 import checklistFacade from '../../../facades/checklist';
 

@@ -11,10 +11,14 @@ async function getPublicationById({ id, accessToken }) {
   return response.data;
 }
 
-async function getPublicationByWhere({ where, offset, limit, accessToken }) {
+async function getPublicationByWhere({
+  where, offset, limit, accessToken,
+}) {
   const getAllUri = template
     .parse(config.uris.literaturesUri.getAllWFilterUri)
-    .expand({ offset, where, limit, accessToken });
+    .expand({
+      offset, where, limit, accessToken,
+    });
   const response = await axios.get(getAllUri);
   return response.data;
 }

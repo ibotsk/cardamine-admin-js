@@ -3,13 +3,10 @@ import helper from './helper';
 
 const VALUE_NA = '-';
 
-const createPublication = (data) => {
-  return helper.parsePublication(data);
-};
+const createPublication = (data) => helper.parsePublication(data);
 
-const createLosName = (name) => {
-  return helper.listOfSpeciesString(name, { isPublication: true });
-};
+const createLosName = (name) => helper
+  .listOfSpeciesString(name, { isPublication: true });
 
 const getValue = (data, column) => {
   const fieldValue = get(data, column, VALUE_NA);
@@ -43,12 +40,10 @@ const handleCompositeField = (data, field, fieldInfo) => {
 };
 
 function createCsvData(dataToExport, fields, configfields) {
-  const headers = fields.map((f) => {
-    return {
-      label: configfields[f].name,
-      key: f,
-    };
-  });
+  const headers = fields.map((f) => ({
+    label: configfields[f].name,
+    key: f,
+  }));
 
   const data = dataToExport.map((d) => {
     const obj = {};

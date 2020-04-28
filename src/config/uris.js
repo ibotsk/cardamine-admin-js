@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const backendBase = `${process.env.REACT_APP_BACKEND_BASE}:${process.env.REACT_APP_BACKEND_PORT}`;
 
 const L = '%7B';
@@ -11,50 +12,55 @@ export default {
   chromosomeDataUri: {
     baseUri: `${backendBase}/api/cdata?access_token={accessToken}`,
     getByIdUri: `${backendBase}/api/cdata/{id}?filter=%7B"include":["dna",%7B"histories":"list-of-species"%7D,%7B"material":"reference"%7D]%7D&access_token={accessToken}`,
-    getAllWFilterUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=%7B"offset":{offset},"where":{where},"limit":{limit},"include":[ 
+    getAllWFilterUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=%7B
+        "offset":{offset},
+        "where":{where},
+        "limit":{limit},
+        "include":[
+          %7B
+            "relation":"counted-by",
+            "scope":%7B
+              "where":%7B%7D
+            %7D
+          %7D,
+          %7B
+            "relation":"latest-revision",
+            "scope":%7B
+              "include":%7B
+                "relation":"list-of-species",
+                "where":%7B%7D
+              %7D
+            %7D 
+          %7D,
+          %7B
+            "relation":"material",
+            "scope":%7B
+              "where":%7B%7D,
+              "include":[
                 %7B
-                    "relation":"counted-by",
-                    "scope":%7B
-                        "where":%7B%7D
-                    %7D
+                  "relation":"world-l4",
+                  "scope":%7B
+                    "where":%7B%7D
+                  %7D
                 %7D,
                 %7B
-                    "relation":"latest-revision",
-                    "scope":%7B
-                        "include":%7B
-                            "relation":"list-of-species",
-                            "where":%7B%7D
-                        %7D
-                    %7D 
-                %7D,
-                %7B
-                    "relation":"material",
-                    "scope":%7B
-                        "where":%7B%7D,
-                        "include":[
-                            %7B
-                                "relation":"world-l4",
-                                "scope":%7B
-                                    "where":%7B%7D
-                                %7D
-                            %7D,
-                            %7B
-                                "relation":"reference",
-                                "scope":%7B
-                                    "include":[
-                                        %7B
-                                            "relation":"literature"
-                                        %7D,
-                                        %7B
-                                            "relation":"original-identification"
-                                        %7D
-                                    ]
-                                %7D
-                            %7D
-                        ]
-                    %7D
+                  "relation":"reference",
+                  "scope":%7B
+                    "include":[
+                      %7B
+                        "relation":"literature"
+                      %7D,
+                      %7B
+                        "relation":"original-identification"
+                      %7D
+                    ]
+                  %7D
                 %7D
-            ]%7D`,
+              ]
+            %7D
+          %7D
+        ]
+      %7D`,
     exportUri: `${backendBase}/api/cdata?access_token={accessToken}&filter=${L}"where":{where},"include":[${L}"material":[${L}"reference":["literature","original-identification"]${R},"collected-by","identified-by","world-l4"]${R},"latest-revision","dna","counted-by"]${R}`,
     countUri: `${backendBase}/api/cdata/count?where={whereString}&access_token={accessToken}`,
   },

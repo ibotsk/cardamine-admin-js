@@ -151,111 +151,108 @@ const columns = [
   },
 ];
 
-const getInitialToggles = (toggledColumns) => {
-  return toggledColumns.reduce((obj, el) => {
+const getInitialToggles = (toggledColumns) => toggledColumns
+  .reduce((obj, el) => {
     const key = el.dataField;
-    // obj[key] = !el.hidden;
     return {
       ...obj,
       [key]: !el.hidden,
     };
-  }, {});
-};
+  },
+  {});
 
-const formatResult = (data, { onAddToExport, isExported }) => {
-  return data.map((d) => {
-    const origIdentification = get(
-      d,
-      ['material', 'reference', 'original-identification'],
-      ''
-    );
-    const latestRevision = d['latest-revision'];
-    const coordinatesLatGeoref = get(d, 'material.coordinatesGeorefLat', null);
-    const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
-    const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
-    const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
+const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
+  const origIdentification = get(
+    d,
+    ['material', 'reference', 'original-identification'],
+    '',
+  );
+  const latestRevision = d['latest-revision'];
+  const coordinatesLatGeoref = get(d, 'material.coordinatesGeorefLat', null);
+  const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
+  const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
+  const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
 
-    let latitudeString = '';
-    if (coordinatesLatGeoref) {
-      latitudeString = `${coordinatesLatGeoref} (gr)`;
-    } else if (coordinatesLatOrig) {
-      latitudeString = `${coordinatesLatOrig} (orig)`;
-    }
-    let longitudeString = '';
-    if (coordinatesLonGeoref) {
-      longitudeString = `${coordinatesLonGeoref} (gr)`;
-    } else if (coordinatesLonOrig) {
-      longitudeString = `${coordinatesLonOrig} (orig)`;
-    }
+  let latitudeString = '';
+  if (coordinatesLatGeoref) {
+    latitudeString = `${coordinatesLatGeoref} (gr)`;
+  } else if (coordinatesLatOrig) {
+    latitudeString = `${coordinatesLatOrig} (orig)`;
+  }
+  let longitudeString = '';
+  if (coordinatesLonGeoref) {
+    longitudeString = `${coordinatesLonGeoref} (gr)`;
+  } else if (coordinatesLonOrig) {
+    longitudeString = `${coordinatesLonOrig} (orig)`;
+  }
 
-    return {
-      id: d.id,
-      inExport: (
-        <Checkbox
-          name={`${d.id}isExported`}
-          checked={isExported(d.id)}
-          onChange={(e) => onAddToExport(e, [d.id])}
+  return {
+    id: d.id,
+    inExport: (
+      <Checkbox
+        name={`${d.id}isExported`}
+        checked={isExported(d.id)}
+        onChange={(e) => onAddToExport(e, [d.id])}
+      />
+    ),
+    action: (
+      <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
+        <Button bsStyle="warning" bsSize="xsmall">
+          Edit
+        </Button>
+      </LinkContainer>
+    ),
+    originalIdentification: origIdentification ? (
+      <Link to={`${PAGE_DETAIL}${origIdentification.id}`}>
+        <LosName
+          key={origIdentification.id}
+          data={origIdentification}
+          format="plain"
         />
-      ),
-      action: (
-        <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
-          <Button bsStyle="warning" bsSize="xsmall">
-            Edit
-          </Button>
-        </LinkContainer>
-      ),
-      originalIdentification: origIdentification ? (
-        <Link to={`${PAGE_DETAIL}${origIdentification.id}`}>
-          <LosName
-            key={origIdentification.id}
-            data={origIdentification}
-            format="plain"
-          />
-        </Link>
-      ) : (
-        ''
-      ),
-      lastRevision: latestRevision ? (
-        <Link to={`${PAGE_DETAIL}${latestRevision['list-of-species'].id}`}>
-          <LosName
-            key={latestRevision['list-of-species'].id}
-            data={latestRevision['list-of-species']}
-            format="plain"
-          />
-        </Link>
-      ) : (
-        ''
-      ),
-      publicationAuthor: get(
-        d,
-        'material.reference.literature.paperAuthor',
-        ''
-      ),
-      year: get(d, 'material.reference.literature.year', ''),
-      n: d.n,
-      dn: d.dn,
-      ploidy: d.ploidyLevel,
-      ploidyRevised: d.ploidyLevelRevised,
-      xRevised: d.xRevised,
-      countedBy: d['counted-by'] ? d['counted-by'].persName : '',
-      countedDate: d.countedDate,
-      nOfPlants: d.numberOfAnalysedPlants,
-      note: d.note,
-      eda: formatter.eda({
-        ambiguous: d.ambiguousRecord,
-        doubtful: d.doubtfulRecord,
-        erroneous: d.erroneousRecord,
-      }),
-      duplicate: d.duplicateData,
-      depositedIn: d.depositedIn,
-      w4: get(d, ['material', 'world-l4', 'description'], ''),
-      country: get(d, 'material.country', ''),
-      latitude: latitudeString,
-      longitude: longitudeString,
-      localityDescription: get(d, 'material.description'),
-    };
-  });
-};
+      </Link>
+    ) : (
+      ''
+    ),
+    lastRevision: latestRevision ? (
+      <Link to={`${PAGE_DETAIL}${latestRevision['list-of-species'].id}`}>
+        <LosName
+          key={latestRevision['list-of-species'].id}
+          data={latestRevision['list-of-species']}
+          format="plain"
+        />
+      </Link>
+    ) : (
+      ''
+    ),
+    publicationAuthor: get(
+      d,
+      'material.reference.literature.paperAuthor',
+      '',
+    ),
+    year: get(d, 'material.reference.literature.year', ''),
+    n: d.n,
+    dn: d.dn,
+    ploidy: d.ploidyLevel,
+    ploidyRevised: d.ploidyLevelRevised,
+    xRevised: d.xRevised,
+    countedBy: d['counted-by'] ? d['counted-by'].persName : '',
+    countedDate: d.countedDate,
+    nOfPlants: d.numberOfAnalysedPlants,
+    note: d.note,
+    eda: formatter.eda({
+      ambiguous: d.ambiguousRecord,
+      doubtful: d.doubtfulRecord,
+      erroneous: d.erroneousRecord,
+    }),
+    duplicate: d.duplicateData,
+    depositedIn: d.depositedIn,
+    w4: get(d, ['material', 'world-l4', 'description'], ''),
+    country: get(d, 'material.country', ''),
+    latitude: latitudeString,
+    longitude: longitudeString,
+    localityDescription: get(d, 'material.description'),
+  };
+});
 
 class Cdata extends React.Component {
   constructor(props) {
@@ -349,7 +346,9 @@ class Cdata extends React.Component {
             checked={exportPage}
             onChange={(e) => onChangeCheckboxPage(e)}
           >
-            Add <b>all records on this page</b>
+            Add
+            {' '}
+            <b>all records on this page</b>
             {' '}
             to export
           </Checkbox>
@@ -358,7 +357,9 @@ class Cdata extends React.Component {
             checked={exportAll}
             onChange={(e) => onChangeCheckboxAll(e)}
           >
-            Add <b>all results</b>
+            Add
+            {' '}
+            <b>all results</b>
             {' '}
             to export
           </Checkbox>
@@ -368,7 +369,9 @@ class Cdata extends React.Component {
   };
 
   render() {
-    const { data, paginationOptions, exportedCdata, accessToken } = this.props;
+    const {
+      data, paginationOptions, exportedCdata, accessToken,
+    } = this.props;
     const { toggles: stateToggles, showModalExport } = this.state;
     return (
       <div id="chromosome-data">
@@ -377,7 +380,9 @@ class Cdata extends React.Component {
             <Col md={2}>
               <LinkContainer to={NEW_RECORD}>
                 <Button bsStyle="success">
-                  <Glyphicon glyph="plus" /> Add new
+                  <Glyphicon glyph="plus" />
+                  {' '}
+                  Add new
                 </Button>
               </LinkContainer>
             </Col>
@@ -388,7 +393,7 @@ class Cdata extends React.Component {
                 disabled={this.getExportedCount() === 0}
               >
                 <Glyphicon glyph="export" />
-                Export Export 
+                Export Export
                 {' '}
                 <Badge>{this.getExportedCount()}</Badge>
               </Button>
@@ -411,9 +416,10 @@ class Cdata extends React.Component {
                 <ToggleList
                   {...tkProps.columnToggleProps}
                   toggles={stateToggles || tkProps.columnToggleProps.toggles}
-                  onColumnToggle={(p) =>
-                    this.onColumnToggleWithDispatch(tkProps, p)
-                  }
+                  onColumnToggle={(p) => this.onColumnToggleWithDispatch(
+                    tkProps,
+                    p,
+                  )}
                 />
                 <hr />
                 <this.ExportToggles onAddToExport={this.onAddToExport} />
@@ -452,23 +458,21 @@ const mapStateToProps = (state) => ({
   exportedCdata: state.exportData.cdata,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onChangePage: (page, pageSize) => {
-      dispatch(setPagination({ page, pageSize }));
-    },
-    onAddToCdataExport: (ids) => {
-      dispatch(setExportCdata({ ids }));
-    },
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+  onChangePage: (page, pageSize) => {
+    dispatch(setPagination({ page, pageSize }));
+  },
+  onAddToCdataExport: (ids) => {
+    dispatch(setExportCdata({ ids }));
+  },
+});
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(
   TabledPage({
     getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
     getCount: config.uris.chromosomeDataUri.countUri,
-  })(Cdata)
+  })(Cdata),
 );

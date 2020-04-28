@@ -54,21 +54,19 @@ class Persons extends Component {
     this.setState({ showModalPerson: false });
   };
 
-  formatResult = (data) => {
-    return data.map((p) => ({
-      id: p.id,
-      action: (
-        <Button
-          bsSize="xsmall"
-          bsStyle="warning"
-          onClick={() => this.showModal(p.id)}
-        >
-          Edit
-        </Button>
-      ),
-      person: p.persName,
-    }));
-  };
+  formatResult = (data) => data.map((p) => ({
+    id: p.id,
+    action: (
+      <Button
+        bsSize="xsmall"
+        bsStyle="warning"
+        onClick={() => this.showModal(p.id)}
+      >
+        Edit
+      </Button>
+    ),
+    person: p.persName,
+  }));
 
   render() {
     const { data, onTableChange, paginationOptions } = this.props;
@@ -117,5 +115,5 @@ export default connect(mapStateToProps)(
   TabledPage({
     getAll: config.uris.personsUri.getAllWFilterUri,
     getCount: config.uris.personsUri.countUri,
-  })(Persons)
+  })(Persons),
 );

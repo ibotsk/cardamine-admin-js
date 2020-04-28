@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Grid, Col, Row, Button, Panel, Well } from 'react-bootstrap';
+import {
+  Grid, Col, Row, Button, Panel, Well,
+} from 'react-bootstrap';
 
 import CSVReader from 'react-csv-reader';
 import { Line, Circle } from 'rc-progress';
@@ -62,7 +64,7 @@ class Import extends React.Component {
     const { records, total } = await importFacade.loadData(
       data,
       accessToken,
-      this.increase
+      this.increase,
     );
 
     // TODO: handle duplicate references found, currently taken first
@@ -107,10 +109,9 @@ class Import extends React.Component {
       submitEnabled,
     } = this.state;
 
-    const ignored =
-      loadDataCount > 0 && loadDataCountTotal > loadDataCount
-        ? loadDataCountTotal - loadDataCount
-        : 0;
+    const ignored = loadDataCount > 0 && loadDataCountTotal > loadDataCount
+      ? loadDataCountTotal - loadDataCount
+      : 0;
 
     return (
       <div id="import">

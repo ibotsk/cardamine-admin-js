@@ -7,7 +7,7 @@ axios.interceptors.response.use(
   (error) => {
     responseHandler.handleAxiosError(error);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axios;

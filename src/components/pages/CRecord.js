@@ -34,9 +34,7 @@ const revisionsColumns = [
     dataField: 'id',
     text: 'Name',
     // , rowIndex, formatExtraData
-    formatter: (cell, row) => {
-      return <LosName data={row['list-of-species']} />;
-    },
+    formatter: (cell, row) => <LosName data={row['list-of-species']} />,
   },
   {
     dataField: 'hDate',
@@ -85,7 +83,6 @@ class Record extends Component {
       await this.getChromosomeRecord();
       await this.getLists();
     } catch (e) {
-      console.error(e);
       throw e;
     }
   }
@@ -120,11 +117,13 @@ class Record extends Component {
       idStandardisedNameSelected,
     } = await cRecordFacade.getSpecies(
       accessToken,
-      reference.idStandardisedName
+      reference.idStandardisedName,
     );
 
     const { countedBy } = chromrecord;
-    const { collectedBy, identifiedBy, checkedBy, idWorld4 } = material;
+    const {
+      collectedBy, identifiedBy, checkedBy, idWorld4,
+    } = material;
     const { idLiterature } = reference;
     const {
       persons,
@@ -141,7 +140,7 @@ class Record extends Component {
 
     const { world4s, idWorld4Selected } = await cRecordFacade.getWorld4s(
       accessToken,
-      idWorld4
+      idWorld4,
     );
 
     const {
@@ -229,7 +228,9 @@ class Record extends Component {
   submitForm = async (event) => {
     event.preventDefault();
     const { accessToken } = this.props;
-    const { chromrecord, dna, material, reference } = this.state;
+    const {
+      chromrecord, dna, material, reference,
+    } = this.state;
 
     try {
       await cRecordFacade.saveUpdateChromrecordWithAll(
@@ -239,7 +240,7 @@ class Record extends Component {
           material,
           reference,
         },
-        accessToken
+        accessToken,
       );
       const { router } = this.context;
       router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
@@ -315,14 +316,12 @@ class Record extends Component {
                       id="original-identification-autocomplete"
                       options={listOfSpecies}
                       selected={idStandardisedNameSelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeahead(
-                          selected,
-                          'reference',
-                          'idStandardisedName'
-                        )
-                      }
-                      placeholder="Start by typing a species in the database"
+                      onChange={(selected) => this.onChangeTypeahead(
+                        selected,
+                        'reference',
+                        'idStandardisedName',
+                      )}
+                      placeholder="Start typing a species in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalSpecies}>
@@ -361,14 +360,12 @@ class Record extends Component {
                       id="publication-autocomplete"
                       options={literatures}
                       selected={idLiteratureSelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeahead(
-                          selected,
-                          'reference',
-                          'idLiterature'
-                        )
-                      }
-                      placeholder="Start by typing a publication in the database"
+                      onChange={(selected) => this.onChangeTypeahead(
+                        selected,
+                        'reference',
+                        'idLiterature',
+                      )}
+                      placeholder="Start typing a publication in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalLiterature}>
@@ -482,10 +479,12 @@ class Record extends Component {
                       id="counted-by-autocomplete"
                       options={persons}
                       selected={countedBySelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeaheadChromrecord(selected, 'countedBy')
-                      }
-                      placeholder="Start by typing a surname present in the database"
+                      onChange={(selected) => this.onChangeTypeaheadChromrecord(
+                        selected,
+                        'countedBy',
+                      )}
+                      placeholder="Start typing a surname
+                      present in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalPerson}>
@@ -769,10 +768,12 @@ class Record extends Component {
                     id="world4-autocomplete"
                     options={world4s}
                     selected={idWorld4Selected}
-                    onChange={(selected) =>
-                      this.onChangeTypeahead(selected, 'material', 'idWorld4')
-                    }
-                    placeholder="Start by typing a country present in the database"
+                    onChange={(selected) => this.onChangeTypeahead(
+                      selected,
+                      'material',
+                      'idWorld4',
+                    )}
+                    placeholder="Start typing a country present in the database"
                   />
                 </Col>
               </FormGroup>
@@ -877,10 +878,12 @@ class Record extends Component {
                       id="collected-by-autocomplete"
                       options={persons}
                       selected={collectedBySelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeaheadMaterial(selected, 'collectedBy')
-                      }
-                      placeholder="Start by typing a surname present in the database"
+                      onChange={(selected) => this.onChangeTypeaheadMaterial(
+                        selected,
+                        'collectedBy',
+                      )}
+                      placeholder="Start typing a surname
+                      present in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalPerson}>
@@ -913,10 +916,12 @@ class Record extends Component {
                       id="identified-by-autocomplete"
                       options={persons}
                       selected={identifiedBySelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeaheadMaterial(selected, 'identifiedBy')
-                      }
-                      placeholder="Start by typing a surname present in the database"
+                      onChange={(selected) => this.onChangeTypeaheadMaterial(
+                        selected,
+                        'identifiedBy',
+                      )}
+                      placeholder="Start typing a surname
+                      present in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalPerson}>
@@ -962,10 +967,12 @@ class Record extends Component {
                       id="checked-by-autocomplete"
                       options={persons}
                       selected={checkedBySelected}
-                      onChange={(selected) =>
-                        this.onChangeTypeaheadMaterial(selected, 'checkedBy')
-                      }
-                      placeholder="Start by typing a surname present in the database"
+                      onChange={(selected) => this.onChangeTypeaheadMaterial(
+                        selected,
+                        'checkedBy',
+                      )}
+                      placeholder="Start typing a surname
+                      present in the database"
                     />
                     <InputGroup.Button>
                       <Button bsStyle="info" onClick={this.showModalPerson}>
