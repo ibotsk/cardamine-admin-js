@@ -198,7 +198,9 @@ class Checklist extends Component {
   });
 
   render() {
-    const { data, onTableChange, history } = this.props;
+    const {
+      data, onTableChange, history, accessToken,
+    } = this.props;
     const {
       tableRowsSelected,
       species,
@@ -206,7 +208,6 @@ class Checklist extends Component {
       synonyms,
       synonymIdsToDelete,
       listOfSpecies,
-      accessToken,
       modalSpeciesEditId,
       showModalSpecies,
       showModalDelete,
