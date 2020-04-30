@@ -452,9 +452,6 @@ class Cdata extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-  page: state.pagination.page,
-  pageSize: state.pagination.pageSize,
   exportedCdata: state.exportData.cdata,
 });
 

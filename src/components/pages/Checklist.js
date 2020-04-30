@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import {
   Grid, Col, Row, Button, Glyphicon,
@@ -290,13 +289,7 @@ class Checklist extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-});
-
-export default connect(mapStateToProps)(
-  TabledPage({
-    getAll: config.uris.listOfSpeciesUri.getAllWOrderUri,
-    getCount: config.uris.listOfSpeciesUri.countUri,
-  })(Checklist),
-);
+export default TabledPage({
+  getAll: config.uris.listOfSpeciesUri.getAllWOrderUri,
+  getCount: config.uris.listOfSpeciesUri.countUri,
+})(Checklist);

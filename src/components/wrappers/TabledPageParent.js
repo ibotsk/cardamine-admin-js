@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import PropTypes from 'prop-types';
 
@@ -132,11 +133,18 @@ const TabledPage = (injectedProps) =>
       accessToken: PropTypes.string.isRequired,
     };
 
-    return hoc;
+    const mapStateToProps = (state) => ({
+      accessToken: state.authentication.accessToken,
+      page: state.pagination.page,
+      pageSize: state.pagination.pageSize,
+    });
+
+    return connect(mapStateToProps)(hoc);
   };
+
 
 export default TabledPage;
 
 TabledPage.propTypes = {
-  WrappedComponent: PropTypes.element,
+  WrappedComponent: PropTypes.element.isRequired,
 };

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
@@ -115,13 +114,7 @@ class Publications extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-});
-
-export default connect(mapStateToProps)(
-  TabledPage({
-    getAll: config.uris.literaturesUri.getAllWFilterUri,
-    getCount: config.uris.literaturesUri.countUri,
-  })(Publications),
-);
+export default TabledPage({
+  getAll: config.uris.literaturesUri.getAllWFilterUri,
+  getCount: config.uris.literaturesUri.countUri,
+})(Publications);
