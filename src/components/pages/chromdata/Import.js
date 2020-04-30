@@ -4,6 +4,8 @@ import {
   Grid, Col, Row, Button, Panel, Well,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+
 import CSVReader from 'react-csv-reader';
 import { Line, Circle } from 'rc-progress';
 import { Link } from 'react-router-dom';
@@ -225,3 +227,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps)(Import);
+
+Import.propTypes = {
+  accessToken: PropTypes.string.isRequired,
+};

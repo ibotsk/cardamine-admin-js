@@ -6,6 +6,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
+import PropTypes from 'prop-types';
+import PublicationType from '../propTypes/publication';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import PublicationModal from '../segments/modals/PublicationModal';
 
@@ -52,9 +55,10 @@ class Publications extends Component {
 
   hideModal = async () => {
     const { paginationOptions, onTableChange } = this.props;
+    const { page, sizePerPage } = paginationOptions;
     await onTableChange(undefined, {
-      page: paginationOptions.page,
-      sizePerPage: paginationOptions.sizePerPage,
+      page,
+      sizePerPage,
       filters: {},
     });
     this.setState({ showModalLiterature: false });
@@ -118,3 +122,16 @@ export default TabledPage({
   getAll: config.uris.literaturesUri.getAllWFilterUri,
   getCount: config.uris.literaturesUri.countUri,
 })(Publications);
+
+Publications.propTypes = {
+  data: PropTypes.arrayOf(PublicationType.type).isRequired,
+  paginationOptions: PropTypes.shape({
+    page: PropTypes.number.isRequired,
+    sizePerPage: PropTypes.number.isRequired,
+  }).isRequired,
+  onTableChange: PropTypes.func.isRequired,
+};
+
+Publications.defaultProps = {
+  ...PublicationType.defaults,
+};

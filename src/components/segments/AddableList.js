@@ -121,7 +121,7 @@ export default AddableList;
 AddableList.propTypes = {
   id: PropTypes.string,
   data: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.number,
   })),
   itemComponent: PropTypes.func.isRequired,
   getRowId: PropTypes.func,

@@ -6,6 +6,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
+import PropTypes from 'prop-types';
+import PersonType from '../propTypes/person';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import PersonModal from '../segments/modals/PersonModal';
 
@@ -45,9 +48,10 @@ class Persons extends Component {
 
   hideModal = () => {
     const { paginationOptions, onTableChange } = this.props;
+    const { page, sizePerPage } = paginationOptions;
     onTableChange(undefined, {
-      page: paginationOptions.page,
-      sizePerPage: paginationOptions.sizePerPage,
+      page,
+      sizePerPage,
       filters: {},
     });
     this.setState({ showModalPerson: false });
@@ -110,3 +114,13 @@ export default TabledPage({
   getAll: config.uris.personsUri.getAllWFilterUri,
   getCount: config.uris.personsUri.countUri,
 })(Persons);
+
+
+Persons.propTypes = {
+  data: PropTypes.arrayOf(PersonType.type).isRequired,
+  paginationOptions: PropTypes.shape({
+    page: PropTypes.number.isRequired,
+    sizePerPage: PropTypes.number.isRequired,
+  }).isRequired,
+  onTableChange: PropTypes.func.isRequired,
+};

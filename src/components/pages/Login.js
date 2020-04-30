@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
+import PropTypes from 'prop-types';
+
 import {
   Grid,
   Col,
@@ -62,6 +64,7 @@ class Login extends Component {
 
   render() {
     const { location } = this.props;
+
     const { redirectToReferrer, username, password } = this.state;
     const { from } = location.state || { from: { pathname: '/' } };
 
@@ -113,3 +116,15 @@ export default connect(null, {
   setAuthenticated: setAuthenticatedAction,
   unsetAuthenticated: unsetAuthenticatedAction,
 })(Login);
+
+Login.propTypes = {
+  setAuthenticated: PropTypes.func.isRequired,
+  unsetAuthenticated: PropTypes.func.isRequired,
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      from: PropTypes.shape({
+        pathname: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
+};

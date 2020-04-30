@@ -3,6 +3,8 @@ import {
   Panel, ListGroup, ListGroupItem, Well, Badge,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+
 const infoReportCategory = (data, label) => {
   if (!data) {
     return {
@@ -164,3 +166,26 @@ const ImportReport = ({ report }) => {
 };
 
 export default ImportReport;
+
+ImportReport.propTypes = {
+  report: PropTypes.shape({
+    speciesReport: PropTypes.object,
+    publicationReport: PropTypes.object,
+    personsReport: PropTypes.object,
+  }).isRequired,
+};
+
+ReportPanel.propTypes = {
+  panelClass: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number,
+  children: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
+};
+
+ReportPanel.defaultProps = {
+  count: 0,
+  children: undefined,
+};

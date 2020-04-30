@@ -4,6 +4,9 @@ import {
   ControlLabel, FormControl, FormGroup, Col,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+import SynonymType from '../../../propTypes/synonym';
+
 import SynonymListItem from '../../../segments/SynonymListItem';
 
 import config from '../../../../config/config';
@@ -41,3 +44,10 @@ const MisidentifiedSynonymListItem = ({
 };
 
 export default MisidentifiedSynonymListItem;
+
+MisidentifiedSynonymListItem.propTypes = {
+  rowId: PropTypes.number.isRequired,
+  data: SynonymType.type.isRequired,
+  onRowDelete: PropTypes.func.isRequired,
+  onChangeAuthor: PropTypes.func.isRequired,
+};

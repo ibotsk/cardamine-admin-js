@@ -1,7 +1,9 @@
 import React from 'react';
 
 import { Button, Glyphicon } from 'react-bootstrap';
+
 import PropTypes from 'prop-types';
+import SynonymType from '../../../propTypes/synonym';
 
 import SynonymListItem from '../../../segments/SynonymListItem';
 
@@ -55,9 +57,7 @@ export default InvalidSynonymListItem;
 
 InvalidSynonymListItem.propTypes = {
   rowId: PropTypes.number.isRequired,
-  data: PropTypes.shape({
-    synonym: PropTypes.object.isRequired,
-  }).isRequired,
+  data: SynonymType.type.isRequired,
   onRowDelete: PropTypes.func.isRequired,
   onChangeToNomenclatoric: PropTypes.func.isRequired,
   onChangeToTaxonomic: PropTypes.func.isRequired,

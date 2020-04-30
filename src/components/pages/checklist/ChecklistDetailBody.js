@@ -5,6 +5,10 @@ import {
 } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead';
 
+import PropTypes from 'prop-types';
+import SpeciesType from '../../propTypes/species';
+import SynonymType from '../../propTypes/synonym';
+
 import AddableList from '../../segments/AddableList';
 import SpeciesNamePlainList from './SpeciesNamePlainList';
 import {
@@ -377,3 +381,21 @@ const ChecklistDetailBody = ({
 };
 
 export default ChecklistDetailBody;
+
+ChecklistDetailBody.propTypes = {
+  species: SpeciesType.type.isRequired,
+  synonyms: PropTypes.shape({
+    invalidDesignations: PropTypes.arrayOf(SynonymType.type),
+    misidentifications: PropTypes.arrayOf(SynonymType.type),
+    nomenclatoricSynonyms: PropTypes.arrayOf(SynonymType.type),
+    taxonomicSynonyms: PropTypes.arrayOf(SynonymType.type),
+  }).isRequired,
+  fors: PropTypes.shape({
+    basionymFor: PropTypes.arrayOf(SynonymType.type),
+    replacedFor: PropTypes.arrayOf(SynonymType.type),
+    nomenNovumFor: PropTypes.arrayOf(SynonymType.type),
+  }).isRequired,
+  listOfSpecies: PropTypes.arrayOf(SpeciesType.type).isRequired,
+  onSpeciesInputChange: PropTypes.func.isRequired,
+  onSynonymsChange: PropTypes.func.isRequired,
+};
