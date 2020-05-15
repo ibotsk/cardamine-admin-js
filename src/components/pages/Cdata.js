@@ -21,6 +21,10 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit';
 
 import { NotificationContainer } from 'react-notifications';
+
+import PropTypes from 'prop-types';
+import SpeciesType from '../propTypes/species';
+
 import { setPagination, setExportCdata } from '../../actions';
 
 import TabledPage from '../wrappers/TabledPageParent';
@@ -473,3 +477,20 @@ export default connect(
     getCount: config.uris.chromosomeDataUri.countUri,
   })(Cdata),
 );
+
+Cdata.propTypes = {
+  data: PropTypes.arrayOf(SpeciesType.type).isRequired,
+  paginationOptions: PropTypes.shape({
+    page: PropTypes.number.isRequired,
+  }).isRequired,
+  exportedCdata: PropTypes.arrayOf(PropTypes.number),
+  size: PropTypes.number.isRequired,
+  accessToken: PropTypes.string.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  onTableChange: PropTypes.func.isRequired,
+  onAddToCdataExport: PropTypes.func.isRequired,
+};
+
+Cdata.defaultProps = {
+  exportedCdata: [],
+};

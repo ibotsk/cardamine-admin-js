@@ -10,6 +10,9 @@ import {
   Col,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+import SpeciesType from '../../propTypes/species';
+
 import LosName from '../../segments/LosName';
 
 import config from '../../../config/config';
@@ -136,3 +139,10 @@ const ChecklistDetailHeader = ({
 );
 
 export default ChecklistDetailHeader;
+
+ChecklistDetailHeader.propTypes = {
+  data: SpeciesType.type.isRequired,
+  onShowEditModal: PropTypes.func.isRequired,
+  onShowDeleteModal: PropTypes.func.isRequired,
+  onChangeInput: PropTypes.func.isRequired,
+};

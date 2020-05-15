@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 
 export default {
   type: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    ntype: PropTypes.string.isRequired,
+    id: PropTypes.number,
+    ntype: PropTypes.string,
     authors: PropTypes.string,
     authorsH: PropTypes.string,
     forma: PropTypes.string,
@@ -31,6 +31,8 @@ export default {
     varH: PropTypes.string,
   }),
   defaults: {
+    id: null,
+    ntype: null,
     authors: null,
     authorsH: null,
     forma: null,

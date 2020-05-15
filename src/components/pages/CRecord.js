@@ -46,10 +46,6 @@ const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
 
 class Record extends Component {
-  static contextTypes = {
-    router: PropTypes.object,
-  };
-
   constructor(props) {
     super(props);
 
@@ -79,12 +75,8 @@ class Record extends Component {
   }
 
   async componentDidMount() {
-    try {
-      await this.getChromosomeRecord();
-      await this.getLists();
-    } catch (e) {
-      throw e;
-    }
+    await this.getChromosomeRecord();
+    await this.getLists();
   }
 
   getChromosomeRecord = async () => {
@@ -242,6 +234,7 @@ class Record extends Component {
         },
         accessToken,
       );
+
       const { router } = this.context;
       router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data
       notifications.success('Saved');
@@ -1069,3 +1062,24 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps)(Record);
+
+Record.propTypes = {
+  // rowId: PropTypes.number.
+  accessToken: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      recordId: PropTypes.string,
+    }),
+  }).isRequired,
+  history: PropTypes.shape({
+    goBack: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+Record.contextTypes = {
+  router: PropTypes.shape({
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }),
+  }),
+};

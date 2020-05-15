@@ -4,6 +4,10 @@ import {
   Button, Panel, Form, Well,
 } from 'react-bootstrap';
 
+import PropTypes from 'prop-types';
+import SpeciesType from '../../propTypes/species';
+import SynonymType from '../../propTypes/synonym';
+
 import checklistFacade from '../../../facades/checklist';
 
 import notifications from '../../../utils/notifications';
@@ -99,3 +103,34 @@ const ChecklistDetail = ({
 };
 
 export default ChecklistDetail;
+
+ChecklistDetail.propTypes = {
+  species: SpeciesType.type,
+  listOfSpecies: PropTypes.arrayOf(SpeciesType.type),
+  fors: PropTypes.shape({
+    basionymFor: PropTypes.arrayOf(SpeciesType.type),
+    nomenNovumFor: PropTypes.arrayOf(SpeciesType.type),
+    replacedFor: PropTypes.arrayOf(SpeciesType.type),
+  }),
+  synonyms: PropTypes.shape({
+    invalidDesignations: PropTypes.arrayOf(SynonymType.type),
+    misidentifications: PropTypes.arrayOf(SynonymType.type),
+    nomenclatoricSynonyms: PropTypes.arrayOf(SynonymType.type),
+    taxonomicSynonyms: PropTypes.arrayOf(SynonymType.type),
+  }),
+  synonymIdsToDelete: PropTypes.arrayOf(PropTypes.number),
+  accessToken: PropTypes.string.isRequired,
+  onShowEditModal: PropTypes.func.isRequired,
+  onShowDeleteModal: PropTypes.func.isRequired,
+  onSynonymsChange: PropTypes.func.isRequired,
+  onSpeciesChange: PropTypes.func.isRequired,
+  onDetailsChanged: PropTypes.func.isRequired,
+};
+
+ChecklistDetail.defaultProps = {
+  species: {},
+  listOfSpecies: [],
+  fors: {},
+  synonyms: {},
+  synonymIdsToDelete: [],
+};

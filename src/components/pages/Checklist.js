@@ -12,6 +12,9 @@ import filterFactory, {
 
 import { NotificationContainer } from 'react-notifications';
 
+import PropTypes from 'prop-types';
+import SpeciesType from '../propTypes/species';
+
 import TabledPage from '../wrappers/TabledPageParent';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
@@ -294,3 +297,17 @@ export default TabledPage({
   getAll: config.uris.listOfSpeciesUri.getAllWOrderUri,
   getCount: config.uris.listOfSpeciesUri.countUri,
 })(Checklist);
+
+Checklist.propTypes = {
+  data: PropTypes.arrayOf(SpeciesType.type).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  accessToken: PropTypes.string.isRequired,
+  onTableChange: PropTypes.func.isRequired,
+};
