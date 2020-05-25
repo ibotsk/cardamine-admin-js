@@ -1,7 +1,9 @@
 import React from 'react';
 import {
-  Panel, ListGroup, ListGroupItem, Well, Badge
+  Panel, ListGroup, ListGroupItem, Well, Badge,
 } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
 
 const infoReportCategory = (data, label) => {
   if (!data) {
@@ -10,7 +12,9 @@ const infoReportCategory = (data, label) => {
       count: 0,
     };
   }
-  const nonEmptyKeysEntries = Object.entries(data).filter(([key]) => key !== "");
+  const nonEmptyKeysEntries = Object.entries(data).filter(
+    ([key]) => key !== '',
+  );
 
   const nonEmptyKeysEntriesLength = nonEmptyKeysEntries.length;
   if (nonEmptyKeysEntriesLength === 0) {
@@ -23,25 +27,37 @@ const infoReportCategory = (data, label) => {
   return {
     content: (
       <Well bsSize="small">
-        <h4>{label} <Badge>{nonEmptyKeysEntriesLength}</Badge></h4>
+        <h4>
+          {label}
+          {' '}
+          <Badge>{nonEmptyKeysEntriesLength}</Badge>
+        </h4>
         <ListGroup>
-          {
-            nonEmptyKeysEntries.map(([key, value]) => {
-              const rows = Object.keys(value);
-              return (
-                <ListGroupItem key={key}>
-                  <strong>{key}</strong> - used in rows:
-                  {Array.isArray(value) ? (
-                    ` ${value.join(', ')} `
-                  ) : (
-                      <ul>
-                        {rows.map(r => <li key={r}>{r} - in column: {value[r].map(v => `"${v}"`).join(', ')}</li>)}
-                      </ul>
-                    )}
-                </ListGroupItem>
-              );
-            })
-          }
+          {nonEmptyKeysEntries.map(([key, value]) => {
+            const rows = Object.keys(value);
+            return (
+              <ListGroupItem key={key}>
+                <strong>{key}</strong>
+                {' '}
+                - used in rows:
+                {Array.isArray(value) ? (
+                  ` ${value.join(', ')} `
+                ) : (
+                  <ul>
+                    {rows.map((r) => (
+                      <li key={r}>
+                        {r}
+                        {' '}
+                        - in column:
+                        {' '}
+                        {value[r].map((v) => `"${v}"`).join(', ')}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </ListGroupItem>
+            );
+          })}
         </ListGroup>
       </Well>
     ),
@@ -56,8 +72,8 @@ const warningsReport = (speciesReport, publicationReport) => {
       count: 0,
     };
   }
-  const emptySpecies = speciesReport[""];
-  const emptyPublication = publicationReport[""];
+  const emptySpecies = speciesReport[''];
+  const emptyPublication = publicationReport[''];
 
   if (!emptySpecies && !emptyPublication) {
     return {
@@ -66,42 +82,71 @@ const warningsReport = (speciesReport, publicationReport) => {
     };
   }
 
-  let count = (emptySpecies ? emptySpecies.length : 0) + (emptyPublication ? emptyPublication.length : 0);
+  const count = (emptySpecies ? emptySpecies.length : 0)
+    + (emptyPublication ? emptyPublication.length : 0);
   return {
     content: (
       <ListGroup>
-        {emptySpecies && <ListGroupItem><strong>Standard name</strong> empty in rows: {emptySpecies.join(", ")}</ListGroupItem>}
-        {emptyPublication && <ListGroupItem><strong>Publication</strong> empty in rows: {emptyPublication.join(", ")}</ListGroupItem>}
+        {emptySpecies && (
+          <ListGroupItem>
+            <strong>Standard name</strong>
+            {' '}
+            empty in rows:
+            {' '}
+            {emptySpecies.join(', ')}
+          </ListGroupItem>
+        )}
+        {emptyPublication && (
+          <ListGroupItem>
+            <strong>Publication</strong>
+            {' '}
+            empty in rows:
+            {' '}
+            {emptyPublication.join(', ')}
+          </ListGroupItem>
+        )}
       </ListGroup>
     ),
     count,
   };
 };
 
-const ReportPanel = ({ panelClass, label, count = 0, children }) => {
-  return (
-    <Panel bsStyle={panelClass}>
-      <Panel.Heading>
-        <Panel.Title componentClass="h4" toggle>
-          {label} {count !== undefined && <Badge>{count}</Badge>}
-        </Panel.Title>
-      </Panel.Heading>
-      <Panel.Collapse>
-        <Panel.Body>
-          {children}
-        </Panel.Body>
-      </Panel.Collapse>
-    </Panel>
-  );
-};
+const ReportPanel = ({
+  panelClass, label, count = 0, children,
+}) => (
+  <Panel bsStyle={panelClass}>
+    <Panel.Heading>
+      <Panel.Title componentClass="h4" toggle>
+        {label}
+        {' '}
+        {count !== undefined && <Badge>{count}</Badge>}
+      </Panel.Title>
+    </Panel.Heading>
+    <Panel.Collapse>
+      <Panel.Body>{children}</Panel.Body>
+    </Panel.Collapse>
+  </Panel>
+);
 
 const ImportReport = ({ report }) => {
   const { speciesReport, publicationReport, personsReport } = report;
-  const { content: warnings, count: warningsCount } = warningsReport(speciesReport, publicationReport);
+  const { content: warnings, count: warningsCount } = warningsReport(
+    speciesReport,
+    publicationReport,
+  );
 
-  const { content: infoPersons, count: infoCountPersons } = infoReportCategory(personsReport, "Persons to be created");
-  const { content: infoSpecies, count: infoCountSpecies } = infoReportCategory(speciesReport, "Species to be created");
-  const { content: infoPublication, count: infoCountPublication } = infoReportCategory(publicationReport, "Publications to be created");
+  const { content: infoPersons, count: infoCountPersons } = infoReportCategory(
+    personsReport,
+    'Persons to be created',
+  );
+  const { content: infoSpecies, count: infoCountSpecies } = infoReportCategory(
+    speciesReport,
+    'Species to be created',
+  );
+  const {
+    content: infoPublication,
+    count: infoCountPublication,
+  } = infoReportCategory(publicationReport, 'Publications to be created');
 
   const infoCount = infoCountPersons + infoCountSpecies + infoCountPublication;
 
@@ -118,7 +163,29 @@ const ImportReport = ({ report }) => {
       </ReportPanel>
     </div>
   );
-
 };
 
 export default ImportReport;
+
+ImportReport.propTypes = {
+  report: PropTypes.shape({
+    speciesReport: PropTypes.object,
+    publicationReport: PropTypes.object,
+    personsReport: PropTypes.object,
+  }).isRequired,
+};
+
+ReportPanel.propTypes = {
+  panelClass: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  count: PropTypes.number,
+  children: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element),
+  ]),
+};
+
+ReportPanel.defaultProps = {
+  count: 0,
+  children: undefined,
+};

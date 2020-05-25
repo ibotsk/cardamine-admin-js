@@ -1,27 +1,41 @@
 import React from 'react';
 
 import {
-  ControlLabel, FormControl, FormGroup,
-  Col
+  ControlLabel, FormControl, FormGroup, Col,
 } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
+import SynonymType from '../../../propTypes/synonym';
 
 import SynonymListItem from '../../../segments/SynonymListItem';
 
 import config from '../../../../config/config';
 
-const MisidentifiedSynonymListItem = ({ rowId, onChangeAuthor, ...props }) => {
+const MisidentifiedSynonymListItem = ({
+  rowId,
+  onChangeAuthor,
+  data,
+  onRowDelete,
+}) => {
+  const { misidentificationAuthor } = data;
   return (
-    <SynonymListItem rowId={rowId} showSubNomenclatoric={false} prefix={config.mappings.synonym.misidentification.prefix} {...props}>
-      <FormGroup bsSize='sm'>
+    <SynonymListItem
+      rowId={rowId}
+      data={data}
+      prefix={config.mappings.synonym.misidentification.prefix}
+      showSubNomenclatoric={false}
+      onRowDelete={onRowDelete}
+    >
+      <FormGroup bsSize="sm">
         <Col componentClass={ControlLabel} sm={2}>
           Author:
-                </Col>
+        </Col>
         <Col xs={8}>
           <FormControl
             type="text"
-            value={props.data.misidentificationAuthor || ""}
+            value={misidentificationAuthor || ''}
             placeholder="Misidentification Author"
-            onChange={e => onChangeAuthor(rowId, e.target.value)}
+            onChange={(e) => onChangeAuthor(rowId, e.target.value)}
           />
         </Col>
       </FormGroup>
@@ -30,3 +44,10 @@ const MisidentifiedSynonymListItem = ({ rowId, onChangeAuthor, ...props }) => {
 };
 
 export default MisidentifiedSynonymListItem;
+
+MisidentifiedSynonymListItem.propTypes = {
+  rowId: PropTypes.number.isRequired,
+  data: SynonymType.type.isRequired,
+  onRowDelete: PropTypes.func.isRequired,
+  onChangeAuthor: PropTypes.func.isRequired,
+};

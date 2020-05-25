@@ -2,20 +2,17 @@ import 'react-notifications/lib/notifications.css';
 
 import { NotificationManager } from 'react-notifications';
 
-const info = (message) => {
-  return NotificationManager.info(message);
-}
+const info = (message) => NotificationManager.info(message);
 
-const success = (message) => {
-  return NotificationManager.success(message);
-}
+const success = (message) => NotificationManager.success(message);
 
-const warning = (message) => {
-  return NotificationManager.warning(message);
-}
+const warning = (message) => NotificationManager.warning(message);
 
-const error = (message) => {
-  return NotificationManager.error(message);
-}
+const error = (message) => NotificationManager.error(message);
 
-export default { info, success, warning, error };
+export default {
+  info,
+  success,
+  warning,
+  error,
+};

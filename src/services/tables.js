@@ -1,13 +1,17 @@
 import template from 'url-template';
 import axios from './axios';
 
-const getAll = async (uri, offset, where, limit, accessToken) => {
-  const getAllUri = template.parse(uri).expand({ offset, where: JSON.stringify(where), limit, accessToken });
+async function getAll(uri, offset, where, limit, accessToken) {
+  const getAllUri = template
+    .parse(uri)
+    .expand({
+      offset, where: JSON.stringify(where), limit, accessToken,
+    });
   const response = await axios.get(getAllUri);
   return response.data;
 }
 
-const getCount = async (uri, whereString, accessToken) => {
+async function getCount(uri, whereString, accessToken) {
   const getCountUri = template.parse(uri).expand({ whereString, accessToken });
   const response = await axios.get(getCountUri);
   return response.data;
@@ -15,5 +19,5 @@ const getCount = async (uri, whereString, accessToken) => {
 
 export default {
   getAll,
-  getCount
-}
+  getCount,
+};

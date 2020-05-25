@@ -5,8 +5,10 @@ import {
   Col,
   Button, Checkbox,
   Modal, Panel,
-  Form, FormGroup, FormControl, ControlLabel
+  Form, FormGroup, FormControl, ControlLabel,
 } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
 
 import checklistFacade from '../../../facades/checklist';
 
@@ -36,26 +38,25 @@ const initialValues = {
   formaH: '',
   authorsH: '',
   publication: '',
-  tribus: ''
+  tribus: '',
 };
 
 const ntypes = config.mappings.losType;
 
 class SpeciesNameModal extends Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      ...initialValues
+      ...initialValues,
     };
   }
 
   onEnter = async () => {
-    const id = this.props.editId;
-    if (id) {
-      const accessToken = this.props.accessToken;
-      const data = await checklistFacade.getSpeciesById({ id, accessToken });
+    const { editId, accessToken } = this.props;
+    if (editId) {
+      const data = await checklistFacade
+        .getSpeciesById({ id: editId, accessToken });
 
       this.setState({ ...data });
     }
@@ -64,7 +65,7 @@ class SpeciesNameModal extends Component {
   // at least one field must be non-empty - prevent accidental saving of all-empty
   getValidationState = () => {
     const { id, ntype, ...state } = this.state;
-    for (const key in state) {  //without id and ntype
+    for (const key of Object.keys(state)) { // without id and ntype
       if (state[key].length > 0) {
         return true;
       }
@@ -82,113 +83,119 @@ class SpeciesNameModal extends Component {
 
   handleHide = () => {
     this.setState({
-      ...initialValues
+      ...initialValues,
     });
-    this.props.onHide();
+    const { onHide } = this.props;
+    onHide();
   }
 
   handleSave = async () => {
     if (this.getValidationState()) {
-      const accessToken = this.props.accessToken;
+      const { accessToken } = this.props;
       const data = { ...this.state };
       await checklistFacade.saveSpecies({ data, accessToken });
       this.handleHide();
     } else {
+      // eslint-disable-next-line no-alert
       alert('At least one field must not be empty!');
     }
   }
 
   renderHybridFields = (isHybrid) => {
     if (isHybrid) {
+      const {
+        genusH, speciesH, subspH, varH, subvarH,
+        formaH, authorsH,
+      } = this.state;
       return (
         <Panel>
           <Panel.Body>
-            <FormGroup controlId="genusH" bsSize='sm'>
+            <FormGroup controlId="genusH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Genus
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.genusH || ''}
+                  value={genusH || ''}
                   placeholder="Hybrid Genus"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="speciesH" bsSize='sm'>
+            <FormGroup controlId="speciesH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Species
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.speciesH || ''}
+                  value={speciesH || ''}
                   placeholder="Hybrid Species"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="subspH" bsSize='sm'>
+            <FormGroup controlId="subspH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Subsp
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.subspH || ''}
+                  value={subspH || ''}
                   placeholder="Hybrid Subsp"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="varH" bsSize='sm'>
+            <FormGroup controlId="varH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Var
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.varH || ''}
+                  value={varH || ''}
                   placeholder="Hybrid Var"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="subvarH" bsSize='sm'>
+            <FormGroup controlId="subvarH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Subvar
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.subvarH || ''}
+                  value={subvarH || ''}
                   placeholder="Hybrid Subvar"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="formaH" bsSize='sm'>
+            <FormGroup controlId="formaH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Forma
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.formaH || ''}
+                  value={formaH || ''}
                   placeholder="Hybrid Forma"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="authorsH" bsSize='sm'>
+            <FormGroup controlId="authorsH" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Hybrid Authors
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.authorsH || ''}
+                  value={authorsH || ''}
                   placeholder="Hybrid Authors"
                   onChange={this.handleChange}
                 />
@@ -196,146 +203,157 @@ class SpeciesNameModal extends Component {
             </FormGroup>
           </Panel.Body>
         </Panel>
-      )
+      );
     }
+    return null;
   }
 
   render() {
+    const { show, editId } = this.props;
+    const {
+      ntype, genus, species, subsp, subvar, forma, proles, unranked, authors,
+      hybrid, publication, tribus,
+    } = this.state;
+
     return (
-      <Modal show={this.props.show} onHide={this.handleHide} onEnter={this.onEnter}>
+      <Modal show={show} onHide={this.handleHide} onEnter={this.onEnter}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.editId ? 'Edit name' : 'Create new name'}</Modal.Title>
+          <Modal.Title>{editId ? 'Edit name' : 'Create new name'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form horizontal>
-            <FormGroup controlId="ntype" bsSize='sm'>
+            <FormGroup controlId="ntype" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Type
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   componentClass="select"
                   placeholder="select"
-                  value={this.state.ntype}
-                  onChange={this.handleChange} >
+                  value={ntype}
+                  onChange={this.handleChange}
+                >
                   {
-                    Object.keys(ntypes).map(t => <option value={t} key={t}>{ntypes[t].text}</option>)
+                    Object.keys(ntypes).map((t) => (
+                      <option value={t} key={t}>{ntypes[t].text}</option>
+                    ))
                   }
                 </FormControl>
               </Col>
             </FormGroup>
-            <FormGroup controlId="genus" bsSize='sm'>
+            <FormGroup controlId="genus" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Genus
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.genus}
+                  value={genus}
                   placeholder="Genus"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="species" bsSize='sm'>
+            <FormGroup controlId="species" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Species
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.species || ''}
+                  value={species || ''}
                   placeholder="Species"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="subsp" bsSize='sm'>
+            <FormGroup controlId="subsp" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Subsp
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.subsp || ''}
+                  value={subsp || ''}
                   placeholder="Subsp"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="var" bsSize='sm'>
+            <FormGroup controlId="var" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Var
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
+                  // eslint-disable-next-line react/destructuring-assignment
                   value={this.state.var || ''}
                   placeholder="Var"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="subvar" bsSize='sm'>
+            <FormGroup controlId="subvar" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Subvar
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.subvar || ''}
+                  value={subvar || ''}
                   placeholder="Subvar"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="forma" bsSize='sm'>
+            <FormGroup controlId="forma" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Forma
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.forma || ''}
+                  value={forma || ''}
                   placeholder="Forma"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="proles" bsSize='sm'>
+            <FormGroup controlId="proles" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Proles
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.proles || ''}
+                  value={proles || ''}
                   placeholder="Proles"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="unranked" bsSize='sm'>
+            <FormGroup controlId="unranked" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Unranked
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.unranked || ''}
+                  value={unranked || ''}
                   placeholder="Unranked"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="authors" bsSize='sm'>
+            <FormGroup controlId="authors" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Authors
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.authors || ''}
+                  value={authors || ''}
                   placeholder="Authors"
                   onChange={this.handleChange}
                 />
@@ -343,37 +361,41 @@ class SpeciesNameModal extends Component {
             </FormGroup>
             <FormGroup controlId="hybrid">
               <Col sm={12}>
-                <Checkbox inline
+                <Checkbox
+                  inline
                   id="hybrid"
-                  value={this.state.hybrid}
-                  checked={this.state.hybrid}
-                  onChange={this.handleChangeCheckbox}>Hybrid</Checkbox>
+                  value={hybrid}
+                  checked={hybrid}
+                  onChange={this.handleChangeCheckbox}
+                >
+                  Hybrid
+                </Checkbox>
               </Col>
             </FormGroup>
             {
-              this.renderHybridFields(this.state.hybrid)
+              this.renderHybridFields(hybrid)
             }
-            <FormGroup controlId="publication" bsSize='sm'>
+            <FormGroup controlId="publication" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Publication
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.publication || ''}
+                  value={publication || ''}
                   placeholder="Publication"
                   onChange={this.handleChange}
                 />
               </Col>
             </FormGroup>
-            <FormGroup controlId="tribus" bsSize='sm'>
+            <FormGroup controlId="tribus" bsSize="sm">
               <Col componentClass={ControlLabel} sm={titleColWidth}>
                 Tribus
-                            </Col>
+              </Col>
               <Col sm={mainColWidth}>
                 <FormControl
                   type="text"
-                  value={this.state.tribus || ''}
+                  value={tribus || ''}
                   placeholder="Tribus"
                   onChange={this.handleChange}
                 />
@@ -386,12 +408,23 @@ class SpeciesNameModal extends Component {
           <Button bsStyle="primary" onClick={this.handleSave}>Save</Button>
         </Modal.Footer>
       </Modal>
-    )
+    );
   }
 }
 
-const mapStateToProps = state => ({
-  accessToken: state.authentication.accessToken
+const mapStateToProps = (state) => ({
+  accessToken: state.authentication.accessToken,
 });
 
 export default connect(mapStateToProps)(SpeciesNameModal);
+
+SpeciesNameModal.propTypes = {
+  editId: PropTypes.number,
+  show: PropTypes.bool.isRequired,
+  accessToken: PropTypes.string.isRequired,
+  onHide: PropTypes.func.isRequired,
+};
+
+SpeciesNameModal.defaultProps = {
+  editId: undefined,
+};

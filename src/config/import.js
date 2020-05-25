@@ -1,4 +1,3 @@
-
 export default {
   ignoredRows: [0],
   ignoredRowSign: '>',
@@ -9,7 +8,7 @@ export default {
       subsp: 13,
       var: 14,
       forma: 15,
-      authors: 16
+      authors: 16,
     },
     literature: {
       displayType: 58,
@@ -22,13 +21,13 @@ export default {
       editor: 66,
       year: 67,
       pages: 68,
-      journalName: 69
+      journalName: 69,
     },
     countedBy: 23,
     collectedBy: 48,
     identifiedBy: 50,
     checkedBy: 53,
-    idWorld4: 40
+    idWorld4: 40,
   },
   dataColumns: {
     cdata: {
@@ -46,7 +45,7 @@ export default {
       note: 29,
       drawing: 30,
       photo: 31,
-      idiogram: 32
+      idiogram: 32,
     },
     dna: {
       method: 33,
@@ -54,7 +53,7 @@ export default {
       ploidyRevised: 36,
       plantsAnalysed: 37,
       numberAnalyses: 38,
-      note: 39
+      note: 39,
     },
     material: {
       country: 41,
@@ -69,18 +68,17 @@ export default {
       coordinatesLon: 54,
       coordinatesLat: 55,
       coordinatesGeorefLat: 56,
-      coordinatesGeorefLon: 57
+      coordinatesGeorefLon: 57,
     },
     reference: {
-      page: 59
+      page: 59,
     },
     nameAsPublished: {
       genus: 6,
       species: 7,
       subsp: 8,
       var: 9,
-      authors: 10
-    }
-  }
-
+      authors: 10,
+    },
+  },
 };

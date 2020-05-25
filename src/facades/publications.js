@@ -3,17 +3,29 @@ import utils from '../utils/utils';
 import helper from '../utils/helper';
 import whereHelper from '../utils/where';
 
-const getPublicationByIdCurated = async ({ id, accessToken }) => {
-  const data = await publicationsService.getPublicationById({ id, accessToken });
+async function getPublicationByIdCurated({ id, accessToken }) {
+  const data = await publicationsService.getPublicationById({
+    id,
+    accessToken,
+  });
   return utils.nullToEmpty(data);
 }
 
-const getPublicationByAll = async (literatureData, accessToken, formatFound = undefined) => {
+async function getPublicationByAll(
+  literatureData,
+  accessToken,
+  formatFound = undefined,
+) {
   const where = whereHelper.whereDataAll(literatureData);
   if (!where) {
     return null;
   }
-  const publication = await publicationsService.getPublicationByWhere({ where: JSON.stringify(where), offset: 0, limit: 2, accessToken });
+  const publication = await publicationsService.getPublicationByWhere({
+    where: JSON.stringify(where),
+    offset: 0,
+    limit: 2,
+    accessToken,
+  });
 
   let found = publication;
   if (formatFound) {
@@ -22,18 +34,21 @@ const getPublicationByAll = async (literatureData, accessToken, formatFound = un
 
   return {
     term: literatureData,
-    found
+    found,
   };
 }
 
-const savePublicationCurated = async ({ data, accessToken }) => {
+async function savePublicationCurated({ data, accessToken }) {
   const toBeSaved = helper.publicationCurateFields(data);
-  const response = await publicationsService.putPublication({ data: toBeSaved, accessToken });
+  const response = await publicationsService.putPublication({
+    data: toBeSaved,
+    accessToken,
+  });
   return response.data;
 }
 
 export default {
   getPublicationByIdCurated,
   getPublicationByAll,
-  savePublicationCurated
-}
+  savePublicationCurated,
+};

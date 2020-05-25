@@ -1,14 +1,20 @@
+const nullToEmpty = (obj) => Object.keys(obj).reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr]: obj[curr] ? obj[curr] : '',
+  }),
+  {},
+);
 
-const nullToEmpty = (obj) => {
-  Object.keys(obj).forEach(k => obj[k] = (obj[k] ? obj[k] : ''));
-  return obj;
-}
-
-const emptyToNull = obj => {
-  return Object.keys(obj).map(k => obj[k] = (obj[k] === '' ? null : obj[k]));
-}
+const emptyToNull = (obj) => Object.keys(obj).reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr]: obj[curr] === '' ? null : obj[curr],
+  }),
+  {},
+);
 
 export default {
   nullToEmpty,
-  emptyToNull
+  emptyToNull,
 };

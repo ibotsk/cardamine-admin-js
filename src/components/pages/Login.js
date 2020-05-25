@@ -1,43 +1,52 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Redirect
-} from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+
+import PropTypes from 'prop-types';
 
 import {
-  Grid, Col,
+  Grid,
+  Col,
   Button,
-  Form, FormGroup, FormControl, ControlLabel
+  Form,
+  FormGroup,
+  FormControl,
+  ControlLabel,
 } from 'react-bootstrap';
 
 import userService from '../../services/user-service';
-import { setAuthenticated, unsetAuthenticated } from '../../actions';
+import {
+  setAuthenticated as setAuthenticatedAction,
+  unsetAuthenticated as unsetAuthenticatedAction,
+} from '../../actions';
 
 class Login extends Component {
-
   constructor(props) {
     super(props);
+    const { unsetAuthenticated } = this.props;
+    unsetAuthenticated();
 
-    this.props.unsetAuthenticated();
     this.state = {
-      username: "",
-      password: "",
-      redirectToReferrer: false
-    }
+      username: '',
+      password: '',
+      redirectToReferrer: false,
+    };
   }
 
   validateForm = () => {
-    return this.state.username.length > 0 && this.state.password.length > 0;
-  }
+    const { username, password } = this.state;
+    return username.length > 0 && password.length > 0;
+  };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({
-      [event.target.id]: event.target.value
+      [event.target.id]: event.target.value,
     });
-  }
+  };
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
+    const { setAuthenticated } = this.props;
     const { username, password } = this.state;
 
     // stop here if form is invalid
@@ -49,13 +58,15 @@ class Login extends Component {
     if (!responseData.id) {
       return;
     }
-    this.props.setAuthenticated(responseData.id);
+    setAuthenticated(responseData.id);
     this.setState({ redirectToReferrer: true });
-  }
+  };
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: '/' } };
-    const { redirectToReferrer } = this.state;
+    const { location } = this.props;
+
+    const { redirectToReferrer, username, password } = this.state;
+    const { from } = location.state || { from: { pathname: '/' } };
 
     if (redirectToReferrer === true) {
       return <Redirect to={from} />;
@@ -64,7 +75,7 @@ class Login extends Component {
     return (
       <div id="login-page">
         <Grid>
-          <Col xs={12} md={4} mdOffset={4} >
+          <Col xs={12} md={4} mdOffset={4}>
             <h2>Login</h2>
             <Form onSubmit={this.handleSubmit}>
               <FormGroup controlId="username" bsSize="large">
@@ -72,7 +83,7 @@ class Login extends Component {
                 <FormControl
                   autoFocus
                   type="text"
-                  value={this.state.username}
+                  value={username}
                   onChange={this.handleChange}
                 />
               </FormGroup>
@@ -80,11 +91,19 @@ class Login extends Component {
                 <ControlLabel>Password</ControlLabel>
                 <FormControl
                   type="password"
-                  value={this.state.password}
+                  value={password}
                   onChange={this.handleChange}
                 />
               </FormGroup>
-              <Button block bsSize="large" disabled={!this.validateForm()} type="submit" bsStyle="primary" >Login</Button>
+              <Button
+                block
+                bsSize="large"
+                disabled={!this.validateForm()}
+                type="submit"
+                bsStyle="primary"
+              >
+                Login
+              </Button>
             </Form>
           </Col>
         </Grid>
@@ -93,10 +112,19 @@ class Login extends Component {
   }
 }
 
-export default connect(
-  null,
-  {
-    setAuthenticated,
-    unsetAuthenticated
-  }
-)(Login);
+export default connect(null, {
+  setAuthenticated: setAuthenticatedAction,
+  unsetAuthenticated: unsetAuthenticatedAction,
+})(Login);
+
+Login.propTypes = {
+  setAuthenticated: PropTypes.func.isRequired,
+  unsetAuthenticated: PropTypes.func.isRequired,
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      from: PropTypes.shape({
+        pathname: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
+};

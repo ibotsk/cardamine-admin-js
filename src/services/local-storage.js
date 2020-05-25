@@ -1,4 +1,3 @@
-
 const KEY_STATE = 'state';
 
 export const loadState = () => {
@@ -13,11 +12,11 @@ export const loadState = () => {
   }
 };
 
-export const saveState = state => {
+export const saveState = (state) => {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem(KEY_STATE, serializedState);
-  } catch {
+  } catch (e) {
     // ignore write errors
   }
 };
@@ -25,7 +24,7 @@ export const saveState = state => {
 export const removeState = () => {
   try {
     localStorage.removeItem(KEY_STATE);
-  } catch {
+  } catch (e) {
     // ignore
   }
 };

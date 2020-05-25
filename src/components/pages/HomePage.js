@@ -21,17 +21,17 @@ const Routing = () => (
     <PrivateRoute exact path="/chromosome-data/import" component={Import} />
     <PrivateRoute exact path="/publications" component={Publications} />
     <PrivateRoute exact path="/persons" component={Persons} />
-    <PrivateRoute path='/names/:id?' component={Checklist} />
-    <PrivateRoute exact path='/logout' component={Logout} />
+    <PrivateRoute path="/names/:id?" component={Checklist} />
+    <PrivateRoute exact path="/logout" component={Logout} />
   </Switch>
 );
 
 const HomePage = () => (
-  <React.Fragment>
+  <>
     <CNavbar />
     <Routing />
     <Footer />
-  </React.Fragment>
+  </>
 );
 
 export default HomePage;

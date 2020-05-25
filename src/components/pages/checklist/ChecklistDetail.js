@@ -1,9 +1,12 @@
 import React from 'react';
 
 import {
-  Button,
-  Panel, Form, Well
+  Button, Panel, Form, Well,
 } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
+import SpeciesType from '../../propTypes/species';
+import SynonymType from '../../propTypes/synonym';
 
 import checklistFacade from '../../../facades/checklist';
 
@@ -11,6 +14,22 @@ import notifications from '../../../utils/notifications';
 
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';
+
+const submit = async (species, synonyms, deletedSynonyms, accessToken) => {
+  try {
+    await checklistFacade.saveSpeciesAndSynonyms({
+      species,
+      accessToken,
+      synonyms,
+      deletedSynonyms,
+    });
+
+    notifications.success('Saved');
+  } catch (error) {
+    notifications.error('Error saving');
+    throw error;
+  }
+};
 
 const ChecklistDetail = ({
   species,
@@ -21,11 +40,11 @@ const ChecklistDetail = ({
   accessToken,
   onShowEditModal,
   onShowDeleteModal,
-  onValueChange,
+  onSynonymsChange,
+  onSpeciesChange,
   onDetailsChanged,
-  ...props }) => {
-
-  const submitForm = async e => {
+}) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     submit(species, synonyms, synonymIdsToDelete, accessToken);
     onDetailsChanged();
@@ -33,20 +52,17 @@ const ChecklistDetail = ({
 
   const handleSpeciesChange = (prop, val) => {
     const updatedSpecies = { ...species, [prop]: val };
-    onValueChange({ species: updatedSpecies });
+    onSpeciesChange(updatedSpecies);
   };
 
-  const handleSynonymChange = (synonyms, idToDelete = undefined) => {
+  const handleSynonymChange = (newSynonyms, idToDelete = undefined) => {
     // idToDelete must be added to list
     let synonymsToDelete = [...synonymIdsToDelete];
     if (idToDelete) {
       synonymsToDelete.push(idToDelete);
       synonymsToDelete = [...new Set(synonymsToDelete)];
     }
-    onValueChange({
-      synonyms,
-      synonymIdsToDelete: synonymsToDelete
-    })
+    onSynonymsChange(newSynonyms, synonymsToDelete);
   };
 
   if (!species.id) {
@@ -58,7 +74,7 @@ const ChecklistDetail = ({
   }
 
   return (
-    <React.Fragment>
+    <>
       <Form onSubmit={submitForm} horizontal>
         <div className="scrollable">
           <ChecklistDetailHeader
@@ -77,28 +93,44 @@ const ChecklistDetail = ({
           />
         </div>
         <Well>
-          <Button bsStyle="primary" type='submit' >Save</Button>
+          <Button bsStyle="primary" type="submit">
+            Save
+          </Button>
         </Well>
       </Form>
-    </React.Fragment>
+    </>
   );
-
-};
-
-async function submit(species, synonyms, deletedSynonyms, accessToken) {
-  try {
-    await checklistFacade.saveSpeciesAndSynonyms({
-      species,
-      accessToken,
-      synonyms,
-      deletedSynonyms
-    });
-
-    notifications.success('Saved');
-  } catch (error) {
-    notifications.error('Error saving');
-    throw error;
-  }
 };
 
 export default ChecklistDetail;
+
+ChecklistDetail.propTypes = {
+  species: SpeciesType.type,
+  listOfSpecies: PropTypes.arrayOf(SpeciesType.type),
+  fors: PropTypes.shape({
+    basionymFor: PropTypes.arrayOf(SpeciesType.type),
+    nomenNovumFor: PropTypes.arrayOf(SpeciesType.type),
+    replacedFor: PropTypes.arrayOf(SpeciesType.type),
+  }),
+  synonyms: PropTypes.shape({
+    invalidDesignations: PropTypes.arrayOf(SynonymType.type),
+    misidentifications: PropTypes.arrayOf(SynonymType.type),
+    nomenclatoricSynonyms: PropTypes.arrayOf(SynonymType.type),
+    taxonomicSynonyms: PropTypes.arrayOf(SynonymType.type),
+  }),
+  synonymIdsToDelete: PropTypes.arrayOf(PropTypes.number),
+  accessToken: PropTypes.string.isRequired,
+  onShowEditModal: PropTypes.func.isRequired,
+  onShowDeleteModal: PropTypes.func.isRequired,
+  onSynonymsChange: PropTypes.func.isRequired,
+  onSpeciesChange: PropTypes.func.isRequired,
+  onDetailsChanged: PropTypes.func.isRequired,
+};
+
+ChecklistDetail.defaultProps = {
+  species: {},
+  listOfSpecies: [],
+  fors: {},
+  synonyms: {},
+  synonymIdsToDelete: [],
+};
