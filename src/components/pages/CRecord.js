@@ -180,10 +180,13 @@ class Record extends Component {
   };
 
   onChangeInput = (objName, property, value) => {
-    // eslint-disable-next-line react/destructuring-assignment
-    const obj = { ...this.state[objName] };
-    obj[property] = value;
-    this.setState({ [objName]: obj });
+    this.setState((state) => {
+      const obj = state[objName];
+      obj[property] = value;
+      return {
+        [objName]: obj,
+      };
+    });
   };
 
   onChangeTypeaheadChromrecord = (selected, prop) => {
@@ -195,25 +198,24 @@ class Record extends Component {
   };
 
   onChangeTypeahead = (selected, objName, prop) => {
-    // eslint-disable-next-line react/destructuring-assignment
-    const obj = { ...this.state[objName] };
+    this.setState((state) => {
+      const obj = state[objName];
+      obj[prop] = null;
 
-    obj[prop] = null;
+      if (selected && selected.length > 0) {
+        obj[prop] = selected[0].id;
 
-    if (selected && selected.length > 0) {
-      obj[prop] = selected[0].id;
-
-      const { id, label, ...noIdLabel } = selected[0]; // loop properties in selected (except id and label) and try to assign them to the obj
-      for (const key of Object.keys(noIdLabel)) {
-        if (key in obj) {
-          obj[key] = noIdLabel[key];
+        const { id, label, ...noIdLabel } = selected[0]; // loop properties in selected (except id and label) and try to assign them to the obj
+        for (const key of Object.keys(noIdLabel)) {
+          if (key in obj) {
+            obj[key] = noIdLabel[key];
+          }
         }
       }
-    }
-
-    this.setState({
-      [SELECTED(prop)]: selected,
-      [objName]: obj,
+      return {
+        [SELECTED(prop)]: selected,
+        [objName]: obj,
+      };
     });
   };
 

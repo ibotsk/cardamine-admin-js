@@ -418,6 +418,7 @@ class Cdata extends React.Component {
             {(tkProps) => (
               <div>
                 <ToggleList
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...tkProps.columnToggleProps}
                   toggles={stateToggles || tkProps.columnToggleProps.toggles}
                   onColumnToggle={(p) => this.onColumnToggleWithDispatch(
@@ -431,6 +432,7 @@ class Cdata extends React.Component {
                   hover
                   striped
                   condensed
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...tkProps.baseProps}
                   remote={{ filter: true, pagination: true }}
                   filter={filterFactory()}
