@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -44,14 +44,18 @@ const revisionsColumns = [
 
 const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
+const REGEX_LAT = '^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$';
+const REGEX_LON = '^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$';
 
-class Record extends Component {
+class Record extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       chromrecord: {}, // to save
       material: {}, // to save
+      coordinateGeorefLat: undefined, // taken from material; must be put to material before saving
+      coordinateGeorefLon: undefined,
       reference: {}, // to save
       dna: {}, // to save
       histories: [], // to save - not persisted yet
@@ -91,12 +95,24 @@ class Record extends Component {
       histories,
     } = await cRecordFacade.getChromosomeRecord(accessToken, recordId);
 
+    let coordinateGeorefLat;
+    let coordinateGeorefLon;
+
+    const { coordinatesGeoref } = material;
+
+    if (coordinatesGeoref) {
+      coordinateGeorefLat = coordinatesGeoref.coordinates.lat;
+      coordinateGeorefLon = coordinatesGeoref.coordinates.lon;
+    }
+
     this.setState({
       chromrecord,
       dna,
       material,
       reference,
       histories,
+      coordinateGeorefLat,
+      coordinateGeorefLon,
     });
   };
 
@@ -219,6 +235,24 @@ class Record extends Component {
     });
   };
 
+  getValidationLat = () => {
+    const { coordinateGeorefLat } = this.state;
+    const regex = new RegExp(REGEX_LAT);
+    if (!coordinateGeorefLat || regex.test(coordinateGeorefLat)) {
+      return 'success';
+    }
+    return 'error';
+  }
+
+  getValidationLon = () => {
+    const { coordinateGeorefLon } = this.state;
+    const regex = new RegExp(REGEX_LON);
+    if (!coordinateGeorefLon || regex.test(coordinateGeorefLon)) {
+      return 'success';
+    }
+    return 'error';
+  }
+
   submitForm = async (event) => {
     event.preventDefault();
     const { accessToken } = this.props;
@@ -258,6 +292,8 @@ class Record extends Component {
       dna,
       listOfSpecies,
       world4s,
+      coordinateGeorefLat,
+      coordinateGeorefLon,
     } = this.state;
 
     const {
@@ -977,6 +1013,18 @@ class Record extends Component {
                   </InputGroup>
                 </Col>
               </FormGroup>
+              <Row>
+                <Col sm={10} smOffset={2}>
+                  <h5>
+                    Original coordinates are a
+                    {' '}
+                    <b>free-text</b>
+                    .
+                    {' '}
+                    Please insert values as published.
+                  </h5>
+                </Col>
+              </Row>
               <FormGroup controlId="coordinatesLat" bsSize="sm">
                 <Col componentClass={ControlLabel} sm={2}>
                   Lat. orig:
@@ -1003,29 +1051,53 @@ class Record extends Component {
                   />
                 </Col>
               </FormGroup>
-              <FormGroup controlId="coordinatesGeorefLat" bsSize="sm">
+              <Row>
+                <Col sm={10} smOffset={2}>
+                  <h5>
+                    Georeferenced coordinate must be a
+                    {' '}
+                    <b>number with decimal point</b>
+                    .
+                  </h5>
+                </Col>
+              </Row>
+              <FormGroup
+                bsSize="sm"
+                controlId="coordinateGeorefLat"
+                validationState={this.getValidationLat()}
+              >
                 <Col componentClass={ControlLabel} sm={2}>
                   Lat. georef:
                 </Col>
                 <Col sm={10}>
                   <FormControl
                     type="text"
-                    value={material.coordinatesGeorefLat || ''}
-                    onChange={(e) => this.onChangeTextInput(e, 'material')}
+                    value={coordinateGeorefLat || ''}
+                    onChange={(e) => this.setState({
+                      coordinateGeorefLat: e.target.value,
+                    })}
                     placeholder=""
+                    pattern={REGEX_LAT}
                   />
                 </Col>
               </FormGroup>
-              <FormGroup controlId="coordinatesGeorefLon" bsSize="sm">
+              <FormGroup
+                bsSize="sm"
+                controlId="coordinateGeorefLon"
+                validationState={this.getValidationLon()}
+              >
                 <Col componentClass={ControlLabel} sm={2}>
                   Lon. georef:
                 </Col>
                 <Col sm={10}>
                   <FormControl
                     type="text"
-                    value={material.coordinatesGeorefLon || ''}
-                    onChange={(e) => this.onChangeTextInput(e, 'material')}
+                    value={coordinateGeorefLon || ''}
+                    onChange={(e) => this.setState({
+                      coordinateGeorefLon: e.target.value,
+                    })}
                     placeholder=""
+                    pattern={REGEX_LON}
                   />
                 </Col>
               </FormGroup>

@@ -172,21 +172,20 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
     '',
   );
   const latestRevision = d['latest-revision'];
-  const coordinatesLatGeoref = get(d, 'material.coordinatesGeorefLat', null);
-  const coordinatesLonGeoref = get(d, 'material.coordinatesGeorefLon', null);
+
+  const coordinatesGeoref = get(d, 'material.coordinatesGeoref', null);
   const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
   const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
 
   let latitudeString = '';
-  if (coordinatesLatGeoref) {
-    latitudeString = `${coordinatesLatGeoref} (gr)`;
-  } else if (coordinatesLatOrig) {
-    latitudeString = `${coordinatesLatOrig} (orig)`;
-  }
   let longitudeString = '';
-  if (coordinatesLonGeoref) {
-    longitudeString = `${coordinatesLonGeoref} (gr)`;
-  } else if (coordinatesLonOrig) {
+
+  if (coordinatesGeoref) {
+    const { coordinates } = coordinatesGeoref;
+    latitudeString = `${coordinates.lat} (gr)`;
+    longitudeString = `${coordinates.lon} (gr)`;
+  } else if (coordinatesLatOrig && coordinatesLonOrig) {
+    latitudeString = `${coordinatesLatOrig} (orig)`;
     longitudeString = `${coordinatesLonOrig} (orig)`;
   }
 
