@@ -119,6 +119,17 @@ async function saveUpdateChromrecordWithAll(
     chromrecord,
     accessToken,
   );
+
+  // material.coordinatesGeoref and coordinatesForMap must be saved as stringified jsons
+  if (material.coordinatesGeoref) {
+    // eslint-disable-next-line no-param-reassign
+    material.coordinatesGeoref = JSON.stringify(material.coordinatesGeoref);
+  }
+  if (material.coordinatesForMap) {
+    // eslint-disable-next-line no-param-reassign
+    material.coordinatesForMap = JSON.stringify(material.coordinatesForMap);
+  }
+
   const responseMat = await chromDataService.saveUpdateMaterial(
     { ...material, idCdata: responseChrom.data.id },
     accessToken,

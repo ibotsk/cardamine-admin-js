@@ -258,7 +258,19 @@ class Record extends React.Component {
     const { accessToken } = this.props;
     const {
       chromrecord, dna, material, reference,
+      coordinateGeorefLat, coordinateGeorefLon,
     } = this.state;
+
+    if (coordinateGeorefLat && coordinateGeorefLon) {
+      material.coordinatesGeoref = {
+        coordinates: {
+          lat: coordinateGeorefLat,
+          lon: coordinateGeorefLon,
+        },
+      };
+    } else {
+      material.coordinatesGeoref = null;
+    }
 
     try {
       await cRecordFacade.saveUpdateChromrecordWithAll(
