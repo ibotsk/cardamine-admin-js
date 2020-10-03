@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import { Grid, FormGroup, Checkbox } from 'react-bootstrap';
+import {
+  Grid,
+  Form, FormGroup, FormControl,
+  Checkbox, Button,
+} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
+
+import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import RemotePagination from '../../segments/RemotePagination';
 
@@ -13,35 +19,118 @@ import materialFacade from '../../../facades/material';
 import whereUtils from '../../../utils/where';
 import config from '../../../config/config';
 
-const defaultSizePerPage = config.pagination.sizePerPageList[0].value;
+const { pagination, constants } = config;
+const defaultSizePerPage = pagination.sizePerPageList[0].value;
 
 const EDIT_RECORD = '/chromosome-data/edit/';
+const LAT_LON_DELIMITER = ', ';
 
 const RED_ROWS = 1;
 const YELLOW_ROWS = 2;
 const OK_ROWS = 3;
+
+class LatLonRenderer extends React.Component {
+  constructor(props) {
+    super(props);
+    const { value = { lat: '', lon: '' } } = props;
+
+    this.state = {
+      lat: value.lat,
+      lon: value.lon,
+    };
+  }
+
+  getValue() {
+    const { lat, lon } = this.state;
+    if (!lat || !lon) {
+      return undefined;
+    }
+    return { lat, lon };
+  }
+
+  render() {
+    const { onUpdate } = this.props;
+    const { lat, lon } = this.state;
+    return (
+      <Form inline key="mapCoordinatesForm">
+        <FormGroup controlId="lat">
+          <FormControl
+            type="text"
+            bsSize="small"
+            placeholder="latitude"
+            value={lat}
+            onChange={(e) => this.setState({ lat: e.target.value })}
+            pattern={constants.regexLatitude}
+          />
+        </FormGroup>
+        {' '}
+        <FormGroup controlId="lon">
+          <FormControl
+            type="text"
+            bsSize="small"
+            placeholder="longitude"
+            value={lon}
+            onChange={(e) => this.setState({ lon: e.target.value })}
+            pattern={constants.regexLongitude}
+          />
+        </FormGroup>
+        {' '}
+        <Button
+          key="submit"
+          bsSize="small"
+          bsStyle="primary"
+          onClick={() => onUpdate(this.getValue())}
+        >
+          Save
+        </Button>
+      </Form>
+    );
+  }
+}
+
+const latLonFormatter = (cell) => {
+  if (!cell) {
+    return null;
+  }
+  const { lat, lon } = cell;
+  if ((lat || lat === 0) && (lon || lon === 0)) {
+    return `${lat}${LAT_LON_DELIMITER}${lon}`;
+  }
+  return null;
+};
 
 const columns = [
   {
     dataField: 'id',
     text: 'ID',
     hidden: true,
+    editable: false,
   },
   {
     dataField: 'idCdata',
     text: 'Record ID',
+    editable: false,
   },
   {
     dataField: 'coordinatesOriginal',
     text: 'Original coordinates',
+    editable: false,
+    formatter: latLonFormatter,
   },
   {
     dataField: 'coordinatesGeoref',
     text: 'Georeferenced coordinates',
+    editable: false,
+    formatter: latLonFormatter,
   },
   {
     dataField: 'coordinatesForMap',
     text: 'Coordinates for map',
+    formatter: latLonFormatter,
+    editorRenderer: (editorProps, value) => (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <LatLonRenderer {...editorProps} value={value} />
+    ),
   },
 ];
 
@@ -74,14 +163,10 @@ const formatData = (data) => data.map(({
       </Link>
     ),
     coordinatesOriginal: coordinatesLat && coordinatesLon
-      ? `${coordinatesLat}, ${coordinatesLon}`
-      : null,
-    coordinatesGeoref: coordinatesG
-      ? `${coordinatesG.lat}, ${coordinatesG.lon}`
-      : null,
-    coordinatesForMap: coordinatesM
-      ? `${coordinatesM.lat}, ${coordinatesM.lon}`
-      : null,
+      ? { lat: coordinatesLat, lon: coordinatesLon }
+      : undefined,
+    coordinatesGeoref: coordinatesG,
+    coordinatesForMap: coordinatesM,
   };
 });
 
@@ -96,6 +181,8 @@ const Coordinates = ({ accessToken }) => {
   const [page, setPage] = useState(1);
   const [sizePerPage, setSizePerPage] = useState(defaultSizePerPage);
   const [totalSize, setTotalSize] = useState(0);
+
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -115,7 +202,7 @@ const Coordinates = ({ accessToken }) => {
     }
 
     fetchData();
-  }, [accessToken, where, sizePerPage, page]);
+  }, [accessToken, where, sizePerPage, page, update]);
 
   const handleCheckboxChange = (option) => {
     const checkedBoxes = { ...checked, [option]: !checked[option] };
@@ -129,7 +216,18 @@ const Coordinates = ({ accessToken }) => {
 
   const handleTableChange = async (type, {
     page: currentPage, sizePerPage: currentSizePerPage,
+    cellEdit,
   }) => {
+    if (cellEdit) {
+      const { newValue = {}, rowId } = cellEdit;
+      const { lat, lon } = newValue;
+
+      await materialFacade.saveCoordinatesForMap(
+        rowId, lat, lon, accessToken,
+      );
+      setUpdate((u) => !u);
+    }
+
     setPage(currentPage);
     setSizePerPage(currentSizePerPage);
   };
@@ -197,6 +295,7 @@ const Coordinates = ({ accessToken }) => {
         </FormGroup>
       </div>
       <RemotePagination
+        remote
         hover
         striped
         condensed
@@ -208,11 +307,11 @@ const Coordinates = ({ accessToken }) => {
         sizePerPage={sizePerPage}
         totalSize={totalSize}
         onTableChange={handleTableChange}
+        cellEdit={cellEditFactory({ mode: 'dbclick', blurToSave: true })}
       />
     </Grid>
   );
 };
-
 
 const mapStateToProps = (state) => ({
   accessToken: state.authentication.accessToken,
@@ -222,4 +321,16 @@ export default connect(mapStateToProps)(Coordinates);
 
 Coordinates.propTypes = {
   accessToken: PropTypes.string.isRequired,
+};
+
+LatLonRenderer.propTypes = {
+  value: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+  }),
+  onUpdate: PropTypes.func.isRequired,
+};
+
+LatLonRenderer.defaultProps = {
+  value: undefined,
 };

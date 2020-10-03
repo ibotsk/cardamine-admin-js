@@ -120,7 +120,7 @@ async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
 async function saveSpecies({ data, accessToken }) {
   const curatedData = { ...data };
   if (!data.ntype) {
-    curatedData.ntype = config.defaultLosType;
+    curatedData.ntype = config.constants.defaultLosType;
   }
   const response = await checklistService.putSpecies({
     data: curatedData,

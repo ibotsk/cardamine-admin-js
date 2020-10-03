@@ -1,4 +1,5 @@
 import tableService from '../services/tables';
+import materialService from '../services/material';
 
 import config from '../config/config';
 
@@ -20,7 +21,29 @@ async function getCoordinatesCount(where = {}, accessToken) {
   return count;
 }
 
+async function saveCoordinatesForMap(id, lat, lon, accessToken) {
+  let coordinatesForMap = null;
+
+  // lat and lon can be 0
+  if (lat !== null && lat !== undefined && lon !== null && lon !== undefined) {
+    const coordinatesJSON = {
+      coordinates: {
+        lat,
+        lon,
+      },
+    };
+
+    coordinatesForMap = JSON.stringify(coordinatesJSON);
+  }
+
+  const data = {
+    coordinatesForMap,
+  };
+  await materialService.patchAttributes(id, data, accessToken);
+}
+
 export default {
   getCoordinates,
   getCoordinatesCount,
+  saveCoordinatesForMap,
 };

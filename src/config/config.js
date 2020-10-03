@@ -1,8 +1,11 @@
 /* eslint-disable max-len */
+import constantsConfig from './constants';
 import exportConfig from './export';
 import urisConfig from './uris';
 
 export default {
+  constants: constantsConfig,
+  export: exportConfig,
   nomenclature: {
     name: {
       sl: 's.l.',
@@ -31,12 +34,10 @@ export default {
         '{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}',
     },
   },
-  export: exportConfig,
   format: {
     formatted: 'formatted',
     plain: 'plain',
   },
-  defaultLosType: 'N',
   mappings: {
     displayType: {
       nullableFields: [

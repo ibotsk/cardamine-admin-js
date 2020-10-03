@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -33,6 +34,7 @@ const customTotal = (from, to, size) => (
 );
 
 const RemotePagination = ({
+  remote,
   striped,
   hover,
   condensed,
@@ -47,6 +49,7 @@ const RemotePagination = ({
   sizePerPage,
   totalSize,
   onTableChange,
+  cellEdit,
 }) => (
   <div>
     <PaginationProvider
@@ -80,7 +83,7 @@ const RemotePagination = ({
               />
             </div>
             <BootstrapTable
-              remote
+              remote={remote}
               striped={striped}
               hover={hover}
               condensed={condensed}
@@ -92,6 +95,7 @@ const RemotePagination = ({
               rowEvents={rowEvents}
               rowClasses={rowClasses}
               onTableChange={onTableChange}
+              cellEdit={cellEdit}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...paginationTableProps}
             />
@@ -105,6 +109,9 @@ const RemotePagination = ({
 export default RemotePagination;
 
 RemotePagination.propTypes = {
+  remote: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.object,
+  ]).isRequired,
   striped: PropTypes.bool,
   hover: PropTypes.bool,
   condensed: PropTypes.bool,
@@ -122,6 +129,7 @@ RemotePagination.propTypes = {
   sizePerPage: PropTypes.number.isRequired,
   totalSize: PropTypes.number.isRequired,
   onTableChange: PropTypes.func.isRequired,
+  cellEdit: PropTypes.object,
 };
 
 RemotePagination.defaultProps = {
@@ -133,4 +141,5 @@ RemotePagination.defaultProps = {
   rowEvents: undefined,
   rowClasses: undefined,
   keyField: undefined,
+  cellEdit: undefined,
 };

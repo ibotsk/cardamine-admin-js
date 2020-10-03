@@ -29,6 +29,10 @@ import PersonModal from '../segments/modals/PersonModal';
 import PublicationModal from '../segments/modals/PublicationModal';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
+import config from '../../config/config';
+
+const { constants } = config;
+
 const revisionsColumns = [
   {
     dataField: 'id',
@@ -44,8 +48,6 @@ const revisionsColumns = [
 
 const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
-const REGEX_LAT = '^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$';
-const REGEX_LON = '^[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$';
 
 class Record extends React.Component {
   constructor(props) {
@@ -237,7 +239,7 @@ class Record extends React.Component {
 
   getValidationLat = () => {
     const { coordinateGeorefLat } = this.state;
-    const regex = new RegExp(REGEX_LAT);
+    const regex = new RegExp(constants.regexLatitude);
     if (!coordinateGeorefLat || regex.test(coordinateGeorefLat)) {
       return 'success';
     }
@@ -246,7 +248,7 @@ class Record extends React.Component {
 
   getValidationLon = () => {
     const { coordinateGeorefLon } = this.state;
-    const regex = new RegExp(REGEX_LON);
+    const regex = new RegExp(constants.regexLongitude);
     if (!coordinateGeorefLon || regex.test(coordinateGeorefLon)) {
       return 'success';
     }
@@ -1089,7 +1091,7 @@ class Record extends React.Component {
                       coordinateGeorefLat: e.target.value,
                     })}
                     placeholder=""
-                    pattern={REGEX_LAT}
+                    pattern={constants.regexLatitude}
                   />
                 </Col>
               </FormGroup>
@@ -1109,7 +1111,7 @@ class Record extends React.Component {
                       coordinateGeorefLon: e.target.value,
                     })}
                     placeholder=""
-                    pattern={REGEX_LON}
+                    pattern={constants.regexLongitude}
                   />
                 </Col>
               </FormGroup>

@@ -70,6 +70,7 @@ export default {
   materialUri: {
     baseUri: `${backendBase}/api/materials?access_token={accessToken}`,
     getCoordinatesUri: `${backendBase}/api/materials?filter=%7B"fields":["id","idCdata","coordinatesLat","coordinatesLon","coordinatesGeoref","coordinatesForMap"],"where":{where},"offset":{offset},"limit":{limit},"order":"idCdata"%7D&access_token={accessToken}`,
+    patchAttributesUri: `${backendBase}/api/materials/{id}?access_token={accessToken}`,
     countUri: `${backendBase}/api/materials/count?where={whereString}&access_token={accessToken}`,
   },
   referenceUri: {
