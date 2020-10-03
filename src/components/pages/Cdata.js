@@ -385,7 +385,7 @@ class Cdata extends React.Component {
                 <Button bsStyle="success">
                   <Glyphicon glyph="plus" />
                   {' '}
-                  Add new
+                  Create new
                 </Button>
               </LinkContainer>
             </Col>

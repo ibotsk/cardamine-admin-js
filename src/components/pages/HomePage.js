@@ -12,6 +12,7 @@ import Checklist from './Checklist';
 import PrivateRoute from '../wrappers/PrivateRoute';
 import Logout from '../segments/Logout';
 import Import from './chromdata/Import';
+import Coordinates from './chromdata/Coordinates';
 
 const Routing = () => (
   <Switch>
@@ -21,6 +22,7 @@ const Routing = () => (
     <PrivateRoute exact path="/chromosome-data/import" component={Import} />
     <PrivateRoute exact path="/publications" component={Publications} />
     <PrivateRoute exact path="/persons" component={Persons} />
+    <PrivateRoute exact path="/coordinates" component={Coordinates} />
     <PrivateRoute path="/names/:id?" component={Checklist} />
     <PrivateRoute exact path="/logout" component={Logout} />
   </Switch>
