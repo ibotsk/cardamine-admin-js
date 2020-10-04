@@ -8,7 +8,7 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 
 import tablesService from '../../services/tables';
 
-import whereHelper from '../../utils/where';
+import { whereUtils } from '../../utils';
 import config from '../../config';
 
 const customTotal = (from, to, size) => (
@@ -62,7 +62,7 @@ const TabledPage = (injectedProps) =>
 
       handleTableChange = async (type, { page, sizePerPage, filters = {} }) => {
         // TODO make function to take into account existing where
-        const where = whereHelper.makeWhereFromFilter(filters);
+        const where = whereUtils.makeWhereFromFilter(filters);
         await this.handleChange(page, sizePerPage, where);
       };
 

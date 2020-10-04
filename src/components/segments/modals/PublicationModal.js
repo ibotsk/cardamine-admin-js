@@ -9,7 +9,7 @@ import {
 
 import PropTypes from 'prop-types';
 
-import publicationsFacade from '../../../facades/publications';
+import { publicationsFacade } from '../../../facades';
 
 import config from '../../../config';
 

@@ -11,11 +11,11 @@ import { Line, Circle } from 'rc-progress';
 import { Link } from 'react-router-dom';
 
 import { NotificationContainer } from 'react-notifications';
+
 import ImportReport from './ImportReport';
 
-import importUtils from '../../../utils/import';
-import notifications from '../../../utils/notifications';
-import importFacade from '../../../facades/import';
+import { importUtils, notifications } from '../../../utils';
+import { importFacade } from '../../../facades';
 
 import config from '../../../config';
 

@@ -7,7 +7,7 @@ import {
 
 import PropTypes from 'prop-types';
 
-import personsFacade from '../../../facades/persons';
+import { personsFacade } from '../../../facades';
 
 const VALIDATION_STATE_SUCCESS = 'success';
 const VALIDATION_STATE_ERROR = 'error';

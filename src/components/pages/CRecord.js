@@ -20,9 +20,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import { NotificationContainer } from 'react-notifications';
 
-import notifications from '../../utils/notifications';
+import { notifications } from '../../utils';
 
-import cRecordFacade from '../../facades/crecord';
+import { crecordFacade } from '../../facades';
 
 import LosName from '../segments/LosName';
 import PersonModal from '../segments/modals/PersonModal';
@@ -95,7 +95,7 @@ class Record extends React.Component {
       material,
       reference,
       histories,
-    } = await cRecordFacade.getChromosomeRecord(accessToken, recordId);
+    } = await crecordFacade.getChromosomeRecord(accessToken, recordId);
 
     let coordinateGeorefLat;
     let coordinateGeorefLon;
@@ -125,7 +125,7 @@ class Record extends React.Component {
     const {
       listOfSpecies,
       idStandardisedNameSelected,
-    } = await cRecordFacade.getSpecies(
+    } = await crecordFacade.getSpecies(
       accessToken,
       reference.idStandardisedName,
     );
@@ -141,14 +141,14 @@ class Record extends React.Component {
       collectedBySelected,
       identifiedBySelected,
       checkedBySelected,
-    } = await cRecordFacade.getPersons(accessToken, {
+    } = await crecordFacade.getPersons(accessToken, {
       countedBy,
       collectedBy,
       identifiedBy,
       checkedBy,
     });
 
-    const { world4s, idWorld4Selected } = await cRecordFacade.getWorld4s(
+    const { world4s, idWorld4Selected } = await crecordFacade.getWorld4s(
       accessToken,
       idWorld4,
     );
@@ -156,7 +156,7 @@ class Record extends React.Component {
     const {
       literatures,
       idLiteratureSelected,
-    } = await cRecordFacade.getLiteratures(accessToken, idLiterature);
+    } = await crecordFacade.getLiteratures(accessToken, idLiterature);
 
     this.setState({
       listOfSpecies,
@@ -275,7 +275,7 @@ class Record extends React.Component {
     }
 
     try {
-      await cRecordFacade.saveUpdateChromrecordWithAll(
+      await crecordFacade.saveUpdateChromrecordWithAll(
         {
           chromrecord,
           dna,

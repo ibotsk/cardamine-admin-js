@@ -1,10 +1,10 @@
-import helper from '../../utils/helper';
+import { helperUtils } from '../../utils';
 
 const LosName = ({ data, format = 'plain' }) => {
   if (!data) {
     return '';
   }
-  return helper.listOfSpeciesForComponent(data, format);
+  return helperUtils.listOfSpeciesForComponent(data, format);
 };
 
 export default LosName;

@@ -14,9 +14,9 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import RemotePagination from '../../segments/RemotePagination';
 
-import materialFacade from '../../../facades/material';
+import { materialFacade } from '../../../facades';
 
-import whereUtils from '../../../utils/where';
+import { whereUtils } from '../../../utils';
 import config from '../../../config';
 
 const { pagination, constants } = config;

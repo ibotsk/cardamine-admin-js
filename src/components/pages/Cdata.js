@@ -30,7 +30,7 @@ import { setPagination, setExportCdata } from '../../actions';
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
-import formatter from '../../utils/formatter';
+import { formatterUtils } from '../../utils';
 import config from '../../config';
 import ExportDataModal from '../segments/modals/ExportDataModal';
 
@@ -242,7 +242,7 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
     countedDate: d.countedDate,
     nOfPlants: d.numberOfAnalysedPlants,
     note: d.note,
-    eda: formatter.eda({
+    eda: formatterUtils.eda({
       ambiguous: d.ambiguousRecord,
       doubtful: d.doubtfulRecord,
       erroneous: d.erroneousRecord,

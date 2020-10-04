@@ -10,7 +10,7 @@ import {
 
 import PropTypes from 'prop-types';
 
-import checklistFacade from '../../../facades/checklist';
+import { checklistFacade } from '../../../facades';
 
 import config from '../../../config';
 

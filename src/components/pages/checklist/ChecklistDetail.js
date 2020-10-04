@@ -8,9 +8,9 @@ import PropTypes from 'prop-types';
 import SpeciesType from '../../propTypes/species';
 import SynonymType from '../../propTypes/synonym';
 
-import checklistFacade from '../../../facades/checklist';
+import { checklistFacade } from '../../../facades';
 
-import notifications from '../../../utils/notifications';
+import { notifications } from '../../../utils';
 
 import ChecklistDetailHeader from './ChecklistDetailHeader';
 import ChecklistDetailBody from './ChecklistDetailBody';

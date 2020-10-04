@@ -1,6 +1,6 @@
 import chromDataService from '../services/chromosome-data';
 import checklistService from '../services/checklist';
-import helper from '../utils/helper';
+import { helperUtils } from '../utils/';
 
 async function getChromosomeRecord(accessToken, idRecord) {
   let chromrecord = {};
@@ -39,7 +39,7 @@ async function getLiteratures(accessToken, idLiterature) {
     accessToken,
     (l) => ({
       id: l.id,
-      label: helper.parsePublication(l),
+      label: helperUtils.parsePublication(l),
     }),
   );
   const literatureInitial = literatures.find((l) => l.id === idLiterature);
@@ -79,7 +79,7 @@ async function getSpecies(accessToken, idStandardisedName) {
     accessToken,
     (l) => ({
       id: l.id,
-      label: helper.listOfSpeciesString(l),
+      label: helperUtils.listOfSpeciesString(l),
     }),
   );
 

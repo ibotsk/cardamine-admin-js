@@ -1,7 +1,5 @@
 import publicationsService from '../services/publications';
-import utils from '../utils/utils';
-import helper from '../utils/helper';
-import whereHelper from '../utils/where';
+import { utils, helperUtils, whereUtils } from '../utils';
 
 async function getPublicationByIdCurated({ id, accessToken }) {
   const data = await publicationsService.getPublicationById({
@@ -16,7 +14,7 @@ async function getPublicationByAll(
   accessToken,
   formatFound = undefined,
 ) {
-  const where = whereHelper.whereDataAll(literatureData);
+  const where = whereUtils.whereDataAll(literatureData);
   if (!where) {
     return null;
   }
@@ -39,7 +37,7 @@ async function getPublicationByAll(
 }
 
 async function savePublicationCurated({ data, accessToken }) {
-  const toBeSaved = helper.publicationCurateFields(data);
+  const toBeSaved = helperUtils.publicationCurateFields(data);
   const response = await publicationsService.putPublication({
     data: toBeSaved,
     accessToken,
