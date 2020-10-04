@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import {
-  Grid,
-  Form, FormGroup, FormControl,
-  Checkbox, Button,
+  Grid, FormGroup, Checkbox,
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -12,6 +10,8 @@ import PropTypes from 'prop-types';
 
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
+import LatLonCellEditRenderer from
+  '../../segments/chromdata/LatLonCellEditRenderer';
 import RemotePagination from '../../segments/RemotePagination';
 
 import { materialFacade } from '../../../facades';
@@ -19,7 +19,7 @@ import { materialFacade } from '../../../facades';
 import { whereUtils } from '../../../utils';
 import config from '../../../config';
 
-const { pagination, constants } = config;
+const { pagination } = config;
 const defaultSizePerPage = pagination.sizePerPageList[0].value;
 
 const EDIT_RECORD = '/chromosome-data/edit/';
@@ -28,65 +28,6 @@ const LAT_LON_DELIMITER = ', ';
 const RED_ROWS = 1;
 const YELLOW_ROWS = 2;
 const OK_ROWS = 3;
-
-class LatLonRenderer extends React.Component {
-  constructor(props) {
-    super(props);
-    const { value = { lat: '', lon: '' } } = props;
-
-    this.state = {
-      lat: value.lat,
-      lon: value.lon,
-    };
-  }
-
-  getValue() {
-    const { lat, lon } = this.state;
-    if (!lat || !lon) {
-      return undefined;
-    }
-    return { lat, lon };
-  }
-
-  render() {
-    const { onUpdate } = this.props;
-    const { lat, lon } = this.state;
-    return (
-      <Form inline key="mapCoordinatesForm">
-        <FormGroup controlId="lat">
-          <FormControl
-            type="text"
-            bsSize="small"
-            placeholder="latitude"
-            value={lat}
-            onChange={(e) => this.setState({ lat: e.target.value })}
-            pattern={constants.regexLatitude}
-          />
-        </FormGroup>
-        {' '}
-        <FormGroup controlId="lon">
-          <FormControl
-            type="text"
-            bsSize="small"
-            placeholder="longitude"
-            value={lon}
-            onChange={(e) => this.setState({ lon: e.target.value })}
-            pattern={constants.regexLongitude}
-          />
-        </FormGroup>
-        {' '}
-        <Button
-          key="submit"
-          bsSize="small"
-          bsStyle="primary"
-          onClick={() => onUpdate(this.getValue())}
-        >
-          Save
-        </Button>
-      </Form>
-    );
-  }
-}
 
 const latLonFormatter = (cell) => {
   if (!cell) {
@@ -129,7 +70,7 @@ const columns = [
     formatter: latLonFormatter,
     editorRenderer: (editorProps, value) => (
       // eslint-disable-next-line react/jsx-props-no-spreading
-      <LatLonRenderer {...editorProps} value={value} />
+      <LatLonCellEditRenderer {...editorProps} value={value} />
     ),
   },
 ];
@@ -321,16 +262,4 @@ export default connect(mapStateToProps)(Coordinates);
 
 Coordinates.propTypes = {
   accessToken: PropTypes.string.isRequired,
-};
-
-LatLonRenderer.propTypes = {
-  value: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lon: PropTypes.number.isRequired,
-  }),
-  onUpdate: PropTypes.func.isRequired,
-};
-
-LatLonRenderer.defaultProps = {
-  value: undefined,
 };
