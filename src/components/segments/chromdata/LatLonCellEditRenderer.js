@@ -48,9 +48,10 @@ class LatLonCellEditRenderer extends React.Component {
   }
 
   render() {
+    const { onBlur } = this.props;
     const { lat, lon } = this.state;
     return (
-      <Form inline key="mapCoordinatesForm">
+      <Form inline>
         <OverlayTrigger placement="top" overlay={tooltip}>
           <FormGroup
             controlId="lat"
@@ -86,12 +87,19 @@ class LatLonCellEditRenderer extends React.Component {
         </OverlayTrigger>
         {' '}
         <Button
-          key="submit"
           bsSize="small"
           bsStyle="primary"
           onClick={this.handleUpdate}
         >
           Save
+        </Button>
+        {' '}
+        <Button
+          bsSize="small"
+          bsStyle="default"
+          onClick={() => onBlur()}
+        >
+          Cancel
         </Button>
       </Form>
     );
@@ -106,6 +114,7 @@ LatLonCellEditRenderer.propTypes = {
     lon: PropTypes.number.isRequired,
   }),
   onUpdate: PropTypes.func.isRequired,
+  onBlur: PropTypes.func.isRequired,
 };
 
 LatLonCellEditRenderer.defaultProps = {

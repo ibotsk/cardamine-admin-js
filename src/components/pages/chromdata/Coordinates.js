@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import { NotificationContainer } from 'react-notifications';
 
 import LatLonCellEditRenderer from
   '../../segments/chromdata/LatLonCellEditRenderer';
@@ -16,7 +17,7 @@ import RemotePagination from '../../segments/RemotePagination';
 
 import { materialFacade } from '../../../facades';
 
-import { whereUtils } from '../../../utils';
+import { notifications, whereUtils } from '../../../utils';
 import config from '../../../config';
 
 const { pagination } = config;
@@ -51,18 +52,21 @@ const columns = [
     dataField: 'idCdata',
     text: 'Record ID',
     editable: false,
+    headerStyle: { width: '50px' },
   },
   {
     dataField: 'coordinatesOriginal',
     text: 'Original coordinates',
     editable: false,
     formatter: latLonFormatter,
+    headerStyle: { width: '25%' },
   },
   {
     dataField: 'coordinatesGeoref',
     text: 'Georeferenced coordinates',
     editable: false,
     formatter: latLonFormatter,
+    headerStyle: { width: '25%' },
   },
   {
     dataField: 'coordinatesForMap',
@@ -163,9 +167,15 @@ const Coordinates = ({ accessToken }) => {
       const { newValue = {}, rowId } = cellEdit;
       const { lat, lon } = newValue;
 
-      await materialFacade.saveCoordinatesForMap(
-        rowId, lat, lon, accessToken,
-      );
+      try {
+        await materialFacade.saveCoordinatesForMap(
+          rowId, lat, lon, accessToken,
+        );
+        notifications.success('Saved');
+      } catch (error) {
+        notifications.error('Error saving');
+        throw error;
+      }
       setUpdate((u) => !u);
     }
 
@@ -220,18 +230,19 @@ const Coordinates = ({ accessToken }) => {
             onChange={() => handleCheckboxChange(RED_ROWS)}
             className="bg-danger"
           >
-            Rows that require immediate attention
+            Rows that require immediate attention - no map coordinates but
+            original or georeferenced coordinates present
           </Checkbox>
           <Checkbox
             onChange={() => handleCheckboxChange(YELLOW_ROWS)}
             className="bg-warning"
           >
-            Empty rows
+            Empty rows - no coordinates whatsoever
           </Checkbox>
           <Checkbox
             onChange={() => handleCheckboxChange(OK_ROWS)}
           >
-            Resolved rows
+            Resolved rows - map coordinates present
           </Checkbox>
         </FormGroup>
       </div>
@@ -248,8 +259,9 @@ const Coordinates = ({ accessToken }) => {
         sizePerPage={sizePerPage}
         totalSize={totalSize}
         onTableChange={handleTableChange}
-        cellEdit={cellEditFactory({ mode: 'dbclick', blurToSave: true })}
+        cellEdit={cellEditFactory({ mode: 'dbclick' })}
       />
+      <NotificationContainer />
     </Grid>
   );
 };
