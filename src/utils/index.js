@@ -4,6 +4,7 @@ import helperUtils from './helper';
 import importUtils from './import';
 import notifications from './notifications';
 import utils from './utils';
+import validationUtils from './validations';
 import whereUtils from './where';
 
 export {
@@ -13,5 +14,6 @@ export {
   importUtils,
   notifications,
   utils,
+  validationUtils,
   whereUtils,
 };

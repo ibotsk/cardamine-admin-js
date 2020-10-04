@@ -2,13 +2,22 @@ import React from 'react';
 
 import {
   Form, FormGroup, FormControl, Button,
+  Tooltip, OverlayTrigger,
 } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
 
+import { validationUtils } from '../../../utils';
 import config from '../../../config';
 
+const { getValidationLatitudeDec, getValidationLongitudeDec } = validationUtils;
 const { constants } = config;
+
+const tooltip = (
+  <Tooltip id="tooltip">
+    Must be a number with decimal point (e.g. 18.1234)
+  </Tooltip>
+);
 
 class LatLonCellEditRenderer extends React.Component {
   constructor(props) {
@@ -29,38 +38,58 @@ class LatLonCellEditRenderer extends React.Component {
     return { lat, lon };
   }
 
+  handleUpdate = () => {
+    const { lat, lon } = this.state;
+    if (getValidationLatitudeDec(lat, lon) === 'success'
+      && getValidationLongitudeDec(lon, lat) === 'success') {
+      const { onUpdate } = this.props;
+      onUpdate(this.getValue());
+    }
+  }
+
   render() {
-    const { onUpdate } = this.props;
     const { lat, lon } = this.state;
     return (
       <Form inline key="mapCoordinatesForm">
-        <FormGroup controlId="lat">
-          <FormControl
-            type="text"
+        <OverlayTrigger placement="top" overlay={tooltip}>
+          <FormGroup
+            controlId="lat"
+            validationState={getValidationLatitudeDec(lat, lon)}
             bsSize="small"
-            placeholder="latitude"
-            value={lat}
-            onChange={(e) => this.setState({ lat: e.target.value })}
-            pattern={constants.regexLatitude}
-          />
-        </FormGroup>
+          >
+            <FormControl
+              type="text"
+              bsSize="small"
+              placeholder="latitude"
+              value={lat}
+              onChange={(e) => this.setState({ lat: e.target.value })}
+              pattern={constants.regexLatitude}
+            />
+          </FormGroup>
+        </OverlayTrigger>
         {' '}
-        <FormGroup controlId="lon">
-          <FormControl
-            type="text"
+        <OverlayTrigger placement="top" overlay={tooltip}>
+          <FormGroup
+            controlId="lon"
+            validationState={getValidationLongitudeDec(lon, lat)}
             bsSize="small"
-            placeholder="longitude"
-            value={lon}
-            onChange={(e) => this.setState({ lon: e.target.value })}
-            pattern={constants.regexLongitude}
-          />
-        </FormGroup>
+          >
+            <FormControl
+              type="text"
+              bsSize="small"
+              placeholder="longitude"
+              value={lon}
+              onChange={(e) => this.setState({ lon: e.target.value })}
+              pattern={constants.regexLongitude}
+            />
+          </FormGroup>
+        </OverlayTrigger>
         {' '}
         <Button
           key="submit"
           bsSize="small"
           bsStyle="primary"
-          onClick={() => onUpdate(this.getValue())}
+          onClick={this.handleUpdate}
         >
           Save
         </Button>

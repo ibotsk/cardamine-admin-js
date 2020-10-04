@@ -12,6 +12,8 @@ import {
   Form,
   FormControl,
   FormGroup,
+  Tooltip,
+  OverlayTrigger,
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -20,7 +22,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import { NotificationContainer } from 'react-notifications';
 
-import { notifications } from '../../utils';
+import { notifications, validationUtils } from '../../utils';
 
 import { crecordFacade } from '../../facades';
 
@@ -31,7 +33,14 @@ import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
 import config from '../../config';
 
-const { constants } = config;
+const { constants: { regexLatitude, regexLongitude } } = config;
+const { getValidationLatitudeDec, getValidationLongitudeDec } = validationUtils;
+
+const latLonTooltip = (
+  <Tooltip id="tooltip">
+    Must be a number with decimal point (e.g. 18.1234)
+  </Tooltip>
+);
 
 const revisionsColumns = [
   {
@@ -236,24 +245,6 @@ class Record extends React.Component {
       };
     });
   };
-
-  getValidationLat = () => {
-    const { coordinateGeorefLat } = this.state;
-    const regex = new RegExp(constants.regexLatitude);
-    if (!coordinateGeorefLat || regex.test(coordinateGeorefLat)) {
-      return 'success';
-    }
-    return 'error';
-  }
-
-  getValidationLon = () => {
-    const { coordinateGeorefLon } = this.state;
-    const regex = new RegExp(constants.regexLongitude);
-    if (!coordinateGeorefLon || regex.test(coordinateGeorefLon)) {
-      return 'success';
-    }
-    return 'error';
-  }
 
   submitForm = async (event) => {
     event.preventDefault();
@@ -1075,46 +1066,54 @@ class Record extends React.Component {
                   </h5>
                 </Col>
               </Row>
-              <FormGroup
-                bsSize="sm"
-                controlId="coordinateGeorefLat"
-                validationState={this.getValidationLat()}
-              >
-                <Col componentClass={ControlLabel} sm={2}>
-                  Lat. georef:
-                </Col>
-                <Col sm={10}>
-                  <FormControl
-                    type="text"
-                    value={coordinateGeorefLat || ''}
-                    onChange={(e) => this.setState({
-                      coordinateGeorefLat: e.target.value,
-                    })}
-                    placeholder=""
-                    pattern={constants.regexLatitude}
-                  />
-                </Col>
-              </FormGroup>
-              <FormGroup
-                bsSize="sm"
-                controlId="coordinateGeorefLon"
-                validationState={this.getValidationLon()}
-              >
-                <Col componentClass={ControlLabel} sm={2}>
-                  Lon. georef:
-                </Col>
-                <Col sm={10}>
-                  <FormControl
-                    type="text"
-                    value={coordinateGeorefLon || ''}
-                    onChange={(e) => this.setState({
-                      coordinateGeorefLon: e.target.value,
-                    })}
-                    placeholder=""
-                    pattern={constants.regexLongitude}
-                  />
-                </Col>
-              </FormGroup>
+              <OverlayTrigger placement="top" overlay={latLonTooltip}>
+                <FormGroup
+                  bsSize="sm"
+                  controlId="coordinateGeorefLat"
+                  validationState={getValidationLatitudeDec(
+                    coordinateGeorefLat, coordinateGeorefLon,
+                  )}
+                >
+                  <Col componentClass={ControlLabel} sm={2}>
+                    Lat. georef:
+                  </Col>
+                  <Col sm={10}>
+                    <FormControl
+                      type="text"
+                      value={coordinateGeorefLat || ''}
+                      onChange={(e) => this.setState({
+                        coordinateGeorefLat: e.target.value,
+                      })}
+                      placeholder="Latitude georeferenced"
+                      pattern={regexLatitude}
+                    />
+                  </Col>
+                </FormGroup>
+              </OverlayTrigger>
+              <OverlayTrigger placement="top" overlay={latLonTooltip}>
+                <FormGroup
+                  bsSize="sm"
+                  controlId="coordinateGeorefLon"
+                  validationState={getValidationLongitudeDec(
+                    coordinateGeorefLon, coordinateGeorefLat,
+                  )}
+                >
+                  <Col componentClass={ControlLabel} sm={2}>
+                    Lon. georef:
+                  </Col>
+                  <Col sm={10}>
+                    <FormControl
+                      type="text"
+                      value={coordinateGeorefLon || ''}
+                      onChange={(e) => this.setState({
+                        coordinateGeorefLon: e.target.value,
+                      })}
+                      placeholder="Longitude georeferenced"
+                      pattern={regexLongitude}
+                    />
+                  </Col>
+                </FormGroup>
+              </OverlayTrigger>
             </div>
             <Row>
               <Col sm={5} smOffset={2}>
