@@ -10,15 +10,17 @@ import PropTypes from 'prop-types';
 
 import { CSVDownload } from 'react-csv';
 
-import exportconfig from '../../../config/export';
+import config from '../../../config';
 import exportFacade from '../../../facades/export';
 import exportUtils from '../../../utils/export';
+
+const { export: exportConfig } = config;
 
 const CHECK_ALL = 'All';
 const EXPORT_CHROMDATA = 'chromdata';
 
 const makeColumns = (which) => {
-  const cols = exportconfig[which];
+  const cols = exportConfig[which];
   return Object.keys(cols).reduce(
     (prev, curr) => ({
       ...prev,
@@ -31,8 +33,8 @@ const makeColumns = (which) => {
 const initialState = {
   exportFormat: ['CSV'],
   filename: 'chromdata_export.csv',
-  separator: exportconfig.options.separator,
-  enclosingCharacter: exportconfig.options.enclosingCharacter,
+  separator: exportConfig.options.separator,
+  enclosingCharacter: exportConfig.options.enclosingCharacter,
   chromdata: makeColumns(EXPORT_CHROMDATA), // checkboxes
   checkedAll: false,
   exportData: [],
@@ -60,7 +62,7 @@ class ExportDataModal extends React.Component {
     // eslint-disable-next-line react/destructuring-assignment
     const fields = this.state[which];
     const checkedFields = Object.keys(fields).filter((f) => fields[f] === true);
-    const exportconfigWhich = exportconfig[which];
+    const exportconfigWhich = exportConfig[which];
 
     const { data: exportData, headers: exportHeaders } = exportUtils
       .createCsvData(dataToExport, checkedFields, exportconfigWhich);
@@ -106,7 +108,7 @@ class ExportDataModal extends React.Component {
   makeCheckboxes = (which, subwhich) => {
     // eslint-disable-next-line react/destructuring-assignment
     const stateWhich = this.state[which];
-    const configCols = exportconfig[which];
+    const configCols = exportConfig[which];
     const relevantCols = Object.keys(configCols)
       .filter((c) => configCols[c].group === subwhich);
     return relevantCols.map((c) => (

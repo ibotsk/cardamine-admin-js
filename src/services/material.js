@@ -1,7 +1,7 @@
 import template from 'url-template';
 import axios from './axios';
 
-import config from '../config/config';
+import config from '../config';
 
 async function patchAttributes(id, data, accessToken) {
   const uri = template.parse(config.uris.materialUri.patchAttributesUri)

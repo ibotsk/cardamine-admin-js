@@ -1,7 +1,7 @@
 import template from 'url-template';
 import axios from './axios';
 
-import config from '../config/config';
+import config from '../config';
 
 async function login(username, password) {
   const loginUri = template.parse(config.uris.usersUri.loginUri).expand();

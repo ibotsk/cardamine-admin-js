@@ -9,7 +9,7 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import tablesService from '../../services/tables';
 
 import whereHelper from '../../utils/where';
-import config from '../../config/config';
+import config from '../../config';
 
 const customTotal = (from, to, size) => (
   <span className="react-bootstrap-table-pagination-total">

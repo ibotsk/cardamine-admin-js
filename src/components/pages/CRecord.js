@@ -29,7 +29,7 @@ import PersonModal from '../segments/modals/PersonModal';
 import PublicationModal from '../segments/modals/PublicationModal';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
-import config from '../../config/config';
+import config from '../../config';
 
 const { constants } = config;
 

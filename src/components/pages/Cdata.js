@@ -31,7 +31,7 @@ import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import formatter from '../../utils/formatter';
-import config from '../../config/config';
+import config from '../../config';
 import ExportDataModal from '../segments/modals/ExportDataModal';
 
 const PAGE_DETAIL = '/names/';

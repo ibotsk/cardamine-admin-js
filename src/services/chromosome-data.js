@@ -1,7 +1,7 @@
 import template from 'url-template';
 import axios from './axios';
 
-import config from '../config/config';
+import config from '../config';
 
 /**
  * Calls get chromosome record by id, including material, reference and histories.

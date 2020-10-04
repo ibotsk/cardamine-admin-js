@@ -22,7 +22,7 @@ import checklistFacade from '../../facades/checklist';
 
 import notifications from '../../utils/notifications';
 import helper from '../../utils/helper';
-import config from '../../config/config';
+import config from '../../config';
 
 import '../../styles/custom.css';
 import ChecklistDetail from './checklist/ChecklistDetail';

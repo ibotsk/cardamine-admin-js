@@ -17,7 +17,7 @@ import RemotePagination from '../../segments/RemotePagination';
 import materialFacade from '../../../facades/material';
 
 import whereUtils from '../../../utils/where';
-import config from '../../../config/config';
+import config from '../../../config';
 
 const { pagination, constants } = config;
 const defaultSizePerPage = pagination.sizePerPageList[0].value;

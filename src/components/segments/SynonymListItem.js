@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 
 import LosName from './LosName';
 
-import config from '../../config/config';
+import config from '../../config';
 
 const constructSubNomenlatoric = (subNomenclatoricList) => {
   if (!subNomenclatoricList || subNomenclatoricList.length === 0) {

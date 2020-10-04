@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 
 import publicationsFacade from '../../../facades/publications';
 
-import config from '../../../config/config';
+import config from '../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

@@ -11,7 +11,7 @@ import paginationFactory,
 
 import PropTypes from 'prop-types';
 
-import config from '../../config/config';
+import config from '../../config';
 
 const { pagination: paginationConfig } = config;
 

@@ -13,7 +13,7 @@ import TabledPage from '../wrappers/TabledPageParent';
 import PublicationModal from '../segments/modals/PublicationModal';
 
 import helper from '../../utils/helper';
-import config from '../../config/config';
+import config from '../../config';
 
 // const showModalLiterature = 'showModalLiterature';
 

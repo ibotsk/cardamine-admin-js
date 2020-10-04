@@ -17,7 +17,9 @@ import importUtils from '../../../utils/import';
 import notifications from '../../../utils/notifications';
 import importFacade from '../../../facades/import';
 
-import importConfig from '../../../config/import';
+import config from '../../../config';
+
+const { import: importConfig } = config;
 
 const initialState = {
   submitEnabled: false,

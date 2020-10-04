@@ -1,7 +1,7 @@
 import tableService from '../services/tables';
 import materialService from '../services/material';
 
-import config from '../config/config';
+import config from '../config';
 
 const { uris: { materialUri } } = config;
 

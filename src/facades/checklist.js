@@ -2,7 +2,7 @@ import checklistService from '../services/checklist';
 
 import helper from '../utils/helper';
 import whereHelper from '../utils/where';
-import config from '../config/config';
+import config from '../config';
 
 // for synonyms of one type
 const setSynonymOrder = (synonyms) => {

@@ -1,11 +1,14 @@
 /* eslint-disable max-len */
 import constantsConfig from './constants';
 import exportConfig from './export';
+import importConfig from './import';
 import urisConfig from './uris';
 
 export default {
   constants: constantsConfig,
+  uris: urisConfig,
   export: exportConfig,
+  import: importConfig,
   nomenclature: {
     name: {
       sl: 's.l.',
@@ -224,7 +227,6 @@ export default {
       },
     ], // A numeric array is also available. the purpose of above example is custom the text
   },
-  uris: urisConfig,
   logging: {
     level: `${process.env.REACT_APP_LOGGING_LEVEL}`,
   },
