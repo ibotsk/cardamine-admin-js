@@ -41,6 +41,18 @@ const latLonFormatter = (cell) => {
   return null;
 };
 
+const latLonMapFormatter = (cell) => {
+  const latLonString = latLonFormatter(cell);
+  return (
+    <>
+      {latLonString}
+      <span className="pull-right" style={{ color: '#cecece' }}>
+        <small>Double click to edit</small>
+      </span>
+    </>
+  );
+};
+
 const columns = [
   {
     dataField: 'id',
@@ -71,7 +83,7 @@ const columns = [
   {
     dataField: 'coordinatesForMap',
     text: 'Coordinates for map',
-    formatter: latLonFormatter,
+    formatter: latLonMapFormatter,
     editorRenderer: (editorProps, value) => (
       // eslint-disable-next-line react/jsx-props-no-spreading
       <LatLonCellEditRenderer {...editorProps} value={value} />
