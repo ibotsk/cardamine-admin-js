@@ -18,11 +18,10 @@ import SpeciesType from '../propTypes/species';
 import TabledPage from '../wrappers/TabledPageParent';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
 
-import checklistFacade from '../../facades/checklist';
+import { checklistFacade } from '../../facades';
 
-import notifications from '../../utils/notifications';
-import helper from '../../utils/helper';
-import config from '../../config/config';
+import { notifications, helperUtils } from '../../utils';
+import config from '../../config';
 
 import '../../styles/custom.css';
 import ChecklistDetail from './checklist/ChecklistDetail';
@@ -43,7 +42,7 @@ const ntypeFormatter = (cell) => (
 const formatTableRow = (data) => data.map((n) => ({
   id: n.id,
   ntype: n.ntype,
-  speciesName: helper.listOfSpeciesString(n),
+  speciesName: helperUtils.listOfSpeciesString(n),
   extra: <Glyphicon glyph="chevron-right" style={{ color: '#cecece' }} />,
 }));
 

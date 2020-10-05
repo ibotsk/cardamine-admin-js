@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -12,6 +12,8 @@ import {
   Form,
   FormControl,
   FormGroup,
+  Tooltip,
+  OverlayTrigger,
 } from 'react-bootstrap';
 
 import { Typeahead } from 'react-bootstrap-typeahead';
@@ -20,14 +22,25 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import { NotificationContainer } from 'react-notifications';
 
-import notifications from '../../utils/notifications';
+import { notifications, validationUtils } from '../../utils';
 
-import cRecordFacade from '../../facades/crecord';
+import { crecordFacade } from '../../facades';
 
 import LosName from '../segments/LosName';
 import PersonModal from '../segments/modals/PersonModal';
 import PublicationModal from '../segments/modals/PublicationModal';
 import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
+
+import config from '../../config';
+
+const { constants: { regexLatitude, regexLongitude } } = config;
+const { getValidationLatitudeDec, getValidationLongitudeDec } = validationUtils;
+
+const latLonTooltip = (
+  <Tooltip id="tooltip">
+    Must be a number with decimal point (e.g. 18.1234)
+  </Tooltip>
+);
 
 const revisionsColumns = [
   {
@@ -45,13 +58,15 @@ const revisionsColumns = [
 const CHROM_DATA_LIST_URI = '/chromosome-data';
 const SELECTED = (prop) => `${prop}Selected`;
 
-class Record extends Component {
+class Record extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       chromrecord: {}, // to save
       material: {}, // to save
+      coordinateGeorefLat: undefined, // taken from material; must be put to material before saving
+      coordinateGeorefLon: undefined,
       reference: {}, // to save
       dna: {}, // to save
       histories: [], // to save - not persisted yet
@@ -89,7 +104,17 @@ class Record extends Component {
       material,
       reference,
       histories,
-    } = await cRecordFacade.getChromosomeRecord(accessToken, recordId);
+    } = await crecordFacade.getChromosomeRecord(accessToken, recordId);
+
+    let coordinateGeorefLat;
+    let coordinateGeorefLon;
+
+    const { coordinatesGeoref } = material;
+
+    if (coordinatesGeoref) {
+      coordinateGeorefLat = coordinatesGeoref.coordinates.lat;
+      coordinateGeorefLon = coordinatesGeoref.coordinates.lon;
+    }
 
     this.setState({
       chromrecord,
@@ -97,6 +122,8 @@ class Record extends Component {
       material,
       reference,
       histories,
+      coordinateGeorefLat,
+      coordinateGeorefLon,
     });
   };
 
@@ -107,7 +134,7 @@ class Record extends Component {
     const {
       listOfSpecies,
       idStandardisedNameSelected,
-    } = await cRecordFacade.getSpecies(
+    } = await crecordFacade.getSpecies(
       accessToken,
       reference.idStandardisedName,
     );
@@ -123,14 +150,14 @@ class Record extends Component {
       collectedBySelected,
       identifiedBySelected,
       checkedBySelected,
-    } = await cRecordFacade.getPersons(accessToken, {
+    } = await crecordFacade.getPersons(accessToken, {
       countedBy,
       collectedBy,
       identifiedBy,
       checkedBy,
     });
 
-    const { world4s, idWorld4Selected } = await cRecordFacade.getWorld4s(
+    const { world4s, idWorld4Selected } = await crecordFacade.getWorld4s(
       accessToken,
       idWorld4,
     );
@@ -138,7 +165,7 @@ class Record extends Component {
     const {
       literatures,
       idLiteratureSelected,
-    } = await cRecordFacade.getLiteratures(accessToken, idLiterature);
+    } = await crecordFacade.getLiteratures(accessToken, idLiterature);
 
     this.setState({
       listOfSpecies,
@@ -224,10 +251,22 @@ class Record extends Component {
     const { accessToken } = this.props;
     const {
       chromrecord, dna, material, reference,
+      coordinateGeorefLat, coordinateGeorefLon,
     } = this.state;
 
+    if (coordinateGeorefLat && coordinateGeorefLon) {
+      material.coordinatesGeoref = {
+        coordinates: {
+          lat: coordinateGeorefLat,
+          lon: coordinateGeorefLon,
+        },
+      };
+    } else {
+      material.coordinatesGeoref = null;
+    }
+
     try {
-      await cRecordFacade.saveUpdateChromrecordWithAll(
+      await crecordFacade.saveUpdateChromrecordWithAll(
         {
           chromrecord,
           dna,
@@ -258,6 +297,8 @@ class Record extends Component {
       dna,
       listOfSpecies,
       world4s,
+      coordinateGeorefLat,
+      coordinateGeorefLon,
     } = this.state;
 
     const {
@@ -977,6 +1018,18 @@ class Record extends Component {
                   </InputGroup>
                 </Col>
               </FormGroup>
+              <Row>
+                <Col sm={10} smOffset={2}>
+                  <h5>
+                    Original coordinates are a
+                    {' '}
+                    <b>free-text</b>
+                    .
+                    {' '}
+                    Please insert values as published.
+                  </h5>
+                </Col>
+              </Row>
               <FormGroup controlId="coordinatesLat" bsSize="sm">
                 <Col componentClass={ControlLabel} sm={2}>
                   Lat. orig:
@@ -1003,32 +1056,64 @@ class Record extends Component {
                   />
                 </Col>
               </FormGroup>
-              <FormGroup controlId="coordinatesGeorefLat" bsSize="sm">
-                <Col componentClass={ControlLabel} sm={2}>
-                  Lat. georef:
+              <Row>
+                <Col sm={10} smOffset={2}>
+                  <h5>
+                    Georeferenced coordinate must be a
+                    {' '}
+                    <b>number with decimal point</b>
+                    .
+                  </h5>
                 </Col>
-                <Col sm={10}>
-                  <FormControl
-                    type="text"
-                    value={material.coordinatesGeorefLat || ''}
-                    onChange={(e) => this.onChangeTextInput(e, 'material')}
-                    placeholder=""
-                  />
-                </Col>
-              </FormGroup>
-              <FormGroup controlId="coordinatesGeorefLon" bsSize="sm">
-                <Col componentClass={ControlLabel} sm={2}>
-                  Lon. georef:
-                </Col>
-                <Col sm={10}>
-                  <FormControl
-                    type="text"
-                    value={material.coordinatesGeorefLon || ''}
-                    onChange={(e) => this.onChangeTextInput(e, 'material')}
-                    placeholder=""
-                  />
-                </Col>
-              </FormGroup>
+              </Row>
+              <OverlayTrigger placement="top" overlay={latLonTooltip}>
+                <FormGroup
+                  bsSize="sm"
+                  controlId="coordinateGeorefLat"
+                  validationState={getValidationLatitudeDec(
+                    coordinateGeorefLat, coordinateGeorefLon,
+                  )}
+                >
+                  <Col componentClass={ControlLabel} sm={2}>
+                    Lat. georef:
+                  </Col>
+                  <Col sm={10}>
+                    <FormControl
+                      type="text"
+                      value={coordinateGeorefLat || ''}
+                      onChange={(e) => this.setState({
+                        coordinateGeorefLat: e.target.value,
+                      })}
+                      placeholder="Latitude georeferenced"
+                      pattern={regexLatitude}
+                    />
+                  </Col>
+                </FormGroup>
+              </OverlayTrigger>
+              <OverlayTrigger placement="top" overlay={latLonTooltip}>
+                <FormGroup
+                  bsSize="sm"
+                  controlId="coordinateGeorefLon"
+                  validationState={getValidationLongitudeDec(
+                    coordinateGeorefLon, coordinateGeorefLat,
+                  )}
+                >
+                  <Col componentClass={ControlLabel} sm={2}>
+                    Lon. georef:
+                  </Col>
+                  <Col sm={10}>
+                    <FormControl
+                      type="text"
+                      value={coordinateGeorefLon || ''}
+                      onChange={(e) => this.setState({
+                        coordinateGeorefLon: e.target.value,
+                      })}
+                      placeholder="Longitude georeferenced"
+                      pattern={regexLongitude}
+                    />
+                  </Col>
+                </FormGroup>
+              </OverlayTrigger>
             </div>
             <Row>
               <Col sm={5} smOffset={2}>

@@ -2,7 +2,9 @@
 import merge from 'lodash.merge';
 import helper from './helper';
 
-import importConfig from '../config/import';
+import config from '../config';
+
+const { import: importConfig } = config;
 
 const createObject = (configTemplate, rowData) => {
   const object = {};

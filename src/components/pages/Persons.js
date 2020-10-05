@@ -12,7 +12,7 @@ import PersonType from '../propTypes/person';
 import TabledPage from '../wrappers/TabledPageParent';
 import PersonModal from '../segments/modals/PersonModal';
 
-import config from '../../config/config';
+import config from '../../config';
 
 const columns = [
   {

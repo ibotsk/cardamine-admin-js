@@ -18,11 +18,10 @@ import {
   MisidentifiedSynonymListItem,
 } from './items';
 
-import checklistFacade from '../../../facades/checklist';
+import { checklistFacade } from '../../../facades';
 
-import notifications from '../../../utils/notifications';
-import helper from '../../../utils/helper';
-import config from '../../../config/config';
+import { notifications, helperUtils } from '../../../utils';
+import config from '../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
@@ -54,7 +53,7 @@ const addNewSynonymToList = (
   synonymObj.synonym = species;
 
   synonyms.push(synonymObj);
-  synonyms.sort(helper.synonymSorterLex);
+  synonyms.sort(helperUtils.synonymSorterLex);
   return synonyms;
 };
 
@@ -110,7 +109,7 @@ const ChecklistDetailBody = ({
     selected.syntype = newNumType;
 
     toList.push(selected);
-    toList.sort(helper.synonymSorterLex);
+    toList.sort(helperUtils.synonymSorterLex);
 
     const fromListWithoutRemoved = fromList.filter((s, i) => i !== rowId);
 
@@ -138,7 +137,7 @@ const ChecklistDetailBody = ({
   } = synonyms;
   const listOfSpeciesOptions = listOfSpecies.map((l) => ({
     id: l.id,
-    label: helper.listOfSpeciesString(l),
+    label: helperUtils.listOfSpeciesString(l),
   }));
 
   return (

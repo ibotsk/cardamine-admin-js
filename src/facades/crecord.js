@@ -1,6 +1,6 @@
 import chromDataService from '../services/chromosome-data';
 import checklistService from '../services/checklist';
-import helper from '../utils/helper';
+import { helperUtils } from '../utils/';
 
 async function getChromosomeRecord(accessToken, idRecord) {
   let chromrecord = {};
@@ -39,7 +39,7 @@ async function getLiteratures(accessToken, idLiterature) {
     accessToken,
     (l) => ({
       id: l.id,
-      label: helper.parsePublication(l),
+      label: helperUtils.parsePublication(l),
     }),
   );
   const literatureInitial = literatures.find((l) => l.id === idLiterature);
@@ -79,7 +79,7 @@ async function getSpecies(accessToken, idStandardisedName) {
     accessToken,
     (l) => ({
       id: l.id,
-      label: helper.listOfSpeciesString(l),
+      label: helperUtils.listOfSpeciesString(l),
     }),
   );
 
@@ -119,6 +119,17 @@ async function saveUpdateChromrecordWithAll(
     chromrecord,
     accessToken,
   );
+
+  // material.coordinatesGeoref and coordinatesForMap must be saved as stringified jsons
+  if (material.coordinatesGeoref) {
+    // eslint-disable-next-line no-param-reassign
+    material.coordinatesGeoref = JSON.stringify(material.coordinatesGeoref);
+  }
+  if (material.coordinatesForMap) {
+    // eslint-disable-next-line no-param-reassign
+    material.coordinatesForMap = JSON.stringify(material.coordinatesForMap);
+  }
+
   const responseMat = await chromDataService.saveUpdateMaterial(
     { ...material, idCdata: responseChrom.data.id },
     accessToken,

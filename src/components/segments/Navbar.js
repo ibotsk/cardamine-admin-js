@@ -33,9 +33,12 @@ const CNavbar = () => (
             <LinkContainer exact to="/persons">
               <MenuItem eventKey={1.3}>Persons</MenuItem>
             </LinkContainer>
+            <LinkContainer exact to="/coordinates">
+              <MenuItem eventKey={1.4}>Coordinates</MenuItem>
+            </LinkContainer>
             <MenuItem divider />
             <LinkContainer exact to="/chromosome-data/import">
-              <MenuItem eventKey={1.4}>Import</MenuItem>
+              <MenuItem eventKey={1.5}>Import</MenuItem>
             </LinkContainer>
           </NavDropdown>
           <LinkContainer exact to="/names">

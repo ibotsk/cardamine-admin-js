@@ -1,8 +1,7 @@
 import checklistService from '../services/checklist';
 
-import helper from '../utils/helper';
-import whereHelper from '../utils/where';
-import config from '../config/config';
+import { helperUtils, whereUtils } from '../utils';
+import config from '../config';
 
 // for synonyms of one type
 const setSynonymOrder = (synonyms) => {
@@ -46,25 +45,25 @@ async function getSynonyms(id, accessToken) {
     .getSynonymsNomenclatoricOf(
       { id, accessToken },
     );
-  nomenclatoricSynonyms.sort(helper.listOfSpeciesSorterLex);
+  nomenclatoricSynonyms.sort(helperUtils.listOfSpeciesSorterLex);
 
   const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({
     id,
     accessToken,
   });
-  taxonomicSynonyms.sort(helper.listOfSpeciesSorterLex);
+  taxonomicSynonyms.sort(helperUtils.listOfSpeciesSorterLex);
 
   const invalidDesignations = await checklistService.getInvalidDesignationsOf({
     id,
     accessToken,
   });
-  invalidDesignations.sort(helper.listOfSpeciesSorterLex);
+  invalidDesignations.sort(helperUtils.listOfSpeciesSorterLex);
 
   const misidentifications = await checklistService.getMisidentificationsOf({
     id,
     accessToken,
   });
-  misidentifications.sort(helper.listOfSpeciesSorterLex);
+  misidentifications.sort(helperUtils.listOfSpeciesSorterLex);
 
   return {
     nomenclatoricSynonyms,
@@ -95,7 +94,7 @@ async function getBasionymsFor(id, accessToken) {
 }
 
 async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
-  const where = whereHelper.whereDataAll(data);
+  const where = whereUtils.whereDataAll(data);
 
   if (!where) {
     return null;
@@ -120,7 +119,7 @@ async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
 async function saveSpecies({ data, accessToken }) {
   const curatedData = { ...data };
   if (!data.ntype) {
-    curatedData.ntype = config.defaultLosType;
+    curatedData.ntype = config.constants.defaultLosType;
   }
   const response = await checklistService.putSpecies({
     data: curatedData,

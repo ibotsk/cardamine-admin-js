@@ -15,7 +15,7 @@ import SpeciesType from '../../propTypes/species';
 
 import LosName from '../../segments/LosName';
 
-import config from '../../../config/config';
+import config from '../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

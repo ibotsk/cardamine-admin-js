@@ -9,9 +9,9 @@ import {
 
 import PropTypes from 'prop-types';
 
-import publicationsFacade from '../../../facades/publications';
+import { publicationsFacade } from '../../../facades';
 
-import config from '../../../config/config';
+import config from '../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

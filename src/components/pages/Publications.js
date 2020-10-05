@@ -12,8 +12,8 @@ import PublicationType from '../propTypes/publication';
 import TabledPage from '../wrappers/TabledPageParent';
 import PublicationModal from '../segments/modals/PublicationModal';
 
-import helper from '../../utils/helper';
-import config from '../../config/config';
+import { helperUtils } from '../../utils';
+import config from '../../config';
 
 // const showModalLiterature = 'showModalLiterature';
 
@@ -76,7 +76,7 @@ class Publications extends Component {
       </Button>
     ),
     type: config.mappings.displayType[l.displayType].name,
-    publication: helper.parsePublication(l),
+    publication: helperUtils.parsePublication(l),
   }));
 
   render() {

@@ -10,9 +10,9 @@ import {
 
 import PropTypes from 'prop-types';
 
-import checklistFacade from '../../../facades/checklist';
+import { checklistFacade } from '../../../facades';
 
-import config from '../../../config/config';
+import config from '../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

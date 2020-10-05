@@ -7,7 +7,7 @@ import SynonymType from '../../../propTypes/synonym';
 
 import SynonymListItem from '../../../segments/SynonymListItem';
 
-import config from '../../../../config/config';
+import config from '../../../../config';
 
 const NomenclatoricSynonymListItem = ({
   rowId,

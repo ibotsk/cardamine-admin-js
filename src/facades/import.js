@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import helper from '../utils/helper';
-import importUtils from '../utils/import';
+import { helperUtils, importUtils } from '../utils';
 
 import checklistFacade from './checklist';
 import publicationsFacade from './publications';
@@ -9,8 +8,8 @@ import world4Facade from './world4';
 import chromRecordFacade from './crecord';
 
 const formatTermAsPersName = (term) => term.persName;
-const formatTermAsPublication = (term) => helper.parsePublication(term);
-const formatTermAsSpeciesName = (term) => helper.listOfSpeciesString(term);
+const formatTermAsPublication = (term) => helperUtils.parsePublication(term);
+const formatTermAsSpeciesName = (term) => helperUtils.listOfSpeciesString(term);
 
 const { savePerson } = personsFacade;
 const savePublication = publicationsFacade.savePublicationCurated;
@@ -204,7 +203,7 @@ async function loadData(data, accessToken, increase = undefined) {
         getIdOfFound,
       );
 
-      const literatureData = helper.publicationCurateStringDisplayType(
+      const literatureData = helperUtils.publicationCurateStringDisplayType(
         refLiterature,
       );
       const publication = await publicationsFacade.getPublicationByAll(

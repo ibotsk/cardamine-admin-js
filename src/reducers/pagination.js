@@ -1,5 +1,5 @@
 import { SET_PAGINATION, RESET_PAGINATION } from '../actions/action-types';
-import config from '../config/config';
+import config from '../config';
 
 const initialState = {
   page: config.pagination.pageStartIndex,

@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import personsService from '../services/persons';
-import utils from '../utils/utils';
+import { utils } from '../utils';
 
 async function getPersonsByIdCurated({ id, accessToken }) {
   const data = await personsService.getPersonById({ id, accessToken });
