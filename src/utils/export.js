@@ -39,6 +39,14 @@ const handleCompositeField = (data, field, fieldInfo) => {
   }
 };
 
+const handleFormattedField = (data, fieldInfo) => {
+  if (!data || !fieldInfo.format) { // value is null or no format funcion
+    return data;
+  }
+
+  return fieldInfo.format(data);
+};
+
 function createCsvData(dataToExport, fields, configfields) {
   const headers = fields.map((f) => ({
     label: configfields[f].name,
@@ -50,7 +58,8 @@ function createCsvData(dataToExport, fields, configfields) {
     for (const f of fields) {
       const info = configfields[f];
       const fieldValue = getValue(d, info.column);
-      obj[f] = handleCompositeField(fieldValue, f, info);
+      const formattedFieldValue = handleFormattedField(fieldValue, info);
+      obj[f] = handleCompositeField(formattedFieldValue, f, info);
     }
     return obj;
   });
