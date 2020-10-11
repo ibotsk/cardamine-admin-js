@@ -267,16 +267,17 @@ export default {
       column: 'material.identified-by.persName',
       group: 'material',
     },
-    coordinatesGeoref: {
-      name: 'Coordinates Georeferenced',
-      column: 'material.coordinatesGeoref',
+    coordinatesGeorefLat: {
+      name: 'Coordinates Georeferenced Lat',
+      column: 'material.coordinatesGeoref.coordinates.lat',
       group: 'material',
       default: true,
-      format: (col) => (
-        col && col.coordinates
-          ? `${col.coordinates.lat}, ${col.coordinates.lon}`
-          : col
-      ),
+    },
+    coordinatesGeorefLon: {
+      name: 'Coordinates Georeferenced Lon',
+      column: 'material.coordinatesGeoref.coordinates.lon',
+      group: 'material',
+      default: true,
     },
     description: {
       name: 'Locality Description',
