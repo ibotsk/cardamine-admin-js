@@ -23,6 +23,19 @@ const getIdOfFound = (found) => {
   return found;
 };
 
+const mergeCoordinatesGeoref = (lat, lon) => {
+  const latDot = lat.replace(',', '.');
+  const lonDot = lon.replace(',', '.');
+
+  // empty cell is ''
+  if (latDot === '' || lonDot === ''
+    || Number.isNaN(latDot) || Number.isNaN(lonDot)) {
+    return null;
+  }
+
+  return helperUtils.coordinatesToSave(latDot, lonDot);
+};
+
 /**
  * If needed, it creates a record referenced by imported rows:
  * - person, publication, species
@@ -131,8 +144,16 @@ const processMaterial = async (
     }
   }
 
+  const { coordinatesGeorefLat, coordinatesGeorefLon } = material;
+  const coordinatesGeoref = mergeCoordinatesGeoref(
+    coordinatesGeorefLat, coordinatesGeorefLon,
+  );
+  delete material.coordinatesGeorefLat;
+  delete material.coordinatesGeorefLon;
+
   return {
     ...material,
+    coordinatesGeoref,
     collectedBy: collectedByValue,
     identifiedBy: identifiedByValue,
     checkedBy: checkedByValue,

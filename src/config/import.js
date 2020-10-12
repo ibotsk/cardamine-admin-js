@@ -67,7 +67,7 @@ export default {
       voucherSpecimenNo: 51,
       coordinatesLon: 54,
       coordinatesLat: 55,
-      coordinatesGeorefLat: 56,
+      coordinatesGeorefLat: 56, // separated CSV columns but one DB column -> see facades/import.js/processMaterial()
       coordinatesGeorefLon: 57,
     },
     reference: {

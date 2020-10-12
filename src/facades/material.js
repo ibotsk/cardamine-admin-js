@@ -2,6 +2,7 @@ import tableService from '../services/tables';
 import materialService from '../services/material';
 
 import config from '../config';
+import { helperUtils } from '../utils';
 
 const { uris: { materialUri } } = config;
 
@@ -22,19 +23,7 @@ async function getCoordinatesCount(where = {}, accessToken) {
 }
 
 async function saveCoordinatesForMap(id, lat, lon, accessToken) {
-  let coordinatesForMap = null;
-
-  // lat and lon can be 0
-  if (lat !== null && lat !== undefined && lon !== null && lon !== undefined) {
-    const coordinatesJSON = {
-      coordinates: {
-        lat,
-        lon,
-      },
-    };
-
-    coordinatesForMap = JSON.stringify(coordinatesJSON);
-  }
+  const coordinatesForMap = helperUtils.coordinatesToSave(lat, lon);
 
   const data = {
     coordinatesForMap,
