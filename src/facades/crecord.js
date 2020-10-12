@@ -1,6 +1,6 @@
 import chromDataService from '../services/chromosome-data';
 import checklistService from '../services/checklist';
-import { helperUtils } from '../utils/';
+import { helperUtils } from '../utils';
 
 async function getChromosomeRecord(accessToken, idRecord) {
   let chromrecord = {};
@@ -119,16 +119,6 @@ async function saveUpdateChromrecordWithAll(
     chromrecord,
     accessToken,
   );
-
-  // material.coordinatesGeoref and coordinatesForMap must be saved as stringified jsons
-  if (material.coordinatesGeoref) {
-    // eslint-disable-next-line no-param-reassign
-    material.coordinatesGeoref = JSON.stringify(material.coordinatesGeoref);
-  }
-  if (material.coordinatesForMap) {
-    // eslint-disable-next-line no-param-reassign
-    material.coordinatesForMap = JSON.stringify(material.coordinatesForMap);
-  }
 
   const responseMat = await chromDataService.saveUpdateMaterial(
     { ...material, idCdata: responseChrom.data.id },

@@ -295,6 +295,24 @@ function publicationCurateStringDisplayType(publication) {
   };
 }
 
+function coordinatesToSave(lat, lon) {
+  let result = null;
+
+  // lat and lon can be 0
+  if (lat !== null && lat !== undefined && lon !== null && lon !== undefined) {
+    const coordinatesJSON = {
+      coordinates: {
+        lat,
+        lon,
+      },
+    };
+
+    result = JSON.stringify(coordinatesJSON);
+  }
+
+  return result;
+}
+
 export default {
   listOfSpeciesForComponent,
   listOfSpeciesString,
@@ -303,4 +321,5 @@ export default {
   publicationCurateStringDisplayType,
   synonymSorterLex,
   parsePublication,
+  coordinatesToSave,
 };

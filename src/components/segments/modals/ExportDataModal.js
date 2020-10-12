@@ -19,7 +19,7 @@ const { export: exportConfig } = config;
 const CHECK_ALL = 'All';
 const EXPORT_CHROMDATA = 'chromdata';
 
-const makeColumns = (which) => {
+const makeCheckedDefaultCheckboxes = (which) => {
   const cols = exportConfig[which];
   return Object.keys(cols).reduce(
     (prev, curr) => ({
@@ -35,7 +35,7 @@ const initialState = {
   filename: 'chromdata_export.csv',
   separator: exportConfig.options.separator,
   enclosingCharacter: exportConfig.options.enclosingCharacter,
-  chromdata: makeColumns(EXPORT_CHROMDATA), // checkboxes
+  chromdata: makeCheckedDefaultCheckboxes(EXPORT_CHROMDATA), // checkboxes
   checkedAll: false,
   exportData: [],
   exportHeaders: [],

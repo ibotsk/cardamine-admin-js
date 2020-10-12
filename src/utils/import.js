@@ -6,6 +6,11 @@ import config from '../config';
 
 const { import: importConfig } = config;
 
+/**
+ * Maps rowData to object of columns and their values
+ * @param {number|object} configTemplate can be object of row numbers or directly a row number
+ * @param {object} rowData
+ */
 const createObject = (configTemplate, rowData) => {
   const object = {};
 

@@ -268,14 +268,14 @@ export default {
       group: 'material',
     },
     coordinatesGeorefLat: {
-      name: 'Latitude Georeferenced',
-      column: 'material.coordinatesGeorefLat',
+      name: 'Coordinates Georeferenced Lat',
+      column: 'material.coordinatesGeoref.coordinates.lat',
       group: 'material',
       default: true,
     },
     coordinatesGeorefLon: {
-      name: 'Longitude Georeferenced',
-      column: 'material.coordinatesGeorefLon',
+      name: 'Coordinates Georeferenced Lon',
+      column: 'material.coordinatesGeoref.coordinates.lon',
       group: 'material',
       default: true,
     },
