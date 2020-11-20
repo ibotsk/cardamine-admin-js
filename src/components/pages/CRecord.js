@@ -74,11 +74,11 @@ class Record extends React.Component {
       persons: [],
       world4s: [],
       literatures: [],
-      modals: {
-        showModalPerson: false,
-        showModalLiterature: false,
-        showModalSpecies: false,
-      },
+
+      isShowModalPerson: false,
+      isShowModalLiterature: false,
+      isShowModalSpecies: false,
+
       idStandardisedNameSelected: undefined,
       idLiteratureSelected: undefined,
       countedBySelected: undefined,
@@ -182,19 +182,19 @@ class Record extends React.Component {
     });
   };
 
-  showModalPerson = () => this.setState({ showModalPerson: true });
+  showModalPerson = () => this.setState({ isShowModalPerson: true });
 
-  showModalLiterature = () => this.setState({ showModalLiterature: true });
+  showModalLiterature = () => this.setState({ isShowModalLiterature: true });
 
-  showModalSpecies = () => this.setState({ showModalSpecies: true });
+  showModalSpecies = () => this.setState({ isShowModalSpecies: true });
 
   hideModal = async () => {
-    const { modals } = this.state;
-    for (const key of Object.keys(modals)) {
-      modals[key] = false;
-    }
     await this.getLists();
-    this.setState({ modals });
+    this.setState({
+      isShowModalPerson: false,
+      isShowModalLiterature: false,
+      isShowModalSpecies: false,
+    });
   };
 
   onChangeTextInput = (e, objName) => {
@@ -304,7 +304,11 @@ class Record extends React.Component {
       idWorld4Selected,
     } = this.state;
 
-    const { modals } = this.state;
+    const {
+      isShowModalPerson,
+      isShowModalLiterature,
+      isShowModalSpecies,
+    } = this.state;
 
     return (
       <div id="chromosome-record">
@@ -1122,13 +1126,16 @@ class Record extends React.Component {
             </Row>
           </Form>
         </Grid>
-        <PersonModal show={modals.showModalPerson} onHide={this.hideModal} />
+        <PersonModal
+          show={isShowModalPerson}
+          onHide={this.hideModal}
+        />
         <PublicationModal
-          show={modals.showModalLiterature}
+          show={isShowModalLiterature}
           onHide={this.hideModal}
         />
         <SpeciesNameModal
-          show={modals.showModalSpecies}
+          show={isShowModalSpecies}
           onHide={this.hideModal}
         />
         <NotificationContainer />
