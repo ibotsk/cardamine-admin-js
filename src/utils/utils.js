@@ -14,7 +14,15 @@ const emptyToNull = (obj) => Object.keys(obj).reduce(
   {},
 );
 
+const jsonStringifySafe = (val) => {
+  if (!val) {
+    return null;
+  }
+  return typeof val === 'string' ? val : JSON.stringify(val);
+};
+
 export default {
   nullToEmpty,
   emptyToNull,
+  jsonStringifySafe,
 };

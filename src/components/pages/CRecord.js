@@ -22,7 +22,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 
 import { NotificationContainer } from 'react-notifications';
 
-import { notifications, helperUtils, validationUtils } from '../../utils';
+import {
+  notifications, helperUtils, validationUtils, utils,
+} from '../../utils';
 
 import { crecordFacade } from '../../facades';
 
@@ -256,6 +258,10 @@ class Record extends React.Component {
 
     material.coordinatesGeoref = helperUtils.coordinatesToSave(
       coordinateGeorefLat, coordinateGeorefLon,
+    );
+    // coordinates for map must be saved as string
+    material.coordinatesForMap = utils.jsonStringifySafe(
+      material.coordinatesForMap,
     );
 
     try {
