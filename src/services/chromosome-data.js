@@ -1,7 +1,9 @@
-import template from 'url-template';
 import axios from './axios';
+import Mustache from './mustache';
 
 import config from '../config';
+
+const { uris } = config;
 
 /**
  * Calls get chromosome record by id, including material, reference and histories.
@@ -10,9 +12,9 @@ import config from '../config';
  * @param {*} accessToken
  */
 async function getChromosomeRecordById(id, accessToken) {
-  const getCdataByIdUri = template
-    .parse(config.uris.chromosomeDataUri.getByIdUri)
-    .expand({ id, accessToken });
+  const getCdataByIdUri = Mustache.render(
+    uris.chromosomeDataUri.getByIdUri, { id, accessToken },
+  );
   const response = await axios.get(getCdataByIdUri); // get chromosome record
 
   return response.data;
@@ -24,9 +26,9 @@ async function getChromosomeRecordById(id, accessToken) {
  * @param {*} format Optional param, function to format data
  */
 async function getAllPersons(accessToken, format) {
-  const getAllPersonsUri = template
-    .parse(config.uris.personsUri.getAllWOrderUri)
-    .expand({ accessToken });
+  const getAllPersonsUri = Mustache.render(
+    uris.personsUri.getAllWOrderUri, { accessToken },
+  );
   const response = await axios.get(getAllPersonsUri);
 
   const persons = response.data;
@@ -38,9 +40,9 @@ async function getAllPersons(accessToken, format) {
 }
 
 async function getAllWorld4s(accessToken, format) {
-  const getAllWorld4sUri = template
-    .parse(config.uris.worldl4Uri.getAllWFilterUri)
-    .expand({ accessToken });
+  const getAllWorld4sUri = Mustache.render(
+    uris.worldl4Uri.getAllWFilterUri, { accessToken },
+  );
   const response = await axios.get(getAllWorld4sUri); // get all world4s
 
   const worlds = response.data;
@@ -52,9 +54,9 @@ async function getAllWorld4s(accessToken, format) {
 }
 
 async function getAllLiteratures(accessToken, format) {
-  const getAllLiteraturesUri = template
-    .parse(config.uris.literaturesUri.getAllWOrderUri)
-    .expand({ accessToken });
+  const getAllLiteraturesUri = Mustache.render(
+    uris.literaturesUri.getAllWOrderUri, { accessToken },
+  );
   const response = await axios.get(getAllLiteraturesUri); // get all publications
 
   const literatures = response.data;
@@ -66,37 +68,37 @@ async function getAllLiteratures(accessToken, format) {
 }
 
 async function saveUpdateChromrecord(data, accessToken) {
-  const cdataUri = template
-    .parse(config.uris.chromosomeDataUri.baseUri)
-    .expand({ accessToken });
+  const cdataUri = Mustache.render(
+    uris.chromosomeDataUri.baseUri, { accessToken },
+  );
   return axios.put(cdataUri, data);
 }
 
 async function saveUpdateMaterial(data, accessToken) {
-  const materialUri = template
-    .parse(config.uris.materialUri.baseUri)
-    .expand({ accessToken });
+  const materialUri = Mustache.render(
+    uris.materialUri.baseUri, { accessToken },
+  );
   return axios.put(materialUri, data);
 }
 
 async function saveUpdateReference(data, accessToken) {
-  const referenceUri = template
-    .parse(config.uris.referenceUri.baseUri)
-    .expand({ accessToken });
+  const referenceUri = Mustache.render(
+    uris.referenceUri.baseUri, { accessToken },
+  );
   return axios.put(referenceUri, data);
 }
 
 async function saveUpdateDna(data, accessToken) {
-  const dnaUri = template
-    .parse(config.uris.dnaUri.baseUri)
-    .expand({ accessToken });
+  const dnaUri = Mustache.render(
+    uris.dnaUri.baseUri, { accessToken },
+  );
   return axios.put(dnaUri, data);
 }
 
 async function getForExport(where, accessToken) {
-  const exportUri = template
-    .parse(config.uris.chromosomeDataUri.exportUri)
-    .expand({ where, accessToken });
+  const exportUri = Mustache.render(
+    uris.chromosomeDataUri.exportUri, { where, accessToken },
+  );
   const response = await axios.get(exportUri);
   return response.data;
 }
