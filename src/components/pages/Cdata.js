@@ -28,7 +28,7 @@ import { setPagination, setExportCdata } from '../../actions';
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
-import { formatterUtils, utils } from '../../utils';
+import { formatterUtils, helperUtils, utils } from '../../utils';
 import config from '../../config';
 import ExportDataModal from '../segments/modals/ExportDataModal';
 
@@ -62,18 +62,52 @@ const columns = [
   {
     dataField: 'originalIdentification',
     text: 'Orig. identification',
+    formatter: (cell) => (
+      cell.id ? (
+        <Link to={`${PAGE_DETAIL}${cell.id}`}>
+          <LosName
+            key={cell.id}
+            data={cell}
+            format="plain"
+          />
+        </Link>
+      ) : (
+        ''
+      )
+    ),
   },
   {
     dataField: 'lastRevision',
     text: 'Last revision',
+    formatter: (cell) => (
+      cell.id ? (
+        <Link to={`${PAGE_DETAIL}${cell.id}`}>
+          <LosName
+            key={cell.id}
+            data={cell}
+            format="plain"
+          />
+        </Link>
+      ) : (
+        ''
+      )
+    ),
+  },
+  {
+    dataField: 'fullPublication',
+    text: 'Publication',
+    hidden: false,
+    formatter: (cell) => helperUtils.parsePublication(cell),
   },
   {
     dataField: 'publicationAuthor',
     text: 'Publ. author',
+    hidden: true,
   },
   {
     dataField: 'year',
     text: 'Year',
+    hidden: true,
   },
   {
     dataField: 'n',
@@ -123,6 +157,7 @@ const columns = [
     dataField: 'eda',
     text: 'E/D/A',
     hidden: true,
+    formatter: (cell) => formatterUtils.eda(cell),
   },
   {
     dataField: 'duplicate',
@@ -197,30 +232,11 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
         </Button>
       </LinkContainer>
     ),
-    originalIdentification: d.original_id ? (
-      <Link to={`${PAGE_DETAIL}${d.original_id}`}>
-        <LosName
-          key={d.original_id}
-          data={utils.getObjWKeysThatStartWithStr(d, 'original_')}
-          format="plain"
-        />
-      </Link>
-    ) : (
-      ''
-    ),
-    lastRevision: d.latestRevision_id ? (
-      <Link to={`${PAGE_DETAIL}${d.latestRevision_id}`}>
-        <LosName
-          key={d.latest_revision_id}
-          data={utils.getObjWKeysThatStartWithStr(d, 'latestRevision_')}
-          format="plain"
-        />
-      </Link>
-    ) : (
-      ''
-    ),
-    publicationAuthor: d.paperAuthor,
-    year: d.year,
+    originalIdentification: utils.getObjWKeysThatStartWithStr(d, 'original_'),
+    lastRevision: utils.getObjWKeysThatStartWithStr(d, 'latestRevision_'),
+    fullPublication: utils.getObjWKeysThatStartWithStr(d, 'literature_'),
+    publicationAuthor: d.literature_paperAuthor,
+    year: d.literature_year,
     n: d.n,
     dn: d.dn,
     ploidy: d.ploidyLevel,
@@ -230,11 +246,11 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
     countedDate: d.countedDate,
     nOfPlants: d.numberOfAnalysedPlants,
     note: d.note,
-    eda: formatterUtils.eda({
+    eda: {
       ambiguous: d.ambiguous,
       doubtful: d.doubtful,
       erroneous: d.erroneous,
-    }),
+    },
     duplicate: d.duplicate,
     depositedIn: d.depositedIn,
     w4: d.worldL4,
@@ -360,6 +376,7 @@ class Cdata extends React.Component {
   };
 
   render() {
+    console.log(this.props);
     const {
       data, paginationOptions, exportedCdata, accessToken,
     } = this.props;
