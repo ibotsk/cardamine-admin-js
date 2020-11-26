@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import get from 'lodash.get';
-
 import {
   Grid,
   Row,
@@ -30,7 +28,7 @@ import { setPagination, setExportCdata } from '../../actions';
 import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
-import { formatterUtils } from '../../utils';
+import { formatterUtils, utils } from '../../utils';
 import config from '../../config';
 import ExportDataModal from '../segments/modals/ExportDataModal';
 
@@ -42,7 +40,10 @@ const EXPORT_PAGE = 'exportPage';
 const EXPORT_ALL = 'exportAll';
 const EXPORT_ALL_VALUE = 'all';
 
+const GEOG_POINT_REGEX = /POINT\((\d+\.\d+) (\d+\.\d+)/;
+
 const { ToggleList } = ColumnToggle;
+
 const columns = [
   {
     dataField: 'id',
@@ -166,24 +167,15 @@ const getInitialToggles = (toggledColumns) => toggledColumns
   {});
 
 const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
-  const origIdentification = get(
-    d,
-    ['material', 'reference', 'original-identification'],
-    '',
-  );
-  const latestRevision = d['latest-revision'];
-
-  const coordinatesGeoref = get(d, 'material.coordinatesGeoref', null);
-  const coordinatesLatOrig = get(d, 'material.coordinatesLat', null);
-  const coordinatesLonOrig = get(d, 'material.coordinatesLon', null);
+  const { coordinatesLatOrig, coordinatesLonOrig, coordinatesGeoref } = d;
 
   let latitudeString = '';
   let longitudeString = '';
 
   if (coordinatesGeoref) {
-    const { coordinates } = coordinatesGeoref;
-    latitudeString = `${coordinates.lat} (gr)`;
-    longitudeString = `${coordinates.lon} (gr)`;
+    const found = coordinatesGeoref.match(GEOG_POINT_REGEX); // 0: full match, 1: lon, 2: lat
+    latitudeString = `${found[2]} (gr)`;
+    longitudeString = `${found[1]} (gr)`;
   } else if (coordinatesLatOrig && coordinatesLonOrig) {
     latitudeString = `${coordinatesLatOrig} (orig)`;
     longitudeString = `${coordinatesLonOrig} (orig)`;
@@ -205,55 +197,51 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
         </Button>
       </LinkContainer>
     ),
-    originalIdentification: origIdentification ? (
-      <Link to={`${PAGE_DETAIL}${origIdentification.id}`}>
+    originalIdentification: d.original_id ? (
+      <Link to={`${PAGE_DETAIL}${d.original_id}`}>
         <LosName
-          key={origIdentification.id}
-          data={origIdentification}
+          key={d.original_id}
+          data={utils.getObjWKeysThatStartWithStr(d, 'original_')}
           format="plain"
         />
       </Link>
     ) : (
       ''
     ),
-    lastRevision: latestRevision ? (
-      <Link to={`${PAGE_DETAIL}${latestRevision['list-of-species'].id}`}>
+    lastRevision: d.latestRevision_id ? (
+      <Link to={`${PAGE_DETAIL}${d.latestRevision_id}`}>
         <LosName
-          key={latestRevision['list-of-species'].id}
-          data={latestRevision['list-of-species']}
+          key={d.latest_revision_id}
+          data={utils.getObjWKeysThatStartWithStr(d, 'latestRevision_')}
           format="plain"
         />
       </Link>
     ) : (
       ''
     ),
-    publicationAuthor: get(
-      d,
-      'material.reference.literature.paperAuthor',
-      '',
-    ),
-    year: get(d, 'material.reference.literature.year', ''),
+    publicationAuthor: d.paperAuthor,
+    year: d.year,
     n: d.n,
     dn: d.dn,
     ploidy: d.ploidyLevel,
     ploidyRevised: d.ploidyLevelRevised,
     xRevised: d.xRevised,
-    countedBy: d['counted-by'] ? d['counted-by'].persName : '',
+    countedBy: d.countedBy,
     countedDate: d.countedDate,
     nOfPlants: d.numberOfAnalysedPlants,
     note: d.note,
     eda: formatterUtils.eda({
-      ambiguous: d.ambiguousRecord,
-      doubtful: d.doubtfulRecord,
-      erroneous: d.erroneousRecord,
+      ambiguous: d.ambiguous,
+      doubtful: d.doubtful,
+      erroneous: d.erroneous,
     }),
-    duplicate: d.duplicateData,
+    duplicate: d.duplicate,
     depositedIn: d.depositedIn,
-    w4: get(d, ['material', 'world-l4', 'description'], ''),
-    country: get(d, 'material.country', ''),
+    w4: d.worldL4,
+    country: d.country,
     latitude: latitudeString,
     longitude: longitudeString,
-    localityDescription: get(d, 'material.description'),
+    localityDescription: d.localityDescription,
   };
 });
 

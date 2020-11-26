@@ -9,49 +9,9 @@ export default {
   chromosomeDataUri: {
     baseUri: `${backendBase}/api/cdata?access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/cdata/<%id%>?filter={"include":["dna",{"histories":"list-of-species"},{"material":"reference"}]}&access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={
-        "offset":<%offset%>,
-        "where":<%where%>,
-        "limit":<%limit%>,
-        "include":[
-          {
-            "relation":"counted-by",
-            "scope":{"where":{}}
-          },
-          {
-            "relation":"latest-revision",
-            "scope":{
-              "include":{
-                "relation":"list-of-species",
-                "where":{}
-              }
-            } 
-          },
-          {
-            "relation":"material",
-            "scope":{
-              "where":{},
-              "include":[
-                {
-                  "relation":"world-l4",
-                  "scope":{"where":{}}
-                },
-                {
-                  "relation":"reference",
-                  "scope":{
-                    "include":[
-                      {"relation":"literature"},
-                      {"relation":"original-identification"}
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }`,
+    getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%where%>,"offset":<%offset%>,"limit":<%limit%>}`,
+    countUri: `${backendBase}/api/cdata-admin-views/count?where=<%whereString%>&access_token=<%accessToken%>`,
     exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
-    countUri: `${backendBase}/api/cdata/count?where=<%whereString%>&access_token=<%accessToken%>`,
   },
   dnaUri: {
     baseUri: `${backendBase}/api/dnas?access_token=<%accessToken%>`,
