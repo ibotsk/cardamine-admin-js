@@ -5,21 +5,87 @@ const isNotNullOrEmpty = (expression) => ({
   ],
 });
 
+/**
+ * For resolving filter comparator. Supports LIKE and EQ.
+ * Loopback mysql connector does not support case insensitive.
+ * @param {*} comparator
+ * @param {*} key
+ * @param {*} value
+ */
+const resolveByComparator = (comparator, key, value) => {
+  switch (comparator) {
+    case '':
+      return {};
+    case 'LIKE':
+      return {
+        [key]: {
+          like: `%25${value}%25`,
+        },
+      };
+    case 'REGEXP':
+      return {
+        [key]: {
+          regexp: value,
+        },
+      };
+    case 'NEQ':
+      // if (Array.isArray(value)) {
+      //     return {
+      //         and: value.map(v => ({
+      //             [key]: {
+      //                 neq: v
+      //             }
+      //         }))
+      //     };
+      // }
+      return {
+        [key]: {
+          neq: value,
+        },
+      };
+    case 'EQ':
+    default:
+      return {
+        [key]: value,
+      };
+  }
+};
+
+const filterToWhereItem = (filter, key) => {
+  let conjug = 'or';
+  let { filterVal } = filter;
+  if (filterVal.and) {
+    conjug = 'and';
+    filterVal = filterVal.and;
+  }
+
+  if (Array.isArray(filterVal) && filterVal.length > 1) {
+    const valsOr = [];
+    for (const val of filterVal) {
+      let itemKey = key; let
+        value = val;
+      if (val && typeof val !== 'string') {
+        itemKey = val.field;
+        value = val.value;
+      }
+      valsOr.push(resolveByComparator(filter.comparator, itemKey, value));
+    }
+    return { [conjug]: valsOr };
+  }
+  return resolveByComparator(filter.comparator, key, filter.filterVal);
+};
+
 const makeWhereFromFilter = (filters) => {
-  const whereList = [];
+  const whereItems = [];
   const keys = Object.keys(filters);
   for (const key of keys) {
-    whereList.push({
-      [key]: {
-        like: `%${filters[key].filterVal}%`,
-      },
-    });
+    whereItems.push(filterToWhereItem(filters[key], key));
   }
-  if (whereList.length > 1) {
-    return { OR: whereList };
+  if (whereItems.length > 1) {
+    return { OR: whereItems };
   }
-  if (whereList.length === 1) {
-    return whereList[0];
+  if (whereItems.length === 1) {
+    return whereItems[0];
   }
   return {};
 };

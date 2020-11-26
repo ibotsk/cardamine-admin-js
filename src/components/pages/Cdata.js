@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -25,12 +25,14 @@ import SpeciesType from '../propTypes/species';
 
 import { setPagination, setExportCdata } from '../../actions';
 
-import TabledPage from '../wrappers/TabledPageParent';
 import LosName from '../segments/LosName';
 
 import { formatterUtils, helperUtils, utils } from '../../utils';
 import config from '../../config';
+
 import ExportDataModal from '../segments/modals/ExportDataModal';
+
+import commonHooks from '../segments/hooks';
 
 const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
@@ -261,33 +263,49 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
   };
 });
 
-class Cdata extends React.Component {
-  constructor(props) {
-    super(props);
+const getCountUri = config.uris.chromosomeDataUri.countUri;
+const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-    this.state = {
-      toggles: getInitialToggles(columns),
-      exportPage: false,
-      exportAll: false,
-      showModalExport: false,
-    };
-  }
+// class Cdata extends React.Component {
+//   constructor(props) {
+//     super(props);
 
-  onTableChangeWithDispatch = (type, newState) => {
-    const { onChangePage, onTableChange } = this.props;
-    onChangePage(newState.page, newState.sizePerPage);
-    onTableChange(type, newState);
-  };
+//     this.state = {
+//       toggles: getInitialToggles(columns),
+//       exportPage: false,
+//       exportAll: false,
+//     };
+//   }
+const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
+  const [toggles, setToggles] = useState(getInitialToggles(columns));
+  const [exportPage, setExportPage] = useState(false);
+  const [exportAll, setExportAll] = useState(false);
+  const [showModalExport, setShowModalExport] = useState(false);
 
-  onColumnToggleWithDispatch = (tkProps, param) => {
+  const {
+    page, sizePerPage, where, order, setValues,
+  } = commonHooks.useTableChange();
+
+  const { data, totalSize } = commonHooks.useTableData(
+    getCountUri, getAllUri, accessToken, where, page,
+    sizePerPage, order, showModalExport,
+  );
+
+  // onTableChangeWithDispatch = (type, newState) => {
+  //   const { onChangePage, onTableChange } = this.props;
+  //   onChangePage(newState.page, newState.sizePerPage);
+  //   onTableChange(type, newState);
+  // };
+
+  const onColumnToggleWithDispatch = (tkProps, param) => {
     tkProps.columnToggleProps.onColumnToggle(param);
-    this.setState({
-      toggles: tkProps.columnToggleProps.toggles,
-    });
+    setToggles(tkProps.columnToggleProps.toggles);
+    // this.setState({
+    //   toggles: tkProps.columnToggleProps.toggles,
+    // });
   };
 
-  onAddToExport = (e, ids) => {
-    const { exportedCdata, onAddToCdataExport } = this.props;
+  const onAddToExport = (e, ids) => {
     let exportedIds = ids.includes(EXPORT_ALL_VALUE) ? [] : [...exportedCdata]; // when adding "all", remove all others
     if (exportedIds.includes(EXPORT_ALL_VALUE)) {
       // remove "all" when adding specific ids
@@ -306,43 +324,34 @@ class Cdata extends React.Component {
     onAddToCdataExport(exportedIds);
   };
 
-  isExported = (id) => {
-    const { exportedCdata } = this.props;
-    return (
-      exportedCdata.includes(id) || exportedCdata.includes(EXPORT_ALL_VALUE)
-    );
-  };
+  const isExported = (id) => exportedCdata.includes(id)
+    || exportedCdata.includes(EXPORT_ALL_VALUE);
 
-  getExportedCount = () => {
-    const { exportedCdata, size } = this.props;
-    return exportedCdata.includes(EXPORT_ALL_VALUE)
-      ? size
-      : exportedCdata.length;
-  };
+  const getExportedCount = () => (
+    exportedCdata.includes(EXPORT_ALL_VALUE) ? totalSize : exportedCdata.length
+  );
 
-  showExportModal = () => {
-    const { exportedCdata } = this.props;
+  const showExportModal = () => {
     if (exportedCdata.length > 0) {
-      this.setState({ showModalExport: true });
+      setShowModalExport(true);
     }
   };
 
-  hideModal = async () => {
-    this.setState({ showModalExport: false });
-  };
+  const hideModal = () => setShowModalExport(false);
 
-  ExportToggles = ({ onAddToExport }) => {
-    const { data } = this.props;
-    const { exportPage, exportAll } = this.state;
-
+  const ExportToggles = ({ onAddToExport }) => {
     const onChangeCheckboxPage = (e) => {
       const idsOnPage = data.map((d) => d.id);
       onAddToExport(e, idsOnPage);
-      this.setState({ exportPage: e.target.checked, exportAll: false });
+      setExportPage(e.target.checked);
+      setExportAll(false);
+      // this.setState({ exportPage: e.target.checked, exportAll: false });
     };
     const onChangeCheckboxAll = (e) => {
       onAddToExport(e, [EXPORT_ALL_VALUE]);
-      this.setState({ exportAll: e.target.checked, exportPage: false });
+      setExportPage(e.target.checked);
+      setExportAll(false);
+      // this.setState({ exportAll: e.target.checked, exportPage: false });
     };
 
     return (
@@ -375,93 +384,106 @@ class Cdata extends React.Component {
     );
   };
 
-  render() {
-    console.log(this.props);
-    const {
-      data, paginationOptions, exportedCdata, accessToken,
-    } = this.props;
-    const { toggles: stateToggles, showModalExport } = this.state;
-    return (
-      <div id="chromosome-data">
-        <Grid id="functions">
-          <Row id="functions">
-            <Col md={2}>
-              <LinkContainer to={NEW_RECORD}>
-                <Button bsStyle="success">
-                  <Glyphicon glyph="plus" />
-                  {' '}
-                  Create new
-                </Button>
-              </LinkContainer>
-            </Col>
-            <Col md={2}>
-              <Button
-                bsStyle="primary"
-                onClick={this.showExportModal}
-                disabled={this.getExportedCount() === 0}
-              >
-                <Glyphicon glyph="export" />
-                Export Export
+  const onTableChange = (type, {
+    page: pageTable,
+    sizePerPage: sizePerPageTable,
+    filters,
+    sortField,
+    sortOrder,
+  }) => (
+    setValues({
+      page: pageTable,
+      sizePerPage: sizePerPageTable,
+      filters,
+      sortField,
+      sortOrder,
+    })
+  );
+
+  const paginationOptions = { page, sizePerPage, totalSize };
+
+  return (
+    <div id="chromosome-data">
+      <Grid id="functions">
+        <Row id="functions">
+          <Col md={2}>
+            <LinkContainer to={NEW_RECORD}>
+              <Button bsStyle="success">
+                <Glyphicon glyph="plus" />
                 {' '}
-                <Badge>{this.getExportedCount()}</Badge>
+                Create new
               </Button>
-            </Col>
-          </Row>
-          <h2>Chromosome data</h2>
-        </Grid>
-        <Grid fluid>
-          <ToolkitProvider
-            columnToggle
-            keyField="id"
-            data={formatResult(data, {
-              onAddToExport: this.onAddToExport,
-              isExported: this.isExported,
-            })}
-            columns={columns}
-          >
-            {(tkProps) => (
-              <div>
-                <ToggleList
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...tkProps.columnToggleProps}
-                  toggles={stateToggles || tkProps.columnToggleProps.toggles}
-                  onColumnToggle={(p) => this.onColumnToggleWithDispatch(
-                    tkProps,
-                    p,
-                  )}
-                />
-                <hr />
-                <this.ExportToggles onAddToExport={this.onAddToExport} />
-                <BootstrapTable
-                  hover
-                  striped
-                  condensed
-                  // eslint-disable-next-line react/jsx-props-no-spreading
-                  {...tkProps.baseProps}
-                  remote={{ filter: true, pagination: true }}
-                  filter={filterFactory()}
-                  onTableChange={this.onTableChangeWithDispatch}
-                  pagination={paginationFactory(paginationOptions)}
-                />
-              </div>
-            )}
-          </ToolkitProvider>
-        </Grid>
-        <ExportDataModal
-          show={showModalExport}
-          onHide={this.hideModal}
-          type="chromdata"
-          count={exportedCdata.length}
-          ids={exportedCdata}
-          accessToken={accessToken}
-        />
-        <NotificationContainer />
-      </div>
-    );
-  }
-}
+            </LinkContainer>
+          </Col>
+          <Col md={2}>
+            <Button
+              bsStyle="primary"
+              onClick={showExportModal}
+              disabled={getExportedCount() === 0}
+            >
+              <Glyphicon glyph="export" />
+              Export Export
+              {' '}
+              <Badge>{getExportedCount()}</Badge>
+            </Button>
+          </Col>
+        </Row>
+        <h2>Chromosome data</h2>
+      </Grid>
+      <Grid fluid>
+        <ToolkitProvider
+          columnToggle
+          keyField="id"
+          data={formatResult(data, {
+            onAddToExport,
+            isExported,
+          })}
+          columns={columns}
+        >
+          {(tkProps) => (
+            <div>
+              <ToggleList
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...tkProps.columnToggleProps}
+                toggles={toggles || tkProps.columnToggleProps.toggles}
+                onColumnToggle={(p) => onColumnToggleWithDispatch(
+                  tkProps,
+                  p,
+                )}
+              />
+              <hr />
+              <ExportToggles onAddToExport={onAddToExport} />
+              <BootstrapTable
+                hover
+                striped
+                condensed
+                remote
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...tkProps.baseProps}
+                // remote={{ filter: true, pagination: true }}
+                filter={filterFactory()}
+                onTableChange={onTableChange}
+                pagination={paginationFactory(paginationOptions)}
+              />
+            </div>
+          )}
+        </ToolkitProvider>
+      </Grid>
+      <ExportDataModal
+        show={showModalExport}
+        onHide={hideModal}
+        type="chromdata"
+        count={exportedCdata.length}
+        ids={exportedCdata}
+        accessToken={accessToken}
+      />
+      <NotificationContainer />
+    </div>
+  );
+};
 
 const mapStateToProps = (state) => ({
+  accessToken: state.authentication.accessToken,
   exportedCdata: state.exportData.cdata,
 });
 
@@ -477,23 +499,18 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(
-  TabledPage({
-    getAll: config.uris.chromosomeDataUri.getAllWFilterUri,
-    getCount: config.uris.chromosomeDataUri.countUri,
-  })(Cdata),
-);
+)(Cdata);
 
 Cdata.propTypes = {
-  data: PropTypes.arrayOf(SpeciesType.type).isRequired,
-  paginationOptions: PropTypes.shape({
-    page: PropTypes.number.isRequired,
-  }).isRequired,
+  // data: PropTypes.arrayOf(SpeciesType.type).isRequired,
+  // paginationOptions: PropTypes.shape({
+  //   page: PropTypes.number.isRequired,
+  // }).isRequired,
   exportedCdata: PropTypes.arrayOf(PropTypes.number),
-  size: PropTypes.number.isRequired,
+  // totalSize: PropTypes.number.isRequired,
   accessToken: PropTypes.string.isRequired,
   onChangePage: PropTypes.func.isRequired,
-  onTableChange: PropTypes.func.isRequired,
+  // onTableChange: PropTypes.func.isRequired,
   onAddToCdataExport: PropTypes.func.isRequired,
 };
 

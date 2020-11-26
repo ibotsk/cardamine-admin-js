@@ -1,10 +1,19 @@
 import axios from './axios';
 import Mustache from './mustache';
 
-async function getAll(uri, offset, where, limit, accessToken) {
+async function getAll(
+  uri, offset, where, limit, accessToken, orderString = '["id"]',
+) {
+  const whereString = (typeof where === 'string')
+    ? where : JSON.stringify(where);
+
   const getAllUri = Mustache.render(
     uri, {
-      offset, where: JSON.stringify(where), limit, accessToken,
+      offset,
+      where: whereString,
+      limit,
+      order: orderString,
+      accessToken,
     },
   );
   const response = await axios.get(getAllUri);

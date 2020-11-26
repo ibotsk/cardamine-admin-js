@@ -9,8 +9,8 @@ export default {
   chromosomeDataUri: {
     baseUri: `${backendBase}/api/cdata?access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/cdata/<%id%>?filter={"include":["dna",{"histories":"list-of-species"},{"material":"reference"}]}&access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%where%>,"offset":<%offset%>,"limit":<%limit%>}`,
-    countUri: `${backendBase}/api/cdata-admin-views/count?where=<%whereString%>&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>}`,
+    countUri: `${backendBase}/api/cdata-admin-views/count?where=<%&whereString%>&access_token=<%accessToken%>`,
     exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
   },
   dnaUri: {
