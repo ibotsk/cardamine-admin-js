@@ -21,7 +21,6 @@ import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit';
 import { NotificationContainer } from 'react-notifications';
 
 import PropTypes from 'prop-types';
-import SpeciesType from '../propTypes/species';
 
 import { setPagination, setExportCdata } from '../../actions';
 
@@ -52,6 +51,7 @@ const columns = [
     text: 'ID',
     filter: textFilter(),
     headerStyle: { width: '80px' },
+    sort: true,
   },
   {
     dataField: 'inExport',
@@ -102,58 +102,69 @@ const columns = [
     formatter: (cell) => helperUtils.parsePublication(cell),
   },
   {
-    dataField: 'publicationAuthor',
+    dataField: 'literature_paperAuthor',
     text: 'Publ. author',
     hidden: true,
+    sort: true,
   },
   {
-    dataField: 'year',
+    dataField: 'literature_year',
     text: 'Year',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'n',
     text: 'n',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'dn',
     text: '2n',
+    sort: true,
   },
   {
-    dataField: 'ploidy',
+    dataField: 'ploidyLevel',
     text: 'Ploidy',
     hidden: true,
+    sort: true,
   },
   {
-    dataField: 'ploidyRevised',
+    dataField: 'ploidyLevelRevised',
     text: 'Ploidy revised',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'xRevised',
     text: 'x revised',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'countedBy',
     text: 'Counted by',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'countedDate',
     text: 'Counted date',
     hidden: true,
+    sort: true,
   },
   {
-    dataField: 'nOfPlants',
+    dataField: 'numberOfAnalysedPlants',
     text: 'N. of plants',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'note',
     text: 'Note',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'eda',
@@ -165,19 +176,23 @@ const columns = [
     dataField: 'duplicate',
     text: 'Duplicate',
     hidden: true,
+    sort: true,
   },
   {
     dataField: 'depositedIn',
     text: 'Deposited in',
     hidden: true,
+    sort: true,
   },
   {
-    dataField: 'w4',
+    dataField: 'worldL4',
     text: 'W4',
+    sort: true,
   },
   {
     dataField: 'country',
     text: 'Country',
+    sort: true,
   },
   {
     dataField: 'latitude',
@@ -204,7 +219,11 @@ const getInitialToggles = (toggledColumns) => toggledColumns
   {});
 
 const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
-  const { coordinatesLatOrig, coordinatesLonOrig, coordinatesGeoref } = d;
+  const {
+    id,
+    coordinatesLatOrig, coordinatesLonOrig, coordinatesGeoref,
+    ambiguous, doubtful, erroneous, ...origValues
+  } = d;
 
   let latitudeString = '';
   let longitudeString = '';
@@ -219,16 +238,17 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
   }
 
   return {
-    id: d.id,
+    ...origValues,
+    id,
     inExport: (
       <Checkbox
-        name={`${d.id}isExported`}
-        checked={isExported(d.id)}
-        onChange={(e) => onAddToExport(e, [d.id])}
+        name={`${id}isExported`}
+        checked={isExported(id)}
+        onChange={(e) => onAddToExport(e, [id])}
       />
     ),
     action: (
-      <LinkContainer to={`${EDIT_RECORD}${d.id}`}>
+      <LinkContainer to={`${EDIT_RECORD}${id}`}>
         <Button bsStyle="warning" bsSize="xsmall">
           Edit
         </Button>
@@ -237,26 +257,11 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
     originalIdentification: utils.getObjWKeysThatStartWithStr(d, 'original_'),
     lastRevision: utils.getObjWKeysThatStartWithStr(d, 'latestRevision_'),
     fullPublication: utils.getObjWKeysThatStartWithStr(d, 'literature_'),
-    publicationAuthor: d.literature_paperAuthor,
-    year: d.literature_year,
-    n: d.n,
-    dn: d.dn,
-    ploidy: d.ploidyLevel,
-    ploidyRevised: d.ploidyLevelRevised,
-    xRevised: d.xRevised,
-    countedBy: d.countedBy,
-    countedDate: d.countedDate,
-    nOfPlants: d.numberOfAnalysedPlants,
-    note: d.note,
     eda: {
       ambiguous: d.ambiguous,
       doubtful: d.doubtful,
       erroneous: d.erroneous,
     },
-    duplicate: d.duplicate,
-    depositedIn: d.depositedIn,
-    w4: d.worldL4,
-    country: d.country,
     latitude: latitudeString,
     longitude: longitudeString,
     localityDescription: d.localityDescription,
@@ -266,20 +271,56 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 const getCountUri = config.uris.chromosomeDataUri.countUri;
 const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-// class Cdata extends React.Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.state = {
-//       toggles: getInitialToggles(columns),
-//       exportPage: false,
-//       exportAll: false,
-//     };
-//   }
-const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
-  const [toggles, setToggles] = useState(getInitialToggles(columns));
+const ExportToggles = ({ data, onAddToExport }) => {
   const [exportPage, setExportPage] = useState(false);
   const [exportAll, setExportAll] = useState(false);
+
+  const onChangeCheckboxPage = (e) => {
+    const idsOnPage = data.map((d) => d.id);
+    onAddToExport(e, idsOnPage);
+    setExportPage(e.target.checked);
+    setExportAll(false);
+    // this.setState({ exportPage: e.target.checked, exportAll: false });
+  };
+  const onChangeCheckboxAll = (e) => {
+    onAddToExport(e, [EXPORT_ALL_VALUE]);
+    setExportPage(e.target.checked);
+    setExportAll(false);
+    // this.setState({ exportAll: e.target.checked, exportPage: false });
+  };
+
+  return (
+    <Row>
+      <Col xs={12}>
+        <Checkbox
+          name={EXPORT_PAGE}
+          checked={exportPage}
+          onChange={(e) => onChangeCheckboxPage(e)}
+        >
+          Add
+          {' '}
+          <b>all records on this page</b>
+          {' '}
+          to export
+        </Checkbox>
+        <Checkbox
+          name={EXPORT_ALL}
+          checked={exportAll}
+          onChange={(e) => onChangeCheckboxAll(e)}
+        >
+          Add
+          {' '}
+          <b>all results</b>
+          {' '}
+          to export
+        </Checkbox>
+      </Col>
+    </Row>
+  );
+};
+
+const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
+  const [toggles, setToggles] = useState(getInitialToggles(columns));
   const [showModalExport, setShowModalExport] = useState(false);
 
   const {
@@ -291,18 +332,9 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     sizePerPage, order, showModalExport,
   );
 
-  // onTableChangeWithDispatch = (type, newState) => {
-  //   const { onChangePage, onTableChange } = this.props;
-  //   onChangePage(newState.page, newState.sizePerPage);
-  //   onTableChange(type, newState);
-  // };
-
   const onColumnToggleWithDispatch = (tkProps, param) => {
     tkProps.columnToggleProps.onColumnToggle(param);
     setToggles(tkProps.columnToggleProps.toggles);
-    // this.setState({
-    //   toggles: tkProps.columnToggleProps.toggles,
-    // });
   };
 
   const onAddToExport = (e, ids) => {
@@ -315,7 +347,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     const { checked } = e.target;
     for (const id of ids) {
       if (checked && !exportedIds.includes(id)) {
-        exportedIds.push(id);
+        exportedIds.push(parseInt(id, 10));
       } else {
         exportedIds = exportedIds.filter((item) => item !== id);
       }
@@ -338,51 +370,6 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
   };
 
   const hideModal = () => setShowModalExport(false);
-
-  const ExportToggles = ({ onAddToExport }) => {
-    const onChangeCheckboxPage = (e) => {
-      const idsOnPage = data.map((d) => d.id);
-      onAddToExport(e, idsOnPage);
-      setExportPage(e.target.checked);
-      setExportAll(false);
-      // this.setState({ exportPage: e.target.checked, exportAll: false });
-    };
-    const onChangeCheckboxAll = (e) => {
-      onAddToExport(e, [EXPORT_ALL_VALUE]);
-      setExportPage(e.target.checked);
-      setExportAll(false);
-      // this.setState({ exportAll: e.target.checked, exportPage: false });
-    };
-
-    return (
-      <Row>
-        <Col xs={12}>
-          <Checkbox
-            name={EXPORT_PAGE}
-            checked={exportPage}
-            onChange={(e) => onChangeCheckboxPage(e)}
-          >
-            Add
-            {' '}
-            <b>all records on this page</b>
-            {' '}
-            to export
-          </Checkbox>
-          <Checkbox
-            name={EXPORT_ALL}
-            checked={exportAll}
-            onChange={(e) => onChangeCheckboxAll(e)}
-          >
-            Add
-            {' '}
-            <b>all results</b>
-            {' '}
-            to export
-          </Checkbox>
-        </Col>
-      </Row>
-    );
-  };
 
   const onTableChange = (type, {
     page: pageTable,
@@ -452,7 +439,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
                 )}
               />
               <hr />
-              <ExportToggles onAddToExport={onAddToExport} />
+              <ExportToggles data={data} onAddToExport={onAddToExport} />
               <BootstrapTable
                 hover
                 striped
@@ -502,18 +489,19 @@ export default connect(
 )(Cdata);
 
 Cdata.propTypes = {
-  // data: PropTypes.arrayOf(SpeciesType.type).isRequired,
-  // paginationOptions: PropTypes.shape({
-  //   page: PropTypes.number.isRequired,
-  // }).isRequired,
   exportedCdata: PropTypes.arrayOf(PropTypes.number),
-  // totalSize: PropTypes.number.isRequired,
   accessToken: PropTypes.string.isRequired,
   onChangePage: PropTypes.func.isRequired,
-  // onTableChange: PropTypes.func.isRequired,
   onAddToCdataExport: PropTypes.func.isRequired,
 };
 
 Cdata.defaultProps = {
   exportedCdata: [],
+};
+
+ExportToggles.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  })).isRequired,
+  onAddToExport: PropTypes.func.isRequired,
 };

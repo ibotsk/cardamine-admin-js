@@ -1,4 +1,5 @@
 import exportUtils from './export';
+import filterUtils from './filter';
 import formatterUtils from './formatter';
 import helperUtils from './helper';
 import importUtils from './import';
@@ -9,6 +10,7 @@ import whereUtils from './where';
 
 export {
   exportUtils,
+  filterUtils,
   formatterUtils,
   helperUtils,
   importUtils,

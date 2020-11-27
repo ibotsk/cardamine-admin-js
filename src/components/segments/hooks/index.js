@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { tablesFacade } from '../../../facades';
-import { whereUtils } from '../../../utils';
+import { filterUtils, whereUtils } from '../../../utils';
 
 import config from '../../../config';
 
@@ -77,14 +77,14 @@ function useTableChange(
     // );
     const newWhere = whereUtils.makeWhereFromFilter(filters);
 
-    // const curatedSortField = filterUtils.curateSortFields(sortField);
-    // const newOrder = helperUtils.makeOrder(curatedSortField, sortOrder);
+    const curatedSortField = filterUtils.curateSortFields(sortField);
+    const newOrder = filterUtils.makeOrder(curatedSortField, sortOrder);
 
     // some tables might not have pagination
     // for undefined page and sizePerPage use default or initialized values
     setPage(pageNew || pageInit);
     setSizePerPage(sizePerPageNew || sizePerPageInit);
-    // setOrder(JSON.stringify(newOrder));
+    setOrder(JSON.stringify(newOrder));
     setWhere(JSON.stringify(newWhere));
   };
 
