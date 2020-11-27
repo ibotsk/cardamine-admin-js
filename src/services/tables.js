@@ -16,7 +16,6 @@ async function getAll(
       accessToken,
     },
   );
-  console.log(getAllUri);
   const response = await axios.get(getAllUri);
   return response.data;
 }

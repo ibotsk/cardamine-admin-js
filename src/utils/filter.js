@@ -1,22 +1,29 @@
 import config from '../config';
 
-function curateSortFields(sortField) {
-  const fields = config.nomenclature.filter[sortField];
+function curateSortFields(sortField, prefix = '') {
+  const fields = config.nomenclature.filter.filters[sortField];
   if (fields) {
-    return fields;
+    return fields.map((f) => `${prefix}${f}`);
   }
-  return sortField;
+  return `${prefix}${sortField}`;
 }
 
-function makeOrder(sortFields, sortOrder = 'ASC') {
+function makeOrder(sortFields, sortOrder = 'ASC', defaultField = undefined) {
   let soUpperCase = sortOrder.toUpperCase();
   if (soUpperCase !== 'ASC' && soUpperCase !== 'DESC') {
     soUpperCase = 'ASC';
   }
-  if (Array.isArray(sortFields)) {
-    return sortFields.map((f) => `${f} ${soUpperCase}`);
+  const fields = [];
+  if (!Array.isArray(sortFields)) {
+    fields.push(sortFields);
+  } else {
+    fields.push(...sortFields);
   }
-  return [`${sortFields} ${soUpperCase}`];
+
+  if (defaultField) {
+    fields.push(defaultField);
+  }
+  return fields.map((f) => `${f} ${soUpperCase}`);
 }
 
 export default {

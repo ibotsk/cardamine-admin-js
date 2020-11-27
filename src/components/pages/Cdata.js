@@ -77,9 +77,10 @@ const columns = [
         ''
       )
     ),
+    sort: true,
   },
   {
-    dataField: 'lastRevision',
+    dataField: 'latestRevision',
     text: 'Last revision',
     formatter: (cell) => (
       cell.id ? (
@@ -94,12 +95,14 @@ const columns = [
         ''
       )
     ),
+    sort: true,
   },
   {
-    dataField: 'fullPublication',
+    dataField: 'literature',
     text: 'Publication',
     hidden: false,
     formatter: (cell) => helperUtils.parsePublication(cell),
+    sort: true,
   },
   {
     dataField: 'literature_paperAuthor',
@@ -255,8 +258,8 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
       </LinkContainer>
     ),
     originalIdentification: utils.getObjWKeysThatStartWithStr(d, 'original_'),
-    lastRevision: utils.getObjWKeysThatStartWithStr(d, 'latestRevision_'),
-    fullPublication: utils.getObjWKeysThatStartWithStr(d, 'literature_'),
+    latestRevision: utils.getObjWKeysThatStartWithStr(d, 'latestRevision_'),
+    literature: utils.getObjWKeysThatStartWithStr(d, 'literature_'),
     eda: {
       ambiguous: d.ambiguous,
       doubtful: d.doubtful,
@@ -377,15 +380,26 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     filters,
     sortField,
     sortOrder,
-  }) => (
-    setValues({
+  }) => {
+    let prefix = '';
+    let newSortField = sortField;
+
+    // process coplex fields like originalIdentification, latestRevision and literature
+    const newSortFieldObj = config.nomenclature.filter.columnMap[sortField];
+    if (newSortFieldObj) {
+      prefix = newSortFieldObj.prefix;
+      newSortField = newSortFieldObj.filter;
+    }
+    return setValues({
       page: pageTable,
       sizePerPage: sizePerPageTable,
       filters,
-      sortField,
+      sortField: newSortField,
       sortOrder,
-    })
-  );
+      prefix,
+      defaultOrderField: 'id',
+    });
+  };
 
   const paginationOptions = { page, sizePerPage, totalSize };
 
