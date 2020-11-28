@@ -27,6 +27,8 @@ function useTableData(
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetch = async () => {
       setLoading(true);
       const size = await tablesFacade.getCount(
@@ -40,14 +42,17 @@ function useTableData(
         getAllUri, offset, whereString, orderString, lim, accessToken,
       );
 
-      setTotalSize(size);
-      setData(records);
-      setLoading(false);
+      if (!cancelled) {
+        setTotalSize(size);
+        setData(records);
+        setLoading(false);
+      }
     };
 
     fetch();
-  },
-  [countUri, getAllUri, accessToken, whereString,
+
+    return () => { cancelled = true; };
+  }, [countUri, getAllUri, accessToken, whereString,
     page, limit, orderString, forceChange]);
 
   return {
@@ -60,9 +65,9 @@ function useTableData(
 function useTableChange({
   pageInit = 1,
   sizePerPageInit = sizePerPageDefault,
-  whereInit = '{}',
+  whereInit = undefined,
   orderInit = undefined,
-}) {
+} = {}) {
   const [page, setPage] = useState(pageInit);
   const [sizePerPage, setSizePerPage] = useState(sizePerPageInit);
   const [where, setWhere] = useState(whereInit);

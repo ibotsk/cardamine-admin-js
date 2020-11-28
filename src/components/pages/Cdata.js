@@ -45,8 +45,6 @@ const GEOG_POINT_REGEX = /POINT\((\d+\.\d+) (\d+\.\d+)/;
 
 const { ToggleList } = ColumnToggle;
 
-const defaultOrderString = '["id ASC"]';
-
 const columns = [
   {
     dataField: 'id',
@@ -342,7 +340,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
 
   const {
     page, sizePerPage, where, order, setValues,
-  } = commonHooks.useTableChange({ orderInit: defaultOrderString });
+  } = commonHooks.useTableChange();
 
   const { data, totalSize } = commonHooks.useTableData(
     getCountUri, getAllUri, accessToken, where, page,
