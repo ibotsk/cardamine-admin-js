@@ -41,7 +41,7 @@ const EXPORT_PAGE = 'exportPage';
 const EXPORT_ALL = 'exportAll';
 const EXPORT_ALL_VALUE = 'all';
 
-const GEOG_POINT_REGEX = /POINT\((\d+\.\d+) (\d+\.\d+)/;
+const GEOG_POINT_REGEX = /POINT\((?<lon>(\d+(\.\d+)?)) (?<lat>(\d+(\.\d+)?))/; // /POINT\((\d+\.\d+) (\d+\.\d+)/;
 
 const { ToggleList } = ColumnToggle;
 
@@ -77,6 +77,7 @@ const columns = [
         ''
       )
     ),
+    filter: textFilter(),
     sort: true,
   },
   {
@@ -95,13 +96,15 @@ const columns = [
         ''
       )
     ),
+    filter: textFilter(),
     sort: true,
   },
   {
     dataField: 'literature',
     text: 'Publication',
-    hidden: false,
     formatter: (cell) => helperUtils.parsePublication(cell),
+    filter: textFilter(),
+    hidden: false,
     sort: true,
   },
   {
@@ -247,8 +250,11 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 
   if (coordinatesGeoref) {
     const found = coordinatesGeoref.match(GEOG_POINT_REGEX); // 0: full match, 1: lon, 2: lat
-    latitudeString = `${found[2]} (gr)`;
-    longitudeString = `${found[1]} (gr)`;
+    if (!found) {
+      throw new Error(`${coordinatesGeoref} not parsed correctly`);
+    }
+    latitudeString = `${found.groups.lat} (gr)`;
+    longitudeString = `${found.groups.lon} (gr)`;
   } else if (coordinatesLatOrig && coordinatesLonOrig) {
     latitudeString = `${coordinatesLatOrig} (orig)`;
     longitudeString = `${coordinatesLonOrig} (orig)`;

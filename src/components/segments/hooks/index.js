@@ -82,16 +82,13 @@ function useTableChange({
     prefix = '', // group of columns
     defaultOrderField = undefined,
   }) => {
-    // const curatedFilters = filterUtils.curateSearchFilters(
-    //   filters, { ownerId },
-    // );
-    const newWhere = whereUtils.makeWhereFromFilter(filters);
+    const curatedFilters = filterUtils.curateSearchFilters(filters);
+    const newWhere = whereUtils.makeWhereFromFilter(curatedFilters);
 
     const curatedSortField = filterUtils.curateSortFields(sortField, prefix);
     const newOrder = filterUtils.makeOrder(
       curatedSortField, sortOrder, defaultOrderField,
     );
-
     // some tables might not have pagination
     // for undefined page and sizePerPage use default or initialized values
     setPage(pageNew || pageInit);
