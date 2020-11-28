@@ -57,13 +57,16 @@ function useTableData(
   };
 }
 
-function useTableChange(
-  pageInit = 1, sizePerPageInit = sizePerPageDefault,
-) {
+function useTableChange({
+  pageInit = 1,
+  sizePerPageInit = sizePerPageDefault,
+  whereInit = '{}',
+  orderInit = undefined,
+}) {
   const [page, setPage] = useState(pageInit);
   const [sizePerPage, setSizePerPage] = useState(sizePerPageInit);
-  const [where, setWhere] = useState(undefined);
-  const [order, setOrder] = useState(undefined);
+  const [where, setWhere] = useState(whereInit);
+  const [order, setOrder] = useState(orderInit);
 
   const setValues = ({
     page: pageNew,

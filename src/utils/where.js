@@ -82,7 +82,7 @@ const makeWhereFromFilter = (filters) => {
     whereItems.push(filterToWhereItem(filters[key], key));
   }
   if (whereItems.length > 1) {
-    return { OR: whereItems };
+    return { and: whereItems };
   }
   if (whereItems.length === 1) {
     return whereItems[0];

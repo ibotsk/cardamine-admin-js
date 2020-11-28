@@ -45,6 +45,8 @@ const GEOG_POINT_REGEX = /POINT\((\d+\.\d+) (\d+\.\d+)/;
 
 const { ToggleList } = ColumnToggle;
 
+const defaultOrderString = '["id ASC"]';
+
 const columns = [
   {
     dataField: 'id',
@@ -107,65 +109,76 @@ const columns = [
   {
     dataField: 'literature_paperAuthor',
     text: 'Publ. author',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'literature_year',
     text: 'Year',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'n',
     text: 'n',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'dn',
     text: '2n',
+    filter: textFilter(),
     sort: true,
   },
   {
     dataField: 'ploidyLevel',
     text: 'Ploidy',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'ploidyLevelRevised',
     text: 'Ploidy revised',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'xRevised',
     text: 'x revised',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'countedBy',
     text: 'Counted by',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'countedDate',
     text: 'Counted date',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'numberOfAnalysedPlants',
     text: 'N. of plants',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'note',
     text: 'Note',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
@@ -184,17 +197,20 @@ const columns = [
   {
     dataField: 'depositedIn',
     text: 'Deposited in',
+    filter: textFilter(),
     hidden: true,
     sort: true,
   },
   {
     dataField: 'worldL4',
     text: 'W4',
+    filter: textFilter(),
     sort: true,
   },
   {
     dataField: 'country',
     text: 'Country',
+    filter: textFilter(),
     sort: true,
   },
   {
@@ -283,13 +299,11 @@ const ExportToggles = ({ data, onAddToExport }) => {
     onAddToExport(e, idsOnPage);
     setExportPage(e.target.checked);
     setExportAll(false);
-    // this.setState({ exportPage: e.target.checked, exportAll: false });
   };
   const onChangeCheckboxAll = (e) => {
     onAddToExport(e, [EXPORT_ALL_VALUE]);
     setExportPage(e.target.checked);
     setExportAll(false);
-    // this.setState({ exportAll: e.target.checked, exportPage: false });
   };
 
   return (
@@ -328,7 +342,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
 
   const {
     page, sizePerPage, where, order, setValues,
-  } = commonHooks.useTableChange();
+  } = commonHooks.useTableChange({ orderInit: defaultOrderString });
 
   const { data, totalSize } = commonHooks.useTableData(
     getCountUri, getAllUri, accessToken, where, page,
@@ -461,7 +475,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
                 remote
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...tkProps.baseProps}
-                // remote={{ filter: true, pagination: true }}
+                defaultSorted={[{ dataField: 'id', order: 'asc' }]}
                 filter={filterFactory()}
                 onTableChange={onTableChange}
                 pagination={paginationFactory(paginationOptions)}
