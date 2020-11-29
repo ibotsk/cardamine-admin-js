@@ -1,6 +1,7 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 
+import { Row, Col } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory,
 {
@@ -33,6 +34,23 @@ const customTotal = (from, to, size) => (
   </span>
 );
 
+const TotalAndPaginator = ({ paginationProps }) => (
+  <Row>
+    <Col md={6}>
+      <PaginationTotalStandalone
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...paginationProps}
+      />
+    </Col>
+    <Col md={6}>
+      <PaginationListStandalone
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...paginationProps}
+      />
+    </Col>
+  </Row>
+);
+
 const RemotePagination = ({
   remote,
   striped,
@@ -43,6 +61,8 @@ const RemotePagination = ({
   keyField,
   data,
   columns,
+  filter,
+  defaultSorted,
   rowEvents,
   rowClasses,
   page,
@@ -70,18 +90,7 @@ const RemotePagination = ({
           paginationTableProps,
         }) => (
           <div>
-            <div>
-              <PaginationTotalStandalone
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...paginationProps}
-              />
-            </div>
-            <div>
-              <PaginationListStandalone
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...paginationProps}
-              />
-            </div>
+            <TotalAndPaginator paginationProps={paginationProps} />
             <BootstrapTable
               remote={remote}
               striped={striped}
@@ -92,6 +101,8 @@ const RemotePagination = ({
               keyField={keyField}
               data={data}
               columns={columns}
+              filter={filter}
+              defaultSorted={defaultSorted}
               rowEvents={rowEvents}
               rowClasses={rowClasses}
               onTableChange={onTableChange}
@@ -99,6 +110,7 @@ const RemotePagination = ({
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...paginationTableProps}
             />
+            <TotalAndPaginator paginationProps={paginationProps} />
           </div>
         )
       }
@@ -109,37 +121,45 @@ const RemotePagination = ({
 export default RemotePagination;
 
 RemotePagination.propTypes = {
-  remote: PropTypes.oneOfType([
-    PropTypes.bool, PropTypes.object,
-  ]).isRequired,
-  striped: PropTypes.bool,
-  hover: PropTypes.bool,
-  condensed: PropTypes.bool,
-  id: PropTypes.string,
-  tableClasses: PropTypes.string,
-  keyField: PropTypes.string,
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  cellEdit: PropTypes.object,
   columns: PropTypes.arrayOf(PropTypes.shape({
     dataField: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
   })).isRequired,
-  rowEvents: PropTypes.object,
-  rowClasses: PropTypes.func,
-  page: PropTypes.number.isRequired,
-  sizePerPage: PropTypes.number.isRequired,
-  totalSize: PropTypes.number.isRequired,
+  condensed: PropTypes.bool,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  defaultSorted: PropTypes.arrayOf(PropTypes.object),
+  filter: PropTypes.object,
+  id: PropTypes.string,
+  keyField: PropTypes.string,
+  hover: PropTypes.bool,
   onTableChange: PropTypes.func.isRequired,
-  cellEdit: PropTypes.object,
+  page: PropTypes.number.isRequired,
+  remote: PropTypes.oneOfType([
+    PropTypes.bool, PropTypes.object,
+  ]).isRequired,
+  rowClasses: PropTypes.func,
+  rowEvents: PropTypes.object,
+  sizePerPage: PropTypes.number.isRequired,
+  striped: PropTypes.bool,
+  tableClasses: PropTypes.string,
+  totalSize: PropTypes.number.isRequired,
 };
 
 RemotePagination.defaultProps = {
-  striped: false,
-  hover: false,
-  condensed: false,
-  id: undefined,
-  tableClasses: undefined,
-  rowEvents: undefined,
-  rowClasses: undefined,
-  keyField: undefined,
   cellEdit: undefined,
+  condensed: false,
+  defaultSorted: undefined,
+  filter: undefined,
+  hover: false,
+  id: undefined,
+  keyField: undefined,
+  rowClasses: undefined,
+  rowEvents: undefined,
+  striped: false,
+  tableClasses: undefined,
+};
+
+TotalAndPaginator.propTypes = {
+  paginationProps: PropTypes.object.isRequired,
 };

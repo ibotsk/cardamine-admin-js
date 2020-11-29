@@ -30,6 +30,7 @@ import { formatterUtils, helperUtils, utils } from '../../utils';
 import config from '../../config';
 
 import ExportDataModal from '../segments/modals/ExportDataModal';
+import RemotePagination from '../segments/RemotePagination';
 
 import commonHooks from '../segments/hooks';
 
@@ -419,8 +420,6 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     });
   };
 
-  const paginationOptions = { page, sizePerPage, totalSize };
-
   return (
     <div id="chromosome-data">
       <Grid id="functions">
@@ -450,7 +449,27 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
         <h2>Chromosome data</h2>
       </Grid>
       <Grid fluid>
-        <ToolkitProvider
+        <ExportToggles data={data} onAddToExport={onAddToExport} />
+        <hr />
+        <RemotePagination
+          remote
+          hover
+          striped
+          condesed
+          keyField="id"
+          columns={columns}
+          data={formatResult(data, {
+            onAddToExport,
+            isExported,
+          })}
+          onTableChange={onTableChange}
+          defaultSorted={[{ dataField: 'id', order: 'asc' }]}
+          filter={filterFactory()}
+          page={page}
+          sizePerPage={sizePerPage}
+          totalSize={totalSize}
+        />
+        {/* <ToolkitProvider
           columnToggle
           keyField="id"
           data={formatResult(data, {
@@ -486,7 +505,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
               />
             </div>
           )}
-        </ToolkitProvider>
+        </ToolkitProvider> */}
       </Grid>
       <ExportDataModal
         show={showModalExport}
