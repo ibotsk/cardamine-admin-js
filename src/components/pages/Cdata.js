@@ -13,10 +13,8 @@ import {
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 
-import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, { ColumnToggle } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 
 import { NotificationContainer } from 'react-notifications';
 
@@ -31,6 +29,8 @@ import config from '../../config';
 
 import ExportDataModal from '../segments/modals/ExportDataModal';
 import RemotePagination from '../segments/RemotePagination';
+import SelectCdataTableColumnsModal
+  from '../segments/modals/SelectCdataTableColumnsModal';
 
 import commonHooks from '../segments/hooks';
 
@@ -38,13 +38,9 @@ const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
 const NEW_RECORD = '/chromosome-data/new';
 
-const EXPORT_PAGE = 'exportPage';
-const EXPORT_ALL = 'exportAll';
+const GEOG_POINT_REGEX = /POINT\((?<lon>(\d+(\.\d+)?)) (?<lat>(\d+(\.\d+)?))/;
+
 const EXPORT_ALL_VALUE = 'all';
-
-const GEOG_POINT_REGEX = /POINT\((?<lon>(\d+(\.\d+)?)) (?<lat>(\d+(\.\d+)?))/; // /POINT\((\d+\.\d+) (\d+\.\d+)/;
-
-const { ToggleList } = ColumnToggle;
 
 const columns = [
   {
@@ -229,16 +225,6 @@ const columns = [
   },
 ];
 
-const getInitialToggles = (toggledColumns) => toggledColumns
-  .reduce((obj, el) => {
-    const key = el.dataField;
-    return {
-      ...obj,
-      [key]: !el.hidden,
-    };
-  },
-  {});
-
 const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
   const {
     id,
@@ -295,55 +281,10 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 const getCountUri = config.uris.chromosomeDataUri.countUri;
 const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-const ExportToggles = ({ data, onAddToExport }) => {
-  const [exportPage, setExportPage] = useState(false);
-  const [exportAll, setExportAll] = useState(false);
-
-  const onChangeCheckboxPage = (e) => {
-    const idsOnPage = data.map((d) => d.id);
-    onAddToExport(e, idsOnPage);
-    setExportPage(e.target.checked);
-    setExportAll(false);
-  };
-  const onChangeCheckboxAll = (e) => {
-    onAddToExport(e, [EXPORT_ALL_VALUE]);
-    setExportPage(e.target.checked);
-    setExportAll(false);
-  };
-
-  return (
-    <Row>
-      <Col xs={12}>
-        <Checkbox
-          name={EXPORT_PAGE}
-          checked={exportPage}
-          onChange={(e) => onChangeCheckboxPage(e)}
-        >
-          Add
-          {' '}
-          <b>all records on this page</b>
-          {' '}
-          to export
-        </Checkbox>
-        <Checkbox
-          name={EXPORT_ALL}
-          checked={exportAll}
-          onChange={(e) => onChangeCheckboxAll(e)}
-        >
-          Add
-          {' '}
-          <b>all results</b>
-          {' '}
-          to export
-        </Checkbox>
-      </Col>
-    </Row>
-  );
-};
-
 const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
-  const [toggles, setToggles] = useState(getInitialToggles(columns));
+  const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
+  const [showModalColumns, setShowModalColumns] = useState(false);
 
   const {
     page, sizePerPage, where, order, setValues,
@@ -354,9 +295,17 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     sizePerPage, order, showModalExport,
   );
 
-  const onColumnToggleWithDispatch = (tkProps, param) => {
-    tkProps.columnToggleProps.onColumnToggle(param);
-    setToggles(tkProps.columnToggleProps.toggles);
+  const handleColumnToggle = (toggledDataField) => {
+    const newTableColumns = tableColumns.map((val) => {
+      if (val.dataField === toggledDataField) {
+        return {
+          ...val,
+          hidden: !val.hidden,
+        };
+      }
+      return val;
+    });
+    setTableColumns(newTableColumns);
   };
 
   const onAddToExport = (e, ids) => {
@@ -391,7 +340,10 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
     }
   };
 
-  const hideModal = () => setShowModalExport(false);
+  const hideModal = () => {
+    setShowModalExport(false);
+    setShowModalColumns(false);
+  };
 
   const onTableChange = (type, {
     page: pageTable,
@@ -449,63 +401,60 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
         <h2>Chromosome data</h2>
       </Grid>
       <Grid fluid>
-        <ExportToggles data={data} onAddToExport={onAddToExport} />
+        {/* <ExportToggles data={data} onAddToExport={onAddToExport} />
         <hr />
-        <RemotePagination
-          remote
-          hover
-          striped
-          condesed
-          keyField="id"
-          columns={columns}
-          data={formatResult(data, {
-            onAddToExport,
-            isExported,
-          })}
-          onTableChange={onTableChange}
-          defaultSorted={[{ dataField: 'id', order: 'asc' }]}
-          filter={filterFactory()}
-          page={page}
-          sizePerPage={sizePerPage}
-          totalSize={totalSize}
-        />
-        {/* <ToolkitProvider
+         */}
+        <ToolkitProvider
           columnToggle
           keyField="id"
           data={formatResult(data, {
             onAddToExport,
             isExported,
           })}
-          columns={columns}
+          columns={tableColumns}
         >
-          {(tkProps) => (
+          {({ baseProps, columnToggleProps }) => (
             <div>
-              <ToggleList
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...tkProps.columnToggleProps}
-                toggles={toggles || tkProps.columnToggleProps.toggles}
-                onColumnToggle={(p) => onColumnToggleWithDispatch(
-                  tkProps,
-                  p,
-                )}
-              />
+              <Button
+                bsStyle="primary"
+                onClick={() => setShowModalColumns(true)}
+              >
+                Display columns
+                {' '}
+                <Glyphicon glyph="menu-down" />
+              </Button>
               <hr />
-              <ExportToggles data={data} onAddToExport={onAddToExport} />
-              <BootstrapTable
+              <RemotePagination
+                remote
                 hover
                 striped
-                condensed
-                remote
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...tkProps.baseProps}
+                condesed
+                keyField={baseProps.keyField}
+                columns={baseProps.columns}
+                data={baseProps.data}
+                onTableChange={onTableChange}
                 defaultSorted={[{ dataField: 'id', order: 'asc' }]}
                 filter={filterFactory()}
-                onTableChange={onTableChange}
-                pagination={paginationFactory(paginationOptions)}
+                page={page}
+                sizePerPage={sizePerPage}
+                totalSize={totalSize}
+                columnToggle={baseProps.columnToggle}
               />
+              <SelectCdataTableColumnsModal
+                show={showModalColumns}
+                onHide={hideModal}
+                toggleListProps={{
+                  columns: columnToggleProps.columns,
+                  toggles: columnToggleProps.toggles,
+                  onColumnToggle: handleColumnToggle,
+                }}
+              />
+              {/*
+              <ExportToggles data={data} onAddToExport={onAddToExport} />
+              */}
             </div>
           )}
-        </ToolkitProvider> */}
+        </ToolkitProvider>
       </Grid>
       <ExportDataModal
         show={showModalExport}
@@ -542,17 +491,10 @@ export default connect(
 Cdata.propTypes = {
   exportedCdata: PropTypes.arrayOf(PropTypes.number),
   accessToken: PropTypes.string.isRequired,
-  onChangePage: PropTypes.func.isRequired,
+  // onChangePage: PropTypes.func.isRequired,
   onAddToCdataExport: PropTypes.func.isRequired,
 };
 
 Cdata.defaultProps = {
   exportedCdata: [],
-};
-
-ExportToggles.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  })).isRequired,
-  onAddToExport: PropTypes.func.isRequired,
 };

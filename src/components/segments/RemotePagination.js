@@ -70,6 +70,7 @@ const RemotePagination = ({
   totalSize,
   onTableChange,
   cellEdit,
+  columnToggle,
 }) => (
   <div>
     <PaginationProvider
@@ -107,6 +108,7 @@ const RemotePagination = ({
               rowClasses={rowClasses}
               onTableChange={onTableChange}
               cellEdit={cellEdit}
+              columnToggle={columnToggle}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...paginationTableProps}
             />
@@ -122,6 +124,9 @@ export default RemotePagination;
 
 RemotePagination.propTypes = {
   cellEdit: PropTypes.object,
+  columnToggle: PropTypes.shape({
+    toggles: PropTypes.object.isRequired,
+  }),
   columns: PropTypes.arrayOf(PropTypes.shape({
     dataField: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
@@ -148,6 +153,7 @@ RemotePagination.propTypes = {
 
 RemotePagination.defaultProps = {
   cellEdit: undefined,
+  columnToggle: undefined,
   condensed: false,
   defaultSorted: undefined,
   filter: undefined,
