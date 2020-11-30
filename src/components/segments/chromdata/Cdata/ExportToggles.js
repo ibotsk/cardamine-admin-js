@@ -20,8 +20,8 @@ const ExportToggles = ({ data, onAddToExport }) => {
   };
   const onChangeCheckboxAll = (e) => {
     onAddToExport(e, [EXPORT_ALL_VALUE]);
+    setExportAll(e.target.checked);
     setExportPage(e.target.checked);
-    setExportAll(false);
   };
 
   return (
@@ -42,6 +42,8 @@ const ExportToggles = ({ data, onAddToExport }) => {
           name={EXPORT_ALL}
           checked={exportAll}
           onChange={(e) => onChangeCheckboxAll(e)}
+          disabled
+          title="Disabled because of the fix being in progress"
         >
           Add
           {' '}

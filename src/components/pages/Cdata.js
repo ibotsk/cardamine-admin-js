@@ -28,6 +28,7 @@ import { formatterUtils, helperUtils, utils } from '../../utils';
 import config from '../../config';
 
 import ExportDataModal from '../segments/modals/ExportDataModal';
+import ExportToggles from '../segments/chromdata/Cdata/ExportToggles';
 import RemotePagination from '../segments/RemotePagination';
 import SelectCdataTableColumnsModal
   from '../segments/modals/SelectCdataTableColumnsModal';
@@ -310,15 +311,15 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
 
   const onAddToExport = (e, ids) => {
     let exportedIds = ids.includes(EXPORT_ALL_VALUE) ? [] : [...exportedCdata]; // when adding "all", remove all others
-    if (exportedIds.includes(EXPORT_ALL_VALUE)) {
-      // remove "all" when adding specific ids
-      exportedIds = [];
-    }
 
     const { checked } = e.target;
     for (const id of ids) {
       if (checked && !exportedIds.includes(id)) {
-        exportedIds.push(parseInt(id, 10));
+        if (id !== EXPORT_ALL_VALUE) {
+          exportedIds.push(parseInt(id, 10));
+        } else {
+          exportedIds.push(EXPORT_ALL_VALUE);
+        }
       } else {
         exportedIds = exportedIds.filter((item) => item !== id);
       }
@@ -401,9 +402,6 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
         <h2>Chromosome data</h2>
       </Grid>
       <Grid fluid>
-        {/* <ExportToggles data={data} onAddToExport={onAddToExport} />
-        <hr />
-         */}
         <ToolkitProvider
           columnToggle
           keyField="id"
@@ -423,6 +421,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
                 {' '}
                 <Glyphicon glyph="menu-down" />
               </Button>
+              <ExportToggles data={data} onAddToExport={onAddToExport} />
               <hr />
               <RemotePagination
                 remote
@@ -449,9 +448,6 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
                   onColumnToggle: handleColumnToggle,
                 }}
               />
-              {/*
-              <ExportToggles data={data} onAddToExport={onAddToExport} />
-              */}
             </div>
           )}
         </ToolkitProvider>
