@@ -36,6 +36,55 @@ export default {
       report:
         '{{authors}} ({{year}}) {{title}}. In: (eds.) {{editor}}, {{series}}. {{journal}}, {{volume}}{{issue}}:{{pages}}',
     },
+    filter: {
+      ntypesGroup: ['A', 'PA', 'S', 'DS'],
+      columnMap: { // what column is translated to which filter (only complex values)
+        originalIdentification: {
+          filter: 'listOfSpecies',
+          prefix: 'original_',
+        },
+        latestRevision: {
+          filter: 'listOfSpecies',
+          prefix: 'latestRevision_',
+        },
+        literature: {
+          filter: 'publication',
+          prefix: 'literature_',
+        },
+      },
+      filters: {
+        listOfSpecies: [
+          'genus',
+          'species',
+          'subsp',
+          'var',
+          'subvar',
+          'forma',
+          'proles',
+          'unranked',
+          'authors',
+          'genusH',
+          'speciesH',
+          'subspH',
+          'varH',
+          'subvarH',
+          'formaH',
+          'authorsH',
+        ],
+        publication: [
+          'paperAuthor',
+          'year',
+          'paperTitle',
+          'journalName',
+          'editor',
+          'seriesSource',
+          'publisher',
+          'volume',
+          'issue',
+          'pages',
+        ],
+      },
+    },
   },
   format: {
     formatted: 'formatted',

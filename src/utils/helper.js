@@ -2,6 +2,8 @@ import Mustache from 'mustache';
 import config from '../config';
 import formatter from './formatter';
 
+const tags = config.constants.mustacheTags.publication;
+
 const configName = config.nomenclature.name;
 const ff = config.format.formatted;
 const plf = config.format.plain;
@@ -242,6 +244,9 @@ function synonymSorterLex(synA, synB) {
 }
 
 function parsePublication(publication) {
+  if (!publication.displayType) {
+    return undefined;
+  }
   const typeMapping = config.mappings.displayType[publication.displayType].name;
   const template = config.nomenclature.publication[typeMapping];
 
@@ -256,7 +261,7 @@ function parsePublication(publication) {
     year: publication.year,
     pages: publication.pages,
     journal: publication.journalName,
-  });
+  }, {}, tags);
 }
 
 // useful when changing type of publication, so the unused fields are set to empty

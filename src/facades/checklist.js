@@ -15,12 +15,14 @@ const submitSynonyms = async ({ synonyms, deletedSynonyms, accessToken }) => {
   for (const key of typeOfSynonyms) {
     setSynonymOrder(synonyms[key]);
 
+    // TODO: Promise.all
     for (const synonym of synonyms[key]) {
       checklistService.putSynonym({ data: synonym, accessToken });
     }
   }
 
   // delete
+  // TODO: Promise.all
   for (const id of deletedSynonyms) {
     checklistService.deleteSynonym({ id, accessToken });
   }

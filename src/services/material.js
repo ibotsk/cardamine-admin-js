@@ -1,11 +1,12 @@
-import template from 'url-template';
 import axios from './axios';
+import Mustache from './mustache';
 
 import config from '../config';
 
 async function patchAttributes(id, data, accessToken) {
-  const uri = template.parse(config.uris.materialUri.patchAttributesUri)
-    .expand({ id, accessToken });
+  const uri = Mustache.render(
+    config.uris.materialUri.patchAttributesUri, { id, accessToken },
+  );
   await axios.patch(uri, data);
 }
 
