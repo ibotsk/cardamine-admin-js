@@ -12,6 +12,7 @@ export default {
     getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}`,
     countUri: `${backendBase}/api/cdata-admin-views/count?where=<%&whereString%>&access_token=<%accessToken%>`,
     exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
+    refreshAdminViewUri: `${backendBase}/api/cdata-admin-views/refresh?access_token=<%accessToken%>`,
   },
   dnaUri: {
     baseUri: `${backendBase}/api/dnas?access_token=<%accessToken%>`,

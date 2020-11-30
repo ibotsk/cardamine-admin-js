@@ -132,6 +132,7 @@ async function saveUpdateChromrecordWithAll(
     { ...dna, idCdata: responseChrom.data.id },
     accessToken,
   );
+  await chromDataService.refreshAdminView(accessToken);
 }
 
 export default {

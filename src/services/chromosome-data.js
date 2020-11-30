@@ -103,6 +103,13 @@ async function getForExport(where, accessToken) {
   return response.data;
 }
 
+async function refreshAdminView(accessToken) {
+  const refreshUri = Mustache.render(
+    uris.chromosomeDataUri.refreshAdminViewUri, { accessToken },
+  );
+  return axios.post(refreshUri);
+}
+
 export default {
   getChromosomeRecordById,
   getAllLiteratures,
@@ -113,4 +120,5 @@ export default {
   saveUpdateMaterial,
   saveUpdateReference,
   saveUpdateDna,
+  refreshAdminView
 };
