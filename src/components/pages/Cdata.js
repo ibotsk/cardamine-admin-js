@@ -39,7 +39,8 @@ const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
 const NEW_RECORD = '/chromosome-data/new';
 
-const GEOG_POINT_REGEX = /POINT\((?<lon>(\d+(\.\d+)?)) (?<lat>(\d+(\.\d+)?))/;
+// eslint-disable-next-line max-len
+const GEOG_POINT_REGEX = /POINT\((?<lon>(-?\d+(\.\d+)?)) (?<lat>(-?\d+(\.\d+)?))/;
 
 const EXPORT_ALL_VALUE = 'all';
 
