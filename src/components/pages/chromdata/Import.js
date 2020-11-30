@@ -15,7 +15,7 @@ import { NotificationContainer } from 'react-notifications';
 import ImportReport from './ImportReport';
 
 import { importUtils, notifications } from '../../../utils';
-import { importFacade } from '../../../facades';
+import { importFacade, crecordFacade } from '../../../facades';
 
 import config from '../../../config';
 
@@ -90,6 +90,9 @@ class Import extends React.Component {
     try {
       await importFacade.importData(records, accessToken, this.increaseImport);
       notifications.success('Data successfully imported');
+
+      // refreshing asynchronously
+      crecordFacade.refreshAdminView(accessToken);
 
       this.setState({
         ...initialState,

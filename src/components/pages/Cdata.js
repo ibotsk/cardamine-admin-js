@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Grid,
@@ -18,9 +18,9 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 
 import { NotificationContainer } from 'react-notifications';
 
-import PropTypes from 'prop-types';
-
-import { setPagination, setExportCdata } from '../../actions';
+import {
+  setExportCdata, setCdataNeedsRefresh,
+} from '../../actions';
 
 import LosName from '../segments/LosName';
 
@@ -34,6 +34,8 @@ import SelectCdataTableColumnsModal
   from '../segments/modals/SelectCdataTableColumnsModal';
 
 import commonHooks from '../segments/hooks';
+
+import { crecordFacade } from '../../facades';
 
 const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
@@ -283,10 +285,27 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 const getCountUri = config.uris.chromosomeDataUri.countUri;
 const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
+const Cdata = () => {
   const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
   const [showModalColumns, setShowModalColumns] = useState(false);
+
+  const accessToken = useSelector((state) => state.authentication.accessToken);
+  const exportedCdata = useSelector((state) => state.exportData.cdata);
+  const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
+  const dispatch = useDispatch();
+
+  // needsRefresh is in local redux store
+  // currently needsRefresh = true is set in Coordinates page
+  useEffect(() => {
+    const doRefresh = async () => {
+      if (needsRefresh) {
+        await crecordFacade.refreshAdminView(accessToken);
+        dispatch(setCdataNeedsRefresh(false));
+      }
+    };
+    doRefresh();
+  }, [needsRefresh, accessToken, dispatch]);
 
   const {
     page, sizePerPage, where, order, setValues,
@@ -326,7 +345,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
       }
     }
 
-    onAddToCdataExport(exportedIds);
+    dispatch(setExportCdata(exportedIds));
   };
 
   const isExported = (id) => exportedCdata.includes(id)
@@ -466,32 +485,4 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-  exportedCdata: state.exportData.cdata,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onChangePage: (page, pageSize) => {
-    dispatch(setPagination({ page, pageSize }));
-  },
-  onAddToCdataExport: (ids) => {
-    dispatch(setExportCdata({ ids }));
-  },
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Cdata);
-
-Cdata.propTypes = {
-  exportedCdata: PropTypes.arrayOf(PropTypes.number),
-  accessToken: PropTypes.string.isRequired,
-  // onChangePage: PropTypes.func.isRequired,
-  onAddToCdataExport: PropTypes.func.isRequired,
-};
-
-Cdata.defaultProps = {
-  exportedCdata: [],
-};
+export default Cdata;

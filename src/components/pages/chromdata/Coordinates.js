@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Grid, FormGroup, Checkbox,
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
-import PropTypes from 'prop-types';
 
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { NotificationContainer } from 'react-notifications';
@@ -14,6 +12,8 @@ import { NotificationContainer } from 'react-notifications';
 import LatLonCellEditRenderer from
   '../../segments/chromdata/LatLonCellEditRenderer';
 import RemotePagination from '../../segments/RemotePagination';
+
+import { setCdataNeedsRefresh } from '../../../actions';
 
 import { materialFacade } from '../../../facades';
 
@@ -127,7 +127,7 @@ const formatData = (data) => data.map(({
   };
 });
 
-const Coordinates = ({ accessToken }) => {
+const Coordinates = () => {
   const [checked, setChecked] = useState({
     [RED_ROWS]: false,
     [YELLOW_ROWS]: false,
@@ -140,6 +140,10 @@ const Coordinates = ({ accessToken }) => {
   const [totalSize, setTotalSize] = useState(0);
 
   const [update, setUpdate] = useState(false);
+
+  const accessToken = useSelector((state) => state.authentication.accessToken);
+  const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
@@ -183,6 +187,9 @@ const Coordinates = ({ accessToken }) => {
         await materialFacade.saveCoordinatesForMap(
           rowId, lat, lon, accessToken,
         );
+        if (!needsRefresh) {
+          dispatch(setCdataNeedsRefresh(true));
+        }
         notifications.success('Saved');
       } catch (error) {
         notifications.error('Error saving');
@@ -278,12 +285,4 @@ const Coordinates = ({ accessToken }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-});
-
-export default connect(mapStateToProps)(Coordinates);
-
-Coordinates.propTypes = {
-  accessToken: PropTypes.string.isRequired,
-};
+export default Coordinates;

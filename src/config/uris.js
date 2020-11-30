@@ -12,15 +12,16 @@ export default {
     getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}`,
     countUri: `${backendBase}/api/cdata-admin-views/count?where=<%&whereString%>&access_token=<%accessToken%>`,
     exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
+    refreshAdminViewUri: `${backendBase}/api/cdata-admin-views/refresh?access_token=<%accessToken%>`,
   },
   dnaUri: {
     baseUri: `${backendBase}/api/dnas?access_token=<%accessToken%>`,
   },
   materialUri: {
     baseUri: `${backendBase}/api/materials?access_token=<%accessToken%>`,
-    getCoordinatesUri: `${backendBase}/api/materials?filter={"fields":["id","idCdata","coordinatesLat","coordinatesLon","coordinatesGeoref","coordinatesForMap"],"where":<%where%>,"offset":<%offset%>,"limit":<%limit%>,"order":"idCdata"}&access_token=<%accessToken%>`,
+    getCoordinatesUri: `${backendBase}/api/materials?filter={"fields":["id","idCdata","coordinatesLat","coordinatesLon","coordinatesGeoref","coordinatesForMap"],"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":"idCdata"}&access_token=<%accessToken%>`,
     patchAttributesUri: `${backendBase}/api/materials/<%id%>?access_token=<%accessToken%>`,
-    countUri: `${backendBase}/api/materials/count?where=<%whereString%>&access_token=<%accessToken%>`,
+    countUri: `${backendBase}/api/materials/count?where=<%&whereString%>&access_token=<%accessToken%>`,
   },
   referenceUri: {
     baseUri: `${backendBase}/api/references?access_token=<%accessToken%>`,
