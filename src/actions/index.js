@@ -28,7 +28,7 @@ export const resetPagination = () => ({
   type: RESET_PAGINATION,
 });
 
-export const setExportCdata = ({ ids }) => ({
+export const setExportCdata = (ids) => ({
   type: SET_EXPORT_CDATA,
   ids,
 });
