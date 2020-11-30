@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Grid,
@@ -18,10 +18,8 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 
 import { NotificationContainer } from 'react-notifications';
 
-import PropTypes from 'prop-types';
-
 import {
-  setPagination, setExportCdata, setCdataNeedsRefresh,
+  setExportCdata, setCdataNeedsRefresh,
 } from '../../actions';
 
 import LosName from '../segments/LosName';
@@ -287,13 +285,15 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 const getCountUri = config.uris.chromosomeDataUri.countUri;
 const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-const Cdata = ({
-  exportedCdata, onAddToCdataExport, needsRefresh, setNeedsRefresh,
-  accessToken,
-}) => {
+const Cdata = () => {
   const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
   const [showModalColumns, setShowModalColumns] = useState(false);
+
+  const accessToken = useSelector((state) => state.authentication.accessToken);
+  const exportedCdata = useSelector((state) => state.exportData.cdata);
+  const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
+  const dispatch = useDispatch();
 
   // needsRefresh is in local redux store
   // currently needsRefresh = true is set in Coordinates page
@@ -301,11 +301,11 @@ const Cdata = ({
     const doRefresh = async () => {
       if (needsRefresh) {
         await crecordFacade.refreshAdminView(accessToken);
-        setNeedsRefresh(false);
+        dispatch(setCdataNeedsRefresh(false));
       }
     };
     doRefresh();
-  }, [needsRefresh, accessToken, setNeedsRefresh]);
+  }, [needsRefresh, accessToken, dispatch]);
 
   const {
     page, sizePerPage, where, order, setValues,
@@ -345,7 +345,7 @@ const Cdata = ({
       }
     }
 
-    onAddToCdataExport(exportedIds);
+    dispatch(setExportCdata(exportedIds));
   };
 
   const isExported = (id) => exportedCdata.includes(id)
@@ -485,38 +485,4 @@ const Cdata = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-  exportedCdata: state.exportData.cdata,
-  needsRefresh: state.cdataRefresh.needsRefresh,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onChangePage: (page, pageSize) => {
-    dispatch(setPagination({ page, pageSize }));
-  },
-  onAddToCdataExport: (ids) => {
-    dispatch(setExportCdata({ ids }));
-  },
-  setNeedsRefresh: (needsRefresh) => {
-    dispatch(setCdataNeedsRefresh({ needsRefresh }));
-  },
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Cdata);
-
-Cdata.propTypes = {
-  exportedCdata: PropTypes.arrayOf(PropTypes.number),
-  accessToken: PropTypes.string.isRequired,
-  // onChangePage: PropTypes.func.isRequired,
-  onAddToCdataExport: PropTypes.func.isRequired,
-  needsRefresh: PropTypes.bool.isRequired,
-  setNeedsRefresh: PropTypes.func.isRequired,
-};
-
-Cdata.defaultProps = {
-  exportedCdata: [],
-};
+export default Cdata;

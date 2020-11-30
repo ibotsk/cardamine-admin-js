@@ -37,7 +37,7 @@ export const resetExportCdata = () => ({
   type: RESET_EXPORT_CDATA,
 });
 
-export const setCdataNeedsRefresh = ({ needsRefresh }) => ({
+export const setCdataNeedsRefresh = (needsRefresh) => ({
   type: SET_CDATA_NEEDS_REFRESH,
   needsRefresh,
 });

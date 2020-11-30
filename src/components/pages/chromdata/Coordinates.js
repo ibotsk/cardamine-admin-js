@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   Grid, FormGroup, Checkbox,
 } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-
-import PropTypes from 'prop-types';
 
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { NotificationContainer } from 'react-notifications';
@@ -129,7 +127,7 @@ const formatData = (data) => data.map(({
   };
 });
 
-const Coordinates = ({ accessToken, needsRefresh, setNeedsRefresh }) => {
+const Coordinates = () => {
   const [checked, setChecked] = useState({
     [RED_ROWS]: false,
     [YELLOW_ROWS]: false,
@@ -142,6 +140,10 @@ const Coordinates = ({ accessToken, needsRefresh, setNeedsRefresh }) => {
   const [totalSize, setTotalSize] = useState(0);
 
   const [update, setUpdate] = useState(false);
+
+  const accessToken = useSelector((state) => state.authentication.accessToken);
+  const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
@@ -186,7 +188,7 @@ const Coordinates = ({ accessToken, needsRefresh, setNeedsRefresh }) => {
           rowId, lat, lon, accessToken,
         );
         if (!needsRefresh) {
-          setNeedsRefresh(true);
+          dispatch(setCdataNeedsRefresh(true));
         }
         notifications.success('Saved');
       } catch (error) {
@@ -283,22 +285,4 @@ const Coordinates = ({ accessToken, needsRefresh, setNeedsRefresh }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  accessToken: state.authentication.accessToken,
-  needsRefresh: state.cdataRefresh.needsRefresh,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  setNeedsRefresh: (needsRefresh) => {
-    dispatch(setCdataNeedsRefresh({ needsRefresh }));
-  },
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Coordinates);
-
-Coordinates.propTypes = {
-  accessToken: PropTypes.string.isRequired,
-};
+export default Coordinates;
