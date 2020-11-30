@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -20,7 +20,9 @@ import { NotificationContainer } from 'react-notifications';
 
 import PropTypes from 'prop-types';
 
-import { setPagination, setExportCdata } from '../../actions';
+import {
+  setPagination, setExportCdata, setCdataNeedsRefresh,
+} from '../../actions';
 
 import LosName from '../segments/LosName';
 
@@ -34,6 +36,8 @@ import SelectCdataTableColumnsModal
   from '../segments/modals/SelectCdataTableColumnsModal';
 
 import commonHooks from '../segments/hooks';
+
+import { crecordFacade } from '../../facades';
 
 const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
@@ -283,10 +287,24 @@ const formatResult = (data, { onAddToExport, isExported }) => data.map((d) => {
 const getCountUri = config.uris.chromosomeDataUri.countUri;
 const getAllUri = config.uris.chromosomeDataUri.getAllWFilterUri;
 
-const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
+const Cdata = ({
+  exportedCdata, onAddToCdataExport, needsRefresh, setNeedsRefresh,
+  accessToken,
+}) => {
   const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
   const [showModalColumns, setShowModalColumns] = useState(false);
+
+  // needsRefresh is in local redux store
+  useEffect(() => {
+    const doRefresh = async () => {
+      if (needsRefresh) {
+        await crecordFacade.refreshAdminView(accessToken);
+        setNeedsRefresh(false);
+      }
+    };
+    doRefresh();
+  }, [needsRefresh, accessToken, setNeedsRefresh]);
 
   const {
     page, sizePerPage, where, order, setValues,
@@ -469,6 +487,7 @@ const Cdata = ({ exportedCdata, onAddToCdataExport, accessToken }) => {
 const mapStateToProps = (state) => ({
   accessToken: state.authentication.accessToken,
   exportedCdata: state.exportData.cdata,
+  needsRefresh: state.cdataRefresh.needsRefresh,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -477,6 +496,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
   onAddToCdataExport: (ids) => {
     dispatch(setExportCdata({ ids }));
+  },
+  setNeedsRefresh: (needsRefresh) => {
+    dispatch(setCdataNeedsRefresh({ needsRefresh }));
   },
 });
 
@@ -490,6 +512,8 @@ Cdata.propTypes = {
   accessToken: PropTypes.string.isRequired,
   // onChangePage: PropTypes.func.isRequired,
   onAddToCdataExport: PropTypes.func.isRequired,
+  needsRefresh: PropTypes.bool.isRequired,
+  setNeedsRefresh: PropTypes.func.isRequired,
 };
 
 Cdata.defaultProps = {

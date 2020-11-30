@@ -109,6 +109,10 @@ async function getWorld4s(accessToken, idWorld4) {
   };
 }
 
+async function refreshAdminView(accessToken) {
+  return chromDataService.refreshAdminView(accessToken);
+}
+
 async function saveUpdateChromrecordWithAll(
   {
     chromrecord, dna, material, reference,
@@ -132,7 +136,7 @@ async function saveUpdateChromrecordWithAll(
     { ...dna, idCdata: responseChrom.data.id },
     accessToken,
   );
-  await chromDataService.refreshAdminView(accessToken);
+  await refreshAdminView(accessToken);
 }
 
 export default {
@@ -141,5 +145,6 @@ export default {
   getPersons,
   getSpecies,
   getWorld4s,
+  refreshAdminView,
   saveUpdateChromrecordWithAll,
 };

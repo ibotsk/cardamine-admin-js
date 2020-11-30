@@ -15,6 +15,8 @@ import LatLonCellEditRenderer from
   '../../segments/chromdata/LatLonCellEditRenderer';
 import RemotePagination from '../../segments/RemotePagination';
 
+import { setCdataNeedsRefresh } from '../../../actions';
+
 import { materialFacade } from '../../../facades';
 
 import { notifications, whereUtils } from '../../../utils';
@@ -127,7 +129,7 @@ const formatData = (data) => data.map(({
   };
 });
 
-const Coordinates = ({ accessToken }) => {
+const Coordinates = ({ accessToken, needsRefresh, setNeedsRefresh }) => {
   const [checked, setChecked] = useState({
     [RED_ROWS]: false,
     [YELLOW_ROWS]: false,
@@ -183,6 +185,9 @@ const Coordinates = ({ accessToken }) => {
         await materialFacade.saveCoordinatesForMap(
           rowId, lat, lon, accessToken,
         );
+        if (!needsRefresh) {
+          setNeedsRefresh(true);
+        }
         notifications.success('Saved');
       } catch (error) {
         notifications.error('Error saving');
@@ -280,9 +285,19 @@ const Coordinates = ({ accessToken }) => {
 
 const mapStateToProps = (state) => ({
   accessToken: state.authentication.accessToken,
+  needsRefresh: state.cdataRefresh.needsRefresh,
 });
 
-export default connect(mapStateToProps)(Coordinates);
+const mapDispatchToProps = (dispatch) => ({
+  setNeedsRefresh: (needsRefresh) => {
+    dispatch(setCdataNeedsRefresh({ needsRefresh }));
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Coordinates);
 
 Coordinates.propTypes = {
   accessToken: PropTypes.string.isRequired,

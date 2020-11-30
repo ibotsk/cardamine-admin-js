@@ -9,6 +9,7 @@ const store = createStore(rootReducer, persistedState);
 
 store.subscribe(() => {
   saveState({
+    cdataRefresh: store.getState().cdataRefresh,
     authentication: store.getState().authentication,
     pagination: store.getState().pagination,
     exportData: store.getState().exportData,
