@@ -296,6 +296,7 @@ const Cdata = ({
   const [showModalColumns, setShowModalColumns] = useState(false);
 
   // needsRefresh is in local redux store
+  // currently needsRefresh = true is set in Coordinates page
   useEffect(() => {
     const doRefresh = async () => {
       if (needsRefresh) {
