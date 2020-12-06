@@ -49,10 +49,9 @@ class PublicationModal extends Component {
   onEnter = async () => {
     const { id, accessToken } = this.props;
     if (id) {
-      const data = await publicationsFacade.getPublicationByIdCurated({
-        id,
-        accessToken,
-      });
+      const data = await publicationsFacade.getPublicationByIdCurated(
+        id, accessToken,
+      );
       this.setState({ ...data });
     }
   }
@@ -88,7 +87,7 @@ class PublicationModal extends Component {
     if (this.getValidationState()) {
       const { accessToken } = this.props;
       const data = { ...this.state };
-      await publicationsFacade.savePublicationCurated({ data, accessToken });
+      await publicationsFacade.savePublicationCurated(data, accessToken);
       this.handleHide();
     } else {
       // eslint-disable-next-line no-alert

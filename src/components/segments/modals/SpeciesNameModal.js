@@ -93,7 +93,7 @@ class SpeciesNameModal extends Component {
     if (this.getValidationState()) {
       const { accessToken } = this.props;
       const data = { ...this.state };
-      await checklistFacade.saveSpecies({ data, accessToken });
+      await checklistFacade.saveSpecies(data, accessToken);
       this.handleHide();
     } else {
       // eslint-disable-next-line no-alert
