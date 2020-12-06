@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
-import filterFactory from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
 import RemotePagination from '../segments/RemotePagination';
 import PersonModal from '../segments/modals/PersonModal';
@@ -16,29 +16,33 @@ const columns = [
   {
     dataField: 'id',
     text: 'ID',
+    filter: textFilter(),
+    sort: true,
   },
   {
     dataField: 'action',
     text: 'Actions',
   },
   {
-    dataField: 'person',
+    dataField: 'persName',
     text: 'Person(s) Name',
+    filter: textFilter(),
+    sort: true,
   },
 ];
 
-const formatResult = (data, onEdit) => data.map((p) => ({
-  id: p.id,
+const formatResult = (data, onEdit) => data.map(({ id, persName }) => ({
+  id,
   action: (
     <Button
       bsSize="xsmall"
       bsStyle="warning"
-      onClick={() => onEdit(p.id)}
+      onClick={() => onEdit(id)}
     >
       Edit
     </Button>
   ),
-  person: p.persName,
+  persName,
 }));
 
 const getAllUri = config.uris.personsUri.getAllWFilterUri;
@@ -107,7 +111,7 @@ const Persons = () => {
           columns={columns}
           data={formatResult(data, handleShowModal)}
           onTableChange={onTableChange}
-          defaultSorted={[{ dataField: 'id', order: 'asc' }]}
+          defaultSorted={[{ dataField: 'persName', order: 'asc' }]}
           filter={filterFactory()}
           page={page}
           sizePerPage={sizePerPage}

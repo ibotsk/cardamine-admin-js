@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 
 import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
-import filterFactory from 'react-bootstrap-table2-filter';
+import filterFactory, { multiSelectFilter, textFilter }
+  from 'react-bootstrap-table2-filter';
 
 import RemotePagination from '../segments/RemotePagination';
 import PublicationModal from '../segments/modals/PublicationModal';
@@ -13,22 +14,43 @@ import config from '../../config';
 
 import commonHooks from '../segments/hooks';
 
+const {
+  nomenclature,
+  uris,
+  mappings,
+} = config;
+
 const columns = [
   {
     dataField: 'id',
     text: 'ID',
+    filter: textFilter(),
+    sort: true,
   },
   {
     dataField: 'action',
     text: 'Actions',
   },
   {
-    dataField: 'type',
+    dataField: 'displayType',
     text: 'Type',
+    formatter: (cell) => mappings.displayType[cell].name,
+    filter: multiSelectFilter({
+      options: Object.keys(mappings.displayTypeStringToId).reduce(
+        (ret, key) => ({
+          ...ret,
+          [mappings.displayTypeStringToId[key]]: key,
+        }), {},
+      ),
+    }),
+    sort: true,
   },
   {
-    dataField: 'publication',
+    dataField: 'literature',
     text: 'Publication',
+    formatter: (cell) => helperUtils.parsePublication(cell),
+    filter: textFilter(),
+    sort: true,
   },
 ];
 
@@ -43,12 +65,12 @@ const formatResult = (data, onEdit) => data.map((l) => ({
       Edit
     </Button>
   ),
-  type: config.mappings.displayType[l.displayType].name,
-  publication: helperUtils.parsePublication(l),
+  displayType: l.displayType,
+  literature: l,
 }));
 
-const getAllUri = config.uris.literaturesUri.getAllWFilterUri;
-const getCountUri = config.uris.literaturesUri.countUri;
+const getAllUri = uris.literaturesUri.getAllWFilterUri;
+const getCountUri = uris.literaturesUri.countUri;
 
 const Publications = () => {
   const [showModalLiterature, setShowModalLiterature] = useState(false);
@@ -81,15 +103,21 @@ const Publications = () => {
     filters,
     sortField,
     sortOrder,
-  }) => (
-    setValues({
+  }) => {
+    let newSortField = sortField;
+
+    const newSortFieldObj = nomenclature.filter.columnMap[sortField];
+    if (newSortFieldObj) {
+      newSortField = newSortFieldObj.filter;
+    }
+    return setValues({
       page: pageTable,
       sizePerPage: sizePerPageTable,
       filters,
-      sortField,
+      sortField: newSortField,
       sortOrder,
-    })
-  );
+    });
+  };
 
   return (
     <div id="publications">
@@ -113,7 +141,7 @@ const Publications = () => {
           columns={columns}
           data={formatResult(data, handleShowModal)}
           onTableChange={onTableChange}
-          defaultSorted={[{ dataField: 'id', order: 'asc' }]}
+          defaultSorted={[{ dataField: 'literature', order: 'asc' }]}
           filter={filterFactory()}
           page={page}
           sizePerPage={sizePerPage}

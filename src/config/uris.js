@@ -44,7 +44,7 @@ export default {
   },
   literaturesUri: {
     baseUri: `${backendBase}/api/literature?access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/literature?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":["paperAuthor","paperTitle","year","id"]}&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/literature?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}&access_token=<%accessToken%>`,
     getAllWOrderUri: `${backendBase}/api/literature?filter={"order":["paperAuthor","paperTitle","year","id"]}&access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/literature/<%id%>?access_token=<%accessToken%>`,
     countUri: `${backendBase}/api/literature/count?where=<%&whereString%>&access_token=<%accessToken%>`,
@@ -53,7 +53,7 @@ export default {
     baseUri: `${backendBase}/api/persons?access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/persons/<%id%>?access_token=<%accessToken%>`,
     getByNameUri: `${backendBase}/api/persons?filter={"where":{"persName":"<%name%>"}}&access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/persons?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":["persName","id"]}&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/persons?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}&access_token=<%accessToken%>`,
     getAllWOrderUri: `${backendBase}/api/persons?filter={"order":["persName","id"]}&access_token=<%accessToken%>`,
     countUri: `${backendBase}/api/persons/count?where=<%&whereString%>&access_token=<%accessToken%>`,
   },

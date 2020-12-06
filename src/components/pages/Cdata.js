@@ -24,7 +24,9 @@ import {
 
 import LosName from '../segments/LosName';
 
-import { formatterUtils, helperUtils, utils } from '../../utils';
+import {
+  filterUtils, formatterUtils, helperUtils, utils,
+} from '../../utils';
 import config from '../../config';
 
 import ExportDataModal from '../segments/modals/ExportDataModal';
@@ -45,6 +47,15 @@ const NEW_RECORD = '/chromosome-data/new';
 const GEOG_POINT_REGEX = /POINT\((?<lon>(-?\d+(\.\d+)?)) (?<lat>(-?\d+(\.\d+)?))/;
 
 const EXPORT_ALL_VALUE = 'all';
+
+const addPrefixToFilter = (filterKey, filterVal) => {
+  const complexColumn = config.nomenclature.filter.columnMap[filterKey];
+  if (complexColumn) {
+    const { prefix: colPrefix } = complexColumn;
+    return { ...filterVal, prefix: colPrefix };
+  }
+  return filterVal;
+};
 
 const columns = [
   {
@@ -382,10 +393,13 @@ const Cdata = () => {
       prefix = newSortFieldObj.prefix;
       newSortField = newSortFieldObj.filter;
     }
+    // add relevant prefix to complex column filters
+    const newFilters = filterUtils.applyToFilters(filters, addPrefixToFilter);
+
     return setValues({
       page: pageTable,
       sizePerPage: sizePerPageTable,
-      filters,
+      filters: newFilters,
       sortField: newSortField,
       sortOrder,
       prefix,
