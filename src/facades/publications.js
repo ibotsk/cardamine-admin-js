@@ -8,7 +8,7 @@ const {
 } = config;
 
 async function getPublicationByIdCurated(id, accessToken) {
-  const data = getRequest(
+  const data = await getRequest(
     literaturesUri.getByIdUri, { id }, accessToken,
   );
   return utils.nullToEmpty(data);
@@ -40,7 +40,7 @@ async function getPublicationByAll(
 async function savePublicationCurated(data, accessToken) {
   const toBeSaved = helperUtils.publicationCurateFields(data);
   const response = await putRequest(
-    literaturesUri.baseUri, toBeSaved, accessToken,
+    literaturesUri.baseUri, toBeSaved, undefined, accessToken,
   );
   return response.data;
 }

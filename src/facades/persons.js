@@ -40,7 +40,9 @@ async function getPersonsByName(names, accessToken, formatFound = undefined) {
 }
 
 async function savePerson(data, accessToken) {
-  const response = await putRequest(personsUri.baseUri, data, {}, accessToken);
+  const response = await putRequest(
+    personsUri.baseUri, data, undefined, accessToken,
+  );
   return response.data;
 }
 
