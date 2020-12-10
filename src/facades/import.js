@@ -148,7 +148,9 @@ const processMaterial = async (
   const coordinatesGeoref = mergeCoordinatesGeoref(
     coordinatesGeorefLat, coordinatesGeorefLon,
   );
+  // eslint-disable-next-line no-param-reassign
   delete material.coordinatesGeorefLat;
+  // eslint-disable-next-line no-param-reassign
   delete material.coordinatesGeorefLon;
 
   return {

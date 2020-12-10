@@ -106,10 +106,12 @@ async function getBasionymsFor(id, accessToken) {
 }
 
 async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
-  const where = whereUtils.whereDataAll(data);
-  if (!where) {
+  const whereObj = whereUtils.whereDataAll(data);
+  if (!whereObj) {
     return null;
   }
+
+  const where = JSON.stringify(whereObj);
   const species = await getRequest(
     listOfSpeciesUri.getAllWFilterUri, { where }, accessToken,
   );

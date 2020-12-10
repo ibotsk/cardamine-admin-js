@@ -25,7 +25,9 @@ async function getPublicationByAll(
   }
   const where = JSON.stringify(whereObj);
   const publication = await getRequest(
-    literaturesUri.getAllWFilterUri, { offset: 0, limit: 2, where },
+    literaturesUri.getAllWFilterUri, {
+      offset: 0, limit: 2, where, order: '"id"',
+    },
     accessToken,
   );
 
