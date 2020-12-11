@@ -14,27 +14,33 @@ const DeleteSpeciesModal = ({ show, onCancel, onConfirm }) => (
       <ul>
         <li>
           its references in all chromosome records are set to
+          {' '}
           <b>empty</b>
         </li>
         <li>
           all identification history records (revisions) it is present in are
+          {' '}
           <b>deleted</b>
         </li>
         <li>
           all references to this record as accepted name, basionym, replaced
           name, and nomen novum in other records are set to
+          {' '}
           <b>empty</b>
         </li>
         <li>
           if this record is a synonym of any other record, this synonym
           binding is
+          {' '}
           <b>deleted</b>
         </li>
         <li>
           if this record has synonyms, all bindings to these synonyms are
+          {' '}
           <b>deleted</b>
           {' '}
           (the checklist records themselves
+          {' '}
           <b>remain</b>
         </li>
       </ul>

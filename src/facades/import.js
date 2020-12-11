@@ -327,6 +327,8 @@ async function importData(records, accessToken, increase = undefined) {
     }
     i += 1;
   }
+
+  await chromRecordFacade.refreshAdminView(accessToken);
 }
 
 export default {

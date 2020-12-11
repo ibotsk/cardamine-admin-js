@@ -131,7 +131,7 @@ async function saveSpecies(data, accessToken) {
   if (!data.ntype) {
     curatedData.ntype = config.constants.defaultLosType;
   }
-  const response = putRequest(
+  const response = await putRequest(
     listOfSpeciesUri.baseUri, curatedData, undefined, accessToken,
   );
   return response.data;

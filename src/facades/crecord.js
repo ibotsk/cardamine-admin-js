@@ -151,8 +151,6 @@ async function saveUpdateChromrecordWithAll(
   await putRequest(
     dnaUri.baseUri, dnaData, undefined, accessToken,
   );
-
-  await refreshAdminView(accessToken);
 }
 
 export default {

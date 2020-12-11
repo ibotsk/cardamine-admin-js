@@ -289,6 +289,7 @@ class Record extends React.Component {
         },
         accessToken,
       );
+      await crecordFacade.refreshAdminView(accessToken);
 
       const { router } = this.context;
       router.history.push(CHROM_DATA_LIST_URI); // redirect to chromosome data

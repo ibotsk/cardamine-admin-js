@@ -52,7 +52,7 @@ export default {
   personsUri: {
     baseUri: `${backendBase}/api/persons?access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/persons/<%id%>?access_token=<%accessToken%>`,
-    getByNameUri: `${backendBase}/api/persons?filter={"where":{"persName":"<%name%>"}}&access_token=<%accessToken%>`,
+    getAllWWhereUri: `${backendBase}/api/persons?filter={"where":<%&where%>}&access_token=<%accessToken%>`,
     getAllWFilterUri: `${backendBase}/api/persons?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}&access_token=<%accessToken%>`,
     getAllWOrderUri: `${backendBase}/api/persons?filter={"order":["persName","id"]}&access_token=<%accessToken%>`,
     countUri: `${backendBase}/api/persons/count?where=<%&whereString%>&access_token=<%accessToken%>`,
