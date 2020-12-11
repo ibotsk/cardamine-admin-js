@@ -19,8 +19,8 @@ export class WhereBuilder {
 
 const NONBREAKING_WHITESPACE = '%C2%A0';
 const REGULAR_WHITESPACE = '%20';
-const replaceNonBreakngSpace = (val) => (
-  val.replace(NONBREAKING_WHITESPACE, REGULAR_WHITESPACE)
+const replaceNonBreakingSpace = (val) => (
+  val.replaceAll(NONBREAKING_WHITESPACE, REGULAR_WHITESPACE)
 );
 
 const resolveEncode = (isEncode, val) => {
@@ -28,7 +28,7 @@ const resolveEncode = (isEncode, val) => {
     return val;
   }
   const encoded = isEncode ? encodeURIComponent(val) : val;
-  return replaceNonBreakngSpace(encoded);
+  return replaceNonBreakingSpace(encoded);
 };
 
 export const functions = {
