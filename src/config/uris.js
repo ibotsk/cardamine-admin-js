@@ -11,7 +11,7 @@ export default {
     getByIdUri: `${backendBase}/api/cdata/<%id%>?filter={"include":["dna",{"histories":"list-of-species"},{"material":"reference"}]}&access_token=<%accessToken%>`,
     getAllWFilterUri: `${backendBase}/api/cdata-admin-views?access_token=<%accessToken%>&filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}`,
     countUri: `${backendBase}/api/cdata-admin-views/count?where=<%&whereString%>&access_token=<%accessToken%>`,
-    exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
+    exportUri: `${backendBase}/api/cdata?access_token=<%accessToken%>&filter={"where":<%&where%>,"include":[{"material":[{"reference":["literature","original-identification"]},"collected-by","identified-by","world-l4"]},"latest-revision","dna","counted-by"]}`,
     refreshAdminViewUri: `${backendBase}/api/cdata-admin-views/refresh?access_token=<%accessToken%>`,
   },
   dnaUri: {
@@ -29,7 +29,7 @@ export default {
   listOfSpeciesUri: {
     baseUri: `${backendBase}/api/list-of-species?access_token=<%accessToken%>`,
     getAllWOrderUri: `${backendBase}/api/list-of-species?filter={"order":["genus","species","subsp","var","subvar","forma","authors","id"]}&access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/list-of-species?filter={"where":<%where%>}&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/list-of-species?filter={"where":<%&where%>}&access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/list-of-species/<%id%>?access_token=<%accessToken%>`,
     getByIdWFilterUri: `${backendBase}/api/list-of-species/<%id%>?filter={"include":"synonyms-nomenclatoric"}&access_token=<%accessToken%>`,
     getNomenclatoricSynonymsUri: `${backendBase}/api/list-of-species/<%id%>/synonyms-nomenclatoric?filter={"include":"synonyms-nomenclatoric-through"}&access_token=<%accessToken%>`,
@@ -44,18 +44,18 @@ export default {
   },
   literaturesUri: {
     baseUri: `${backendBase}/api/literature?access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/literature?filter={"offset":<%offset%>,"where":<%where%>,"limit":<%limit%>,"order":["paperAuthor","paperTitle","year","id"]}&access_token=<%accessToken%>`,
-    getAllWOrderUri: `${backendBase}/api/literature?filter={"order":["paperAuthor", "paperTitle", "year", "id"]}&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/literature?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}&access_token=<%accessToken%>`,
+    getAllWOrderUri: `${backendBase}/api/literature?filter={"order":["paperAuthor","paperTitle","year","id"]}&access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/literature/<%id%>?access_token=<%accessToken%>`,
-    countUri: `${backendBase}/api/literature/count?access_token=<%accessToken%>`,
+    countUri: `${backendBase}/api/literature/count?where=<%&whereString%>&access_token=<%accessToken%>`,
   },
   personsUri: {
     baseUri: `${backendBase}/api/persons?access_token=<%accessToken%>`,
     getByIdUri: `${backendBase}/api/persons/<%id%>?access_token=<%accessToken%>`,
     getByNameUri: `${backendBase}/api/persons?filter={"where":{"persName":"<%name%>"}}&access_token=<%accessToken%>`,
-    getAllWFilterUri: `${backendBase}/api/persons?filter={"offset":<%offset%>,"where":<%where%>,"limit":<%limit%>,"order":["persName","id"]}&access_token=<%accessToken%>`,
+    getAllWFilterUri: `${backendBase}/api/persons?filter={"where":<%&where%>,"offset":<%offset%>,"limit":<%limit%>,"order":<%&order%>}&access_token=<%accessToken%>`,
     getAllWOrderUri: `${backendBase}/api/persons?filter={"order":["persName","id"]}&access_token=<%accessToken%>`,
-    countUri: `${backendBase}/api/persons/count?access_token=<%accessToken%>`,
+    countUri: `${backendBase}/api/persons/count?where=<%&whereString%>&access_token=<%accessToken%>`,
   },
   synonymsUri: {
     baseUri: `${backendBase}/api/synonyms?access_token=<%accessToken%>`,

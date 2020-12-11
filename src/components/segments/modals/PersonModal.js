@@ -29,10 +29,9 @@ class PersonModal extends Component {
   onEnter = async () => {
     const { id, accessToken } = this.props;
     if (id) {
-      const data = await personsFacade.getPersonsByIdCurated({
-        id,
-        accessToken,
-      });
+      const data = await personsFacade.getPersonsByIdCurated(
+        id, accessToken,
+      );
       this.setState({ ...data });
     }
   };
@@ -61,7 +60,7 @@ class PersonModal extends Component {
     if (this.getValidationState() === VALIDATION_STATE_SUCCESS) {
       const { accessToken } = this.props;
       const data = { ...this.state };
-      await personsFacade.savePerson({ data, accessToken });
+      await personsFacade.savePerson(data, accessToken);
       this.handleHide();
     } else {
       // eslint-disable-next-line no-alert

@@ -1,7 +1,14 @@
-import checklistService from '../services/checklist';
+import { getRequest, putRequest, deleteRequest } from '../services/backend';
 
 import { helperUtils, whereUtils } from '../utils';
 import config from '../config';
+
+const {
+  uris: {
+    synonymsUri,
+    listOfSpeciesUri,
+  },
+} = config;
 
 // for synonyms of one type
 const setSynonymOrder = (synonyms) => {
@@ -10,61 +17,67 @@ const setSynonymOrder = (synonyms) => {
   }
 };
 
-const submitSynonyms = async ({ synonyms, deletedSynonyms, accessToken }) => {
+const submitSynonyms = async (synonyms, deletedSynonyms, accessToken) => {
   const typeOfSynonyms = Object.keys(synonyms);
   for (const key of typeOfSynonyms) {
     setSynonymOrder(synonyms[key]);
 
     // TODO: Promise.all
     for (const synonym of synonyms[key]) {
-      checklistService.putSynonym({ data: synonym, accessToken });
+      putRequest(synonymsUri.baseUri, synonym, undefined, accessToken);
     }
   }
 
   // delete
   // TODO: Promise.all
   for (const id of deletedSynonyms) {
-    checklistService.deleteSynonym({ id, accessToken });
+    deleteRequest(synonymsUri.synonymsByIdUri, { id }, accessToken);
   }
 };
 
 // -------------------------------------------------------- //
 
-async function getAllSpecies(accessToken) {
-  return checklistService.getAllSpecies(accessToken);
+async function getAllSpecies(accessToken, format = undefined) {
+  const response = await getRequest(
+    listOfSpeciesUri.getAllWOrderUri, undefined, accessToken,
+  );
+  if (!format) {
+    return response;
+  }
+  return response.map(format);
 }
 
 async function getSpeciesByIdWithFilter(id, accessToken) {
-  return checklistService.getSpeciesByIdWithFilter({ id, accessToken });
+  return getRequest(
+    listOfSpeciesUri.getByIdWFilterUri, { id }, accessToken,
+  );
 }
 
 async function getSpeciesById({ id, accessToken }) {
-  return checklistService.getSpeciesById({ id, accessToken });
+  return getRequest(
+    listOfSpeciesUri.getByIdUri, { id }, accessToken,
+  );
 }
 
 async function getSynonyms(id, accessToken) {
-  const nomenclatoricSynonyms = await checklistService
-    .getSynonymsNomenclatoricOf(
-      { id, accessToken },
-    );
+  const nomenclatoricSynonyms = await getRequest(
+    listOfSpeciesUri.getNomenclatoricSynonymsUri, { id }, accessToken,
+  );
   nomenclatoricSynonyms.sort(helperUtils.listOfSpeciesSorterLex);
 
-  const taxonomicSynonyms = await checklistService.getSynonymsTaxonomicOf({
-    id,
-    accessToken,
-  });
+  const taxonomicSynonyms = await getRequest(
+    listOfSpeciesUri.getTaxonomicSynonymsUri, { id }, accessToken,
+  );
   taxonomicSynonyms.sort(helperUtils.listOfSpeciesSorterLex);
 
-  const invalidDesignations = await checklistService.getInvalidDesignationsOf({
-    id,
-    accessToken,
-  });
+  const invalidDesignations = await getRequest(
+    listOfSpeciesUri.getInvalidSynonymsUri, { id }, accessToken,
+  );
   invalidDesignations.sort(helperUtils.listOfSpeciesSorterLex);
 
-  const misidentifications = await checklistService.getMisidentificationsOf({
-    id,
-    accessToken,
-  });
+  const misidentifications = await getRequest(
+    listOfSpeciesUri.getMisidentificationUri, { id }, accessToken,
+  );
   misidentifications.sort(helperUtils.listOfSpeciesSorterLex);
 
   return {
@@ -76,18 +89,15 @@ async function getSynonyms(id, accessToken) {
 }
 
 async function getBasionymsFor(id, accessToken) {
-  const basionymFor = await checklistService.getBasionymFor({
-    id,
-    accessToken,
-  });
-  const replacedFor = await checklistService.getReplacedFor({
-    id,
-    accessToken,
-  });
-  const nomenNovumFor = await checklistService.getNomenNovumFor({
-    id,
-    accessToken,
-  });
+  const basionymFor = await getRequest(
+    listOfSpeciesUri.getBasionymForUri, { id }, accessToken,
+  );
+  const replacedFor = await getRequest(
+    listOfSpeciesUri.getReplacedForUri, { id }, accessToken,
+  );
+  const nomenNovumFor = await getRequest(
+    listOfSpeciesUri.getNomenNovumForUri, { id }, accessToken,
+  );
   return {
     basionymFor,
     replacedFor,
@@ -96,37 +106,34 @@ async function getBasionymsFor(id, accessToken) {
 }
 
 async function getSpeciesByAll(data, accessToken, formatFound = undefined) {
-  const where = whereUtils.whereDataAll(data);
-
-  if (!where) {
+  const whereObj = whereUtils.whereDataAll(data);
+  if (!whereObj) {
     return null;
   }
 
-  const species = await checklistService.getSpeciesByAll({
-    where: JSON.stringify(where),
-    accessToken,
-  });
+  const where = JSON.stringify(whereObj);
+  const species = await getRequest(
+    listOfSpeciesUri.getAllWFilterUri, { where }, accessToken,
+  );
 
   let found = species;
   if (formatFound) {
     found = formatFound(found);
   }
-
   return {
     term: data,
     found,
   };
 }
 
-async function saveSpecies({ data, accessToken }) {
+async function saveSpecies(data, accessToken) {
   const curatedData = { ...data };
   if (!data.ntype) {
     curatedData.ntype = config.constants.defaultLosType;
   }
-  const response = await checklistService.putSpecies({
-    data: curatedData,
-    accessToken,
-  });
+  const response = putRequest(
+    listOfSpeciesUri.baseUri, curatedData, undefined, accessToken,
+  );
   return response.data;
 }
 
@@ -136,16 +143,20 @@ async function saveSpeciesAndSynonyms({
   synonyms,
   deletedSynonyms = [],
 }) {
-  checklistService.putSpecies({ data: species, accessToken });
-  submitSynonyms({
-    accessToken,
+  putRequest(
+    listOfSpeciesUri.baseUri, species, undefined, accessToken,
+  );
+  submitSynonyms(
     synonyms,
     deletedSynonyms,
-  });
+    accessToken,
+  );
 }
 
-async function deleteSpecies({ id, accessToken }) {
-  checklistService.deleteSpecies({ id, accessToken });
+async function deleteSpecies(id, accessToken) {
+  return deleteRequest(
+    listOfSpeciesUri.getByIdUri, { id }, accessToken,
+  );
 }
 
 function createSynonym(idParent, idSynonym, syntype) {

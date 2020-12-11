@@ -1,13 +1,18 @@
 /* eslint-disable no-await-in-loop */
-import personsService from '../services/persons';
+import { getRequest, putRequest } from '../services/backend';
 import { utils } from '../utils';
+import config from '../config';
 
-async function getPersonsByIdCurated({ id, accessToken }) {
-  const data = await personsService.getPersonById({ id, accessToken });
+const {
+  uris: { personsUri },
+} = config;
+
+async function getPersonsByIdCurated(id, accessToken) {
+  const data = await getRequest(personsUri.getByIdUri, { id }, accessToken);
   return utils.nullToEmpty(data);
 }
 
-async function getPersonsByName(names, accessToken, formatFound) {
+async function getPersonsByName(names, accessToken, formatFound = undefined) {
   const keys = Object.keys(names);
 
   const result = {};
@@ -17,12 +22,11 @@ async function getPersonsByName(names, accessToken, formatFound) {
     if (!name) {
       result[key] = null;
     } else {
-      const value = await personsService.getPersonByName({ name, accessToken });
+      const value = await getRequest(
+        personsUri.getByNameUri, { name }, accessToken,
+      );
 
-      let found = value;
-      if (formatFound) {
-        found = formatFound(found);
-      }
+      const found = formatFound ? formatFound(value) : value;
 
       result[key] = {
         term: {
@@ -35,8 +39,10 @@ async function getPersonsByName(names, accessToken, formatFound) {
   return result;
 }
 
-async function savePerson({ data, accessToken }) {
-  const response = await personsService.putPerson({ data, accessToken });
+async function savePerson(data, accessToken) {
+  const response = await putRequest(
+    personsUri.baseUri, data, undefined, accessToken,
+  );
   return response.data;
 }
 

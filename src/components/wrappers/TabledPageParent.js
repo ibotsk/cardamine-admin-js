@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 // eslint-disable-next-line max-len
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
-import tablesService from '../../services/tables';
+import { tablesFacade } from '../../facades';
 
 import { whereUtils } from '../../utils';
 import config from '../../config';
@@ -81,10 +81,11 @@ const TabledPage = (injectedProps) =>
       fetchRecords = async (where, offset, limit) => {
         const { accessToken } = this.props;
 
-        return tablesService.getAll(
+        return tablesFacade.getAll(
           injectedProps.getAll,
           offset,
           where,
+          undefined,
           limit,
           accessToken,
         );
@@ -94,7 +95,7 @@ const TabledPage = (injectedProps) =>
         const { accessToken } = this.props;
 
         const whereString = JSON.stringify(where);
-        const countResponse = await tablesService.getCount(
+        const countResponse = await tablesFacade.getCount(
           injectedProps.getCount,
           whereString,
           accessToken,

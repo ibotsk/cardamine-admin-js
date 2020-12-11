@@ -64,10 +64,10 @@ const processReferencedRecord = async (
     value = referenceMap[formattedTerm];
 
     if (!value) {
-      const { id } = await saveFunction({
-        data: term,
+      const { id } = await saveFunction(
+        term,
         accessToken,
-      });
+      );
       // eslint-disable-next-line no-param-reassign
       referenceMap[formattedTerm] = id;
       value = id;
@@ -148,7 +148,9 @@ const processMaterial = async (
   const coordinatesGeoref = mergeCoordinatesGeoref(
     coordinatesGeorefLat, coordinatesGeorefLon,
   );
+  // eslint-disable-next-line no-param-reassign
   delete material.coordinatesGeorefLat;
+  // eslint-disable-next-line no-param-reassign
   delete material.coordinatesGeorefLon;
 
   return {

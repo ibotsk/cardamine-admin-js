@@ -1,9 +1,15 @@
-const isNotNullOrEmpty = (expression) => ({
-  and: [
-    { [expression]: { neq: null } },
-    { [expression]: { neq: '' } },
-  ],
-});
+import { WhereBuilder, functions } from './builders/where-builder';
+
+const {
+  eq, neq, likep, regexp, and, or,
+} = functions;
+
+const isNotNullOrEmpty = (expression) => (
+  and(
+    neq(expression, null),
+    neq(expression, ''),
+  )
+);
 
 /**
  * For resolving filter comparator. Supports LIKE and EQ.
@@ -17,17 +23,9 @@ const resolveByComparator = (comparator, key, value) => {
     case '':
       return {};
     case 'LIKE':
-      return {
-        [key]: {
-          like: `%25${value}%25`,
-        },
-      };
+      return likep(key, value);
     case 'REGEXP':
-      return {
-        [key]: {
-          regexp: value,
-        },
-      };
+      return regexp(key, value);
     case 'NEQ':
       // if (Array.isArray(value)) {
       //     return {
@@ -38,24 +36,18 @@ const resolveByComparator = (comparator, key, value) => {
       //         }))
       //     };
       // }
-      return {
-        [key]: {
-          neq: value,
-        },
-      };
+      return neq(key, value);
     case 'EQ':
     default:
-      return {
-        [key]: value,
-      };
+      return eq(key, value);
   }
 };
 
 const filterToWhereItem = (filter, key) => {
-  let conjug = 'or';
+  let conjug = or;
   let { filterVal } = filter;
   if (filterVal.and) {
-    conjug = 'and';
+    conjug = and;
     filterVal = filterVal.and;
   }
 
@@ -70,7 +62,7 @@ const filterToWhereItem = (filter, key) => {
       }
       valsOr.push(resolveByComparator(filter.comparator, itemKey, value));
     }
-    return { [conjug]: valsOr };
+    return conjug(...valsOr);
   }
   return resolveByComparator(filter.comparator, key, filter.filterVal);
 };
@@ -81,29 +73,24 @@ const makeWhereFromFilter = (filters) => {
   for (const key of keys) {
     whereItems.push(filterToWhereItem(filters[key], key));
   }
-  if (whereItems.length > 1) {
-    return { and: whereItems };
-  }
-  if (whereItems.length === 1) {
-    return whereItems[0];
-  }
-  return {};
+  const andItems = and(...whereItems);
+
+  const wb = new WhereBuilder();
+  return wb.add(andItems).build();
 };
 
 // displayType is id
 // { displayType, paperAuthor, paperTitle, seriesSource, volume, issue, publisher, editor, year, pages, journalName }
 const whereDataAll = (data) => {
-  const and = Object.keys(data)
+  const andItems = Object.keys(data)
     .filter((k) => !!data[k])
-    .map((k) => ({ [k]: data[k] }));
+    .map((k) => eq(k, data[k]));
 
-  if (and.length === 0) {
+  if (andItems.length === 0) {
     return null;
   }
-
-  return {
-    and,
-  };
+  const wb = new WhereBuilder();
+  return wb.add(and(...andItems)).build();
 };
 
 /**
@@ -116,53 +103,44 @@ const whereDataAll = (data) => {
 function whereCoordinates(dangerRows, warningRows, okRows) {
   const whereArr = [];
   if (dangerRows) {
-    whereArr.push({
-      or: [
-        {
-          and: [
-            isNotNullOrEmpty('coordinatesLat'),
-            isNotNullOrEmpty('coordinatesLon'),
-            { coordinatesForMap: null },
-          ],
-        },
-        {
-          and: [
-            { coordinatesGeoref: { neq: null } },
-            { coordinatesForMap: null },
-          ],
-        },
-      ],
-    });
+    whereArr.push(
+      or(
+        and(
+          isNotNullOrEmpty('coordinatesLat'),
+          isNotNullOrEmpty('coordinatesLon'),
+          eq('coordinatesForMap', null),
+        ),
+        and(
+          neq('coordinatesGeoref', null),
+          eq('coordinatesForMap', null),
+        ),
+      ),
+    );
   }
   if (warningRows) {
-    whereArr.push({
-      and: [
-        {
-          or: [
-            { coordinatesLat: null }, { coordinatesLat: '' },
-          ],
-        },
-        {
-          or: [
-            { coordinatesLon: null }, { coordinatesLon: '' },
-          ],
-        },
-        { coordinatesGeoref: null },
-        { coordinatesForMap: null },
-      ],
-    });
+    whereArr.push(
+      and(
+        or(
+          eq('coordinatesLat', null),
+          eq('coordinatesLat', ''),
+        ),
+        or(
+          eq('coordinatesLon', null),
+          eq('coordinatesLon', ''),
+        ),
+        eq('coordinatesGeoref', null),
+        eq('coordinatesForMap', null),
+      ),
+    );
   }
   if (okRows) {
-    whereArr.push({ coordinatesForMap: { neq: null } });
+    whereArr.push(neq('coordinatesForMap', null));
   }
 
   if (whereArr.length === 0 || whereArr.length === 3) { // all three conditions means all records
     return {};
   }
-  const where = whereArr.length <= 1
-    ? whereArr[0]
-    : { or: whereArr };
-  return where;
+  return or(...whereArr);
 }
 
 export default {

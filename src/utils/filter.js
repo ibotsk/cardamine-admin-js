@@ -4,8 +4,9 @@ const {
   nomenclature: { filter: filterConfig },
 } = config;
 
-const makeComplexFilter = (filterContent, { filter, prefix }) => {
-  const newFilterContent = { ...filterContent };
+const makeComplexFilter = (filterContent, { filter }) => {
+  const { prefix = '', ...newFilterContent } = filterContent;
+
   const newFilterFields = filterConfig.filters[filter]
     .map((f) => `${prefix}${f}`);
 
@@ -79,8 +80,18 @@ function makeOrder(sortFields, sortOrder = 'ASC', defaultField = undefined) {
   return fields.map((f) => `${f} ${soUpperCase}`);
 }
 
+function applyToFilters(filters, func) {
+  const newFilters = { ...filters };
+
+  for (const k of Object.keys(newFilters)) {
+    newFilters[k] = func(k, newFilters[k]);
+  }
+  return newFilters;
+}
+
 export default {
   curateSearchFilters,
   curateSortFields,
   makeOrder,
+  applyToFilters,
 };

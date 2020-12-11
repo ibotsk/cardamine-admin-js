@@ -1,12 +1,18 @@
-import world4Service from '../services/world4';
+import { getRequest } from '../services/backend';
+
+import config from '../config';
+
+const {
+  uris: { worldl4Uri },
+} = config;
 
 async function getOneByDescription(
   description,
   accessToken,
   formatFound = undefined,
 ) {
-  const data = await world4Service.getByDescription(
-    description.trim(),
+  const data = await getRequest(
+    worldl4Uri.getByDescription, { description: description.trim() },
     accessToken,
   );
 
@@ -17,10 +23,7 @@ async function getOneByDescription(
     throw new Error(`More than one World 4 found for "${description}"`);
   }
 
-  let found = data;
-  if (formatFound) {
-    found = formatFound(found);
-  }
+  const found = formatFound ? formatFound(data) : data;
 
   return {
     term: description,

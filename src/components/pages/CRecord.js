@@ -139,6 +139,10 @@ class Record extends React.Component {
     } = await crecordFacade.getSpecies(
       accessToken,
       reference.idStandardisedName,
+      (l) => ({
+        id: l.id,
+        label: helperUtils.listOfSpeciesString(l),
+      }),
     );
 
     const { countedBy } = chromrecord;
@@ -157,17 +161,28 @@ class Record extends React.Component {
       collectedBy,
       identifiedBy,
       checkedBy,
-    });
+    }, (p) => ({
+      id: p.id,
+      label: `${p.persName}`,
+    }));
 
     const { world4s, idWorld4Selected } = await crecordFacade.getWorld4s(
       accessToken,
       idWorld4,
+      (w) => ({
+        id: w.id,
+        label: w.description,
+        idWorld3: w.idParent,
+      }),
     );
 
     const {
       literatures,
       idLiteratureSelected,
-    } = await crecordFacade.getLiteratures(accessToken, idLiterature);
+    } = await crecordFacade.getLiteratures(accessToken, idLiterature, (l) => ({
+      id: l.id,
+      label: helperUtils.parsePublication(l),
+    }));
 
     this.setState({
       listOfSpecies,

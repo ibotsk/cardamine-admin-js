@@ -1,6 +1,19 @@
-import chromDataService from '../services/chromosome-data';
-import checklistService from '../services/checklist';
-import { helperUtils } from '../utils';
+import { getRequest, postRequest, putRequest } from '../services/backend';
+
+import config from '../config';
+
+const {
+  uris: {
+    chromosomeDataUri,
+    dnaUri,
+    listOfSpeciesUri,
+    literaturesUri,
+    materialUri,
+    personsUri,
+    referenceUri,
+    worldl4Uri,
+  },
+} = config;
 
 async function getChromosomeRecord(accessToken, idRecord) {
   let chromrecord = {};
@@ -9,9 +22,8 @@ async function getChromosomeRecord(accessToken, idRecord) {
   let dna = {};
   let histories = [];
   if (idRecord) {
-    chromrecord = await chromDataService.getChromosomeRecordById(
-      idRecord,
-      accessToken,
+    chromrecord = await getRequest(
+      chromosomeDataUri.getByIdUri, { id: idRecord }, accessToken,
     );
 
     material = chromrecord.material || {};
@@ -34,14 +46,13 @@ async function getChromosomeRecord(accessToken, idRecord) {
   };
 }
 
-async function getLiteratures(accessToken, idLiterature) {
-  const literatures = await chromDataService.getAllLiteratures(
-    accessToken,
-    (l) => ({
-      id: l.id,
-      label: helperUtils.parsePublication(l),
-    }),
+async function getLiteratures(
+  accessToken, idLiterature, format = undefined,
+) {
+  const literaturesRaw = await getRequest(
+    literaturesUri.getAllWOrderUri, undefined, accessToken,
   );
+  const literatures = format ? literaturesRaw.map(format) : literaturesRaw;
   const literatureInitial = literatures.find((l) => l.id === idLiterature);
 
   return {
@@ -55,11 +66,13 @@ async function getPersons(
   {
     countedBy, collectedBy, identifiedBy, checkedBy,
   },
+  format = undefined,
 ) {
-  const persons = await chromDataService.getAllPersons(accessToken, (p) => ({
-    id: p.id,
-    label: `${p.persName}`,
-  }));
+  const personsRaw = await getRequest(
+    personsUri.getAllWOrderUri, undefined, accessToken,
+  );
+  const persons = format ? personsRaw.map(format) : personsRaw;
+
   const countedByInitial = persons.find((p) => p.id === countedBy);
   const collectedByInitial = persons.find((p) => p.id === collectedBy);
   const identifiedByInitial = persons.find((p) => p.id === identifiedBy);
@@ -74,14 +87,14 @@ async function getPersons(
   };
 }
 
-async function getSpecies(accessToken, idStandardisedName) {
-  const listOfSpecies = await checklistService.getAllSpecies(
-    accessToken,
-    (l) => ({
-      id: l.id,
-      label: helperUtils.listOfSpeciesString(l),
-    }),
+async function getSpecies(
+  accessToken, idStandardisedName, format = undefined,
+) {
+  const listOfSpeciesRaw = await getRequest(
+    listOfSpeciesUri.getAllWOrderUri, undefined, accessToken,
   );
+  const listOfSpecies = format ? listOfSpeciesRaw.map(format)
+    : listOfSpeciesRaw;
 
   const originalIdentificationInitial = listOfSpecies.find(
     (l) => l.id === idStandardisedName,
@@ -95,12 +108,11 @@ async function getSpecies(accessToken, idStandardisedName) {
   };
 }
 
-async function getWorld4s(accessToken, idWorld4) {
-  const world4s = await chromDataService.getAllWorld4s(accessToken, (w) => ({
-    id: w.id,
-    label: w.description,
-    idWorld3: w.idParent,
-  }));
+async function getWorld4s(accessToken, idWorld4, format = undefined) {
+  const world4sRaw = await getRequest(
+    worldl4Uri.getAllWFilterUri, undefined, accessToken,
+  );
+  const world4s = format ? world4sRaw.map(format) : world4sRaw;
   const world4Initial = world4s.find((w) => w.id === idWorld4);
 
   return {
@@ -110,7 +122,9 @@ async function getWorld4s(accessToken, idWorld4) {
 }
 
 async function refreshAdminView(accessToken) {
-  return chromDataService.refreshAdminView(accessToken);
+  return postRequest(
+    chromosomeDataUri.refreshAdminViewUri, undefined, undefined, accessToken,
+  );
 }
 
 async function saveUpdateChromrecordWithAll(
@@ -119,23 +133,25 @@ async function saveUpdateChromrecordWithAll(
   },
   accessToken,
 ) {
-  const responseChrom = await chromDataService.saveUpdateChromrecord(
-    chromrecord,
-    accessToken,
+  const responseChrom = await putRequest(
+    chromosomeDataUri.baseUri, chromrecord, undefined, accessToken,
   );
 
-  const responseMat = await chromDataService.saveUpdateMaterial(
-    { ...material, idCdata: responseChrom.data.id },
-    accessToken,
+  const materialData = { ...material, idCdata: responseChrom.data.id };
+  const responseMat = await putRequest(
+    materialUri.baseUri, materialData, undefined, accessToken,
   );
-  await chromDataService.saveUpdateReference(
-    { ...reference, idMaterial: responseMat.data.id },
-    accessToken,
+
+  const referenceData = { ...reference, idMaterial: responseMat.data.id };
+  await putRequest(
+    referenceUri.baseUri, referenceData, undefined, accessToken,
   );
-  await chromDataService.saveUpdateDna(
-    { ...dna, idCdata: responseChrom.data.id },
-    accessToken,
+
+  const dnaData = { ...dna, idCdata: responseChrom.data.id };
+  await putRequest(
+    dnaUri.baseUri, dnaData, undefined, accessToken,
   );
+
   await refreshAdminView(accessToken);
 }
 

@@ -151,7 +151,7 @@ class Checklist extends Component {
   deleteRecord = async (id) => {
     const { accessToken, history } = this.props;
     try {
-      await checklistFacade.deleteSpecies({ id, accessToken });
+      await checklistFacade.deleteSpecies(id, accessToken);
       history.push('/names');
       this.hideModal(false);
       notifications.success('Succesfully deleted');

@@ -1,11 +1,15 @@
-import chromService from '../services/chromosome-data';
+import { getRequest } from '../services/backend';
+
+import config from '../config';
+
+const { uris: { chromosomeDataUri } } = config;
 
 async function getForExport(ids, accessToken) {
-  const where = {
+  const whereObj = {
     or: ids.map((id) => ({ id })),
   };
-  const whereString = JSON.stringify(where);
-  return chromService.getForExport(whereString, accessToken);
+  const where = JSON.stringify(whereObj);
+  return getRequest(chromosomeDataUri.exportUri, { where }, accessToken);
 }
 
 export default {

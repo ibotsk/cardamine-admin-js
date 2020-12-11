@@ -1,5 +1,4 @@
-import tableService from '../services/tables';
-import materialService from '../services/material';
+import { getRequest, patchRequest } from '../services/backend';
 
 import config from '../config';
 import { helperUtils } from '../utils';
@@ -7,17 +6,18 @@ import { helperUtils } from '../utils';
 const { uris: { materialUri } } = config;
 
 async function getCoordinates(
-  accessToken, where = {}, offset = 0, limit = 20,
+  accessToken, whereObj = {}, offset = 0, limit = 20,
 ) {
-  return tableService.getAll(
-    materialUri.getCoordinatesUri, offset, where, limit, accessToken,
+  const where = JSON.stringify(whereObj);
+  return getRequest(
+    materialUri.getCoordinatesUri, { offset, limit, where }, accessToken,
   );
 }
 
 async function getCoordinatesCount(where = {}, accessToken) {
   const whereString = JSON.stringify(where);
-  const { count } = await tableService.getCount(
-    materialUri.countUri, whereString, accessToken,
+  const { count } = await getRequest(
+    materialUri.countUri, { whereString }, accessToken,
   );
   return count;
 }
@@ -28,7 +28,9 @@ async function saveCoordinatesForMap(id, lat, lon, accessToken) {
   const data = {
     coordinatesForMap,
   };
-  await materialService.patchAttributes(id, data, accessToken);
+  return patchRequest(
+    materialUri.patchAttributesUri, data, { id }, accessToken,
+  );
 }
 
 export default {
