@@ -1,3 +1,11 @@
+const trimObj = (obj) => Object.keys(obj).reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr]: (typeof obj[curr] === 'string') ? obj[curr].trim() : obj[curr],
+  }),
+  {},
+);
+
 const nullToEmpty = (obj) => Object.keys(obj).reduce(
   (prev, curr) => ({
     ...prev,
@@ -13,6 +21,15 @@ const emptyToNull = (obj) => Object.keys(obj).reduce(
   }),
   {},
 );
+
+/** only highest level */
+const trimAndFixEmpty = (obj) => {
+  if (!obj) {
+    return obj;
+  }
+  const trimmed = trimObj(obj);
+  return emptyToNull(trimmed);
+};
 
 const jsonStringifySafe = (val) => {
   if (!val) {
@@ -44,4 +61,5 @@ export default {
   emptyToNull,
   jsonStringifySafe,
   getObjWKeysThatStartWithStr,
+  trimAndFixEmpty,
 };
