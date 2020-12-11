@@ -17,11 +17,18 @@ export class WhereBuilder {
   }
 }
 
+const NONBREAKING_WHITESPACE = '%C2%A0';
+const REGULAR_WHITESPACE = '%20';
+const replaceNonBreakngSpace = (val) => (
+  val.replace(NONBREAKING_WHITESPACE, REGULAR_WHITESPACE)
+);
+
 const resolveEncode = (isEncode, val) => {
   if (!val) {
     return val;
   }
-  return isEncode ? encodeURIComponent(val) : val;
+  const encoded = isEncode ? encodeURIComponent(val) : val;
+  return replaceNonBreakngSpace(encoded);
 };
 
 export const functions = {
