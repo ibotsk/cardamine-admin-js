@@ -3,7 +3,7 @@ import { Modal, Button } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
 
-import CdataColumnsToggleList from '../chromdata/Cdata/CdataColumnsToggleList';
+import CdataColumnsToggleList from '../components/CdataColumnsToggleList';
 
 const SelectCdataTableColumnsModal = ({
   show, onHide, toggleListProps: {

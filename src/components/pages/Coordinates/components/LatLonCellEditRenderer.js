@@ -7,8 +7,8 @@ import {
 
 import PropTypes from 'prop-types';
 
-import { validationUtils } from '../../../utils';
-import config from '../../../config';
+import { validationUtils } from '../../../../utils';
+import config from '../../../../config';
 
 const { getValidationLatitudeDec, getValidationLongitudeDec } = validationUtils;
 const { constants } = config;

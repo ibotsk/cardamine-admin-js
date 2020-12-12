@@ -13,19 +13,19 @@ import filterFactory, {
 import { NotificationContainer } from 'react-notifications';
 
 import PropTypes from 'prop-types';
-import SpeciesType from '../propTypes/species';
+import SpeciesType from '../../propTypes/species';
 
-import TabledPage from '../wrappers/TabledPageParent';
-import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
+import TabledPage from '../../wrappers/TabledPageParent';
+import SpeciesNameModal from './modals/SpeciesNameModal';
 
-import { checklistFacade } from '../../facades';
+import { checklistFacade } from '../../../facades';
 
-import { notifications, helperUtils } from '../../utils';
-import config from '../../config';
+import { notifications, helperUtils } from '../../../utils';
+import config from '../../../config';
 
-import '../../styles/custom.css';
-import ChecklistDetail from './checklist/ChecklistDetail';
-import DeleteSpeciesModal from '../segments/modals/DeleteSpeciesModal';
+import '../../../styles/custom.css';
+import ChecklistDetail from './components/ChecklistDetail';
+import DeleteSpeciesModal from './modals/DeleteSpeciesModal';
 
 const buildNtypesOptions = (ntypes) => {
   const obj = {};

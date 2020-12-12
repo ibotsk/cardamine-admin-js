@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import merge from 'lodash.merge';
-import helper from './helper';
+import helper from '../../helper';
 
-import config from '../config';
+import config from '../../../config';
 
 const { import: importConfig } = config;
 const { columnDefaults } = importConfig;

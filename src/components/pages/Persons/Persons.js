@@ -3,22 +3,14 @@ import { useSelector } from 'react-redux';
 
 import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
-import filterFactory, { multiSelectFilter, textFilter }
-  from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
-import RemotePagination from '../segments/RemotePagination';
-import PublicationModal from '../segments/modals/PublicationModal';
+import RemotePagination from '../../segments/RemotePagination';
+import PersonModal from './modals/PersonModal';
 
-import { helperUtils } from '../../utils';
-import config from '../../config';
+import config from '../../../config';
 
-import commonHooks from '../segments/hooks';
-
-const {
-  nomenclature,
-  uris,
-  mappings,
-} = config;
+import commonHooks from '../../segments/hooks';
 
 const columns = [
   {
@@ -32,48 +24,32 @@ const columns = [
     text: 'Actions',
   },
   {
-    dataField: 'displayType',
-    text: 'Type',
-    formatter: (cell) => mappings.displayType[cell].name,
-    filter: multiSelectFilter({
-      options: Object.keys(mappings.displayTypeStringToId).reduce(
-        (ret, key) => ({
-          ...ret,
-          [mappings.displayTypeStringToId[key]]: key,
-        }), {},
-      ),
-    }),
-    sort: true,
-  },
-  {
-    dataField: 'literature',
-    text: 'Publication',
-    formatter: (cell) => helperUtils.parsePublication(cell),
+    dataField: 'persName',
+    text: 'Person(s) Name',
     filter: textFilter(),
     sort: true,
   },
 ];
 
-const formatResult = (data, onEdit) => data.map((l) => ({
-  id: l.id,
+const formatResult = (data, onEdit) => data.map(({ id, persName }) => ({
+  id,
   action: (
     <Button
       bsSize="xsmall"
       bsStyle="warning"
-      onClick={() => onEdit(l.id)}
+      onClick={() => onEdit(id)}
     >
       Edit
     </Button>
   ),
-  displayType: l.displayType,
-  literature: l,
+  persName,
 }));
 
-const getAllUri = uris.literaturesUri.getAllWFilterUri;
-const getCountUri = uris.literaturesUri.countUri;
+const getAllUri = config.uris.personsUri.getAllWFilterUri;
+const getCountUri = config.uris.personsUri.countUri;
 
-const Publications = () => {
-  const [showModalLiterature, setShowModalLiterature] = useState(false);
+const Persons = () => {
+  const [showModalPerson, setShowModalPerson] = useState(false);
   const [editId, setEditId] = useState(undefined);
 
   const accessToken = useSelector((state) => state.authentication.accessToken);
@@ -84,16 +60,16 @@ const Publications = () => {
 
   const { data, totalSize } = commonHooks.useTableData(
     getCountUri, getAllUri, accessToken, where, page,
-    sizePerPage, order, showModalLiterature,
+    sizePerPage, order, showModalPerson,
   );
 
   const handleShowModal = (id) => {
     setEditId(id);
-    setShowModalLiterature(true);
+    setShowModalPerson(true);
   };
 
   const handleHideModal = async () => {
-    setShowModalLiterature(false);
+    setShowModalPerson(false);
     setEditId(undefined);
   };
 
@@ -103,24 +79,18 @@ const Publications = () => {
     filters,
     sortField,
     sortOrder,
-  }) => {
-    let newSortField = sortField;
-
-    const newSortFieldObj = nomenclature.filter.columnMap[sortField];
-    if (newSortFieldObj) {
-      newSortField = newSortFieldObj.filter;
-    }
-    return setValues({
+  }) => (
+    setValues({
       page: pageTable,
       sizePerPage: sizePerPageTable,
       filters,
-      sortField: newSortField,
+      sortField,
       sortOrder,
-    });
-  };
+    })
+  );
 
   return (
-    <div id="publications">
+    <div id="persons">
       <Grid id="functions">
         <div id="functions">
           <Button bsStyle="success" onClick={() => handleShowModal()}>
@@ -129,7 +99,7 @@ const Publications = () => {
             Add new
           </Button>
         </div>
-        <h2>Publications</h2>
+        <h2>Persons</h2>
       </Grid>
       <Grid fluid>
         <RemotePagination
@@ -141,20 +111,20 @@ const Publications = () => {
           columns={columns}
           data={formatResult(data, handleShowModal)}
           onTableChange={onTableChange}
-          defaultSorted={[{ dataField: 'literature', order: 'asc' }]}
+          defaultSorted={[{ dataField: 'persName', order: 'asc' }]}
           filter={filterFactory()}
           page={page}
           sizePerPage={sizePerPage}
           totalSize={totalSize}
         />
       </Grid>
-      <PublicationModal
+      <PersonModal
         id={editId}
-        show={showModalLiterature}
+        show={showModalPerson}
         onHide={handleHideModal}
       />
     </div>
   );
 };
 
-export default Publications;
+export default Persons;

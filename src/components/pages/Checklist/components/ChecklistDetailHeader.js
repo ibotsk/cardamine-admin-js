@@ -11,11 +11,11 @@ import {
 } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
-import SpeciesType from '../../propTypes/species';
+import SpeciesType from '../../../propTypes/species';
 
-import LosName from '../../segments/LosName';
+import LosName from '../../../segments/LosName';
 
-import config from '../../../config';
+import config from '../../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;
