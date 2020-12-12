@@ -29,11 +29,12 @@ import {
 } from '../../../utils';
 import config from '../../../config';
 
-import ExportDataModal from '../../segments/modals/ExportDataModal';
-import ExportToggles from '../../segments/chromdata/Cdata/ExportToggles';
-import RemotePagination from '../../segments/RemotePagination';
+import ExportToggles from './components/ExportToggles';
 import SelectCdataTableColumnsModal
-  from '../../segments/modals/SelectCdataTableColumnsModal';
+  from './modals/SelectCdataTableColumnsModal';
+
+import ExportDataModal from './modals/ExportDataModal';
+import RemotePagination from '../../segments/RemotePagination';
 
 import commonHooks from '../../segments/hooks';
 

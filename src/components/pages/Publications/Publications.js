@@ -7,7 +7,7 @@ import filterFactory, { multiSelectFilter, textFilter }
   from 'react-bootstrap-table2-filter';
 
 import RemotePagination from '../../segments/RemotePagination';
-import PublicationModal from '../../segments/modals/PublicationModal';
+import PublicationModal from './modals/PublicationModal';
 
 import { helperUtils } from '../../../utils';
 import config from '../../../config';

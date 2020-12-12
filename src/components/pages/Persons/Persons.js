@@ -6,7 +6,7 @@ import { Button, Grid, Glyphicon } from 'react-bootstrap';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
 import RemotePagination from '../../segments/RemotePagination';
-import PersonModal from '../../segments/modals/PersonModal';
+import PersonModal from './modals/PersonModal';
 
 import config from '../../../config';
 

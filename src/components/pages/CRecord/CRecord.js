@@ -29,9 +29,9 @@ import {
 import { crecordFacade } from '../../../facades';
 
 import LosName from '../../segments/LosName';
-import PersonModal from '../../segments/modals/PersonModal';
-import PublicationModal from '../../segments/modals/PublicationModal';
-import SpeciesNameModal from '../../segments/modals/SpeciesNameModal';
+import PersonModal from '../Persons/modals/PersonModal';
+import PublicationModal from '../Publications/modals/PublicationModal';
+import SpeciesNameModal from '../Checklist/modals/SpeciesNameModal';
 
 import config from '../../../config';
 

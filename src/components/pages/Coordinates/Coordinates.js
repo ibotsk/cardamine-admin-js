@@ -10,7 +10,7 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import { NotificationContainer } from 'react-notifications';
 
 import LatLonCellEditRenderer from
-  '../../segments/chromdata/LatLonCellEditRenderer';
+  './components/LatLonCellEditRenderer';
 import RemotePagination from '../../segments/RemotePagination';
 
 import { setCdataNeedsRefresh } from '../../../actions';

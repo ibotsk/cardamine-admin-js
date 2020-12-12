@@ -10,9 +10,9 @@ import PropTypes from 'prop-types';
 
 import { CSVDownload } from 'react-csv';
 
-import config from '../../../config';
-import { exportFacade } from '../../../facades';
-import { exportUtils } from '../../../utils';
+import config from '../../../../config';
+import { exportFacade } from '../../../../facades';
+import { exportUtils } from '../../../../utils';
 
 const { export: exportConfig } = config;
 

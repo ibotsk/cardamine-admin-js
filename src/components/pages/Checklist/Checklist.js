@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import SpeciesType from '../../propTypes/species';
 
 import TabledPage from '../../wrappers/TabledPageParent';
-import SpeciesNameModal from '../../segments/modals/SpeciesNameModal';
+import SpeciesNameModal from './modals/SpeciesNameModal';
 
 import { checklistFacade } from '../../../facades';
 
@@ -25,7 +25,7 @@ import config from '../../../config';
 
 import '../../../styles/custom.css';
 import ChecklistDetail from './components/ChecklistDetail';
-import DeleteSpeciesModal from '../../segments/modals/DeleteSpeciesModal';
+import DeleteSpeciesModal from './modals/DeleteSpeciesModal';
 
 const buildNtypesOptions = (ntypes) => {
   const obj = {};

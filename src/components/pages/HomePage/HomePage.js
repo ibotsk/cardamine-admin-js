@@ -1,8 +1,8 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 
-import CNavbar from '../../segments/Navbar';
-import Footer from '../../segments/Footer';
+import CNavbar from './components/Navbar';
+import Footer from './components/Footer';
 
 import Cdata from '../Cdata/Cdata';
 import Record from '../CRecord/CRecord';
