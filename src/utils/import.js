@@ -5,11 +5,26 @@ import helper from './helper';
 import config from '../config';
 
 const { import: importConfig } = config;
+const { columnDefaults } = importConfig;
+
+/**
+ * checks obj's properties agains defaults and replaces them
+ * @param {object} obj data
+ * @param {object} defaults from config
+ */
+const fixDefaults = (obj, defaults) => Object.keys(obj).reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr]: (!obj[curr] && defaults[curr] !== undefined)
+      ? defaults[curr] : obj[curr],
+  }),
+  {},
+);
 
 /**
  * Maps rowData to object of columns and their values
  * @param {number|object} configTemplate can be object of row numbers or directly a row number
- * @param {object} rowData
+ * @param {object} rowData data from csv file
  */
 const createObject = (configTemplate, rowData) => {
   const object = {};
@@ -40,10 +55,17 @@ const processRow = (row) => {
     return null;
   }
 
-  const cdata = createObject(importConfig.dataColumns.cdata, row);
-  const material = createObject(importConfig.dataColumns.material, row);
-  const reference = createObject(importConfig.dataColumns.reference, row);
-  const dna = createObject(importConfig.dataColumns.dna, row);
+  const cdataObj = createObject(importConfig.dataColumns.cdata, row);
+  const cdata = fixDefaults(cdataObj, columnDefaults.cdata);
+
+  const materialObj = createObject(importConfig.dataColumns.material, row);
+  const material = fixDefaults(materialObj, columnDefaults.material);
+
+  const referenceObj = createObject(importConfig.dataColumns.reference, row);
+  const reference = fixDefaults(referenceObj, columnDefaults.reference);
+
+  const dnaObj = createObject(importConfig.dataColumns.dna, row);
+  const dna = fixDefaults(dnaObj, columnDefaults.dna);
 
   const nameAsPublished = makeNameAsPublished(row);
   reference.nameAsPublished = nameAsPublished;

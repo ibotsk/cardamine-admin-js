@@ -1,6 +1,16 @@
 export default {
   ignoredRows: [0],
   ignoredRowSign: '>',
+  columnDefaults: {
+    cdata: {
+      drawing: false,
+      photo: false,
+      idiogram: false,
+    },
+    material: {},
+    reference: {},
+    dna: {},
+  },
   referenceColumns: {
     standardizedName: {
       genus: 11,
