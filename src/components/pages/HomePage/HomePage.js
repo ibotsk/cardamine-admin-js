@@ -1,18 +1,18 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 
-import CNavbar from '../segments/Navbar';
-import Footer from '../segments/Footer';
+import CNavbar from '../../segments/Navbar';
+import Footer from '../../segments/Footer';
 
-import Cdata from './Cdata';
-import Record from './CRecord';
-import Publications from './Publications';
-import Persons from './Persons';
-import Checklist from './Checklist';
-import PrivateRoute from '../wrappers/PrivateRoute';
-import Logout from '../segments/Logout';
-import Import from './chromdata/Import';
-import Coordinates from './chromdata/Coordinates';
+import Cdata from '../Cdata/Cdata';
+import Record from '../CRecord/CRecord';
+import Publications from '../Publications/Publications';
+import Persons from '../Persons/Persons';
+import Checklist from '../Checklist/Checklist';
+import PrivateRoute from '../../wrappers/PrivateRoute';
+import Logout from '../../segments/Logout';
+import Import from '../Cdata/Import';
+import Coordinates from '../Coordinates/Coordinates';
 
 const Routing = () => (
   <Switch>

@@ -6,22 +6,22 @@ import {
 import { Typeahead } from 'react-bootstrap-typeahead';
 
 import PropTypes from 'prop-types';
-import SpeciesType from '../../propTypes/species';
-import SynonymType from '../../propTypes/synonym';
+import SpeciesType from '../../../propTypes/species';
+import SynonymType from '../../../propTypes/synonym';
 
-import AddableList from '../../segments/AddableList';
+import AddableList from '../../../segments/AddableList';
 import SpeciesNamePlainList from './SpeciesNamePlainList';
 import {
   NomenclatoricSynonymListItem,
   TaxonomicSynonymListItem,
   InvalidSynonymListItem,
   MisidentifiedSynonymListItem,
-} from './items';
+} from '../items';
 
-import { checklistFacade } from '../../../facades';
+import { checklistFacade } from '../../../../facades';
 
-import { notifications, helperUtils } from '../../../utils';
-import config from '../../../config';
+import { notifications, helperUtils } from '../../../../utils';
+import config from '../../../../config';
 
 const titleColWidth = 2;
 const mainColWidth = 10;

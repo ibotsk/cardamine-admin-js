@@ -24,16 +24,16 @@ import { NotificationContainer } from 'react-notifications';
 
 import {
   notifications, helperUtils, validationUtils, utils,
-} from '../../utils';
+} from '../../../utils';
 
-import { crecordFacade } from '../../facades';
+import { crecordFacade } from '../../../facades';
 
-import LosName from '../segments/LosName';
-import PersonModal from '../segments/modals/PersonModal';
-import PublicationModal from '../segments/modals/PublicationModal';
-import SpeciesNameModal from '../segments/modals/SpeciesNameModal';
+import LosName from '../../segments/LosName';
+import PersonModal from '../../segments/modals/PersonModal';
+import PublicationModal from '../../segments/modals/PublicationModal';
+import SpeciesNameModal from '../../segments/modals/SpeciesNameModal';
 
-import config from '../../config';
+import config from '../../../config';
 
 const { constants: { regexLatitude, regexLongitude } } = config;
 const { getValidationLatitudeDec, getValidationLongitudeDec } = validationUtils;

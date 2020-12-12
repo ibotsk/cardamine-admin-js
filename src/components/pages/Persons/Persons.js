@@ -5,12 +5,12 @@ import { Button, Grid, Glyphicon } from 'react-bootstrap';
 
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
-import RemotePagination from '../segments/RemotePagination';
-import PersonModal from '../segments/modals/PersonModal';
+import RemotePagination from '../../segments/RemotePagination';
+import PersonModal from '../../segments/modals/PersonModal';
 
-import config from '../../config';
+import config from '../../../config';
 
-import commonHooks from '../segments/hooks';
+import commonHooks from '../../segments/hooks';
 
 const columns = [
   {

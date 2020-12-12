@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Login from './Login';
-import HomePage from './HomePage';
+import HomePage from './HomePage/HomePage';
 import PrivateRoute from '../wrappers/PrivateRoute';
 
 const App = () => (

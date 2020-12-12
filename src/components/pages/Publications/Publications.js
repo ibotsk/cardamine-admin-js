@@ -6,13 +6,13 @@ import { Button, Grid, Glyphicon } from 'react-bootstrap';
 import filterFactory, { multiSelectFilter, textFilter }
   from 'react-bootstrap-table2-filter';
 
-import RemotePagination from '../segments/RemotePagination';
-import PublicationModal from '../segments/modals/PublicationModal';
+import RemotePagination from '../../segments/RemotePagination';
+import PublicationModal from '../../segments/modals/PublicationModal';
 
-import { helperUtils } from '../../utils';
-import config from '../../config';
+import { helperUtils } from '../../../utils';
+import config from '../../../config';
 
-import commonHooks from '../segments/hooks';
+import commonHooks from '../../segments/hooks';
 
 const {
   nomenclature,

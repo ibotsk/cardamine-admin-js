@@ -20,24 +20,24 @@ import { NotificationContainer } from 'react-notifications';
 
 import {
   setExportCdata, setCdataNeedsRefresh,
-} from '../../actions';
+} from '../../../actions';
 
-import LosName from '../segments/LosName';
+import LosName from '../../segments/LosName';
 
 import {
   filterUtils, formatterUtils, helperUtils, utils,
-} from '../../utils';
-import config from '../../config';
+} from '../../../utils';
+import config from '../../../config';
 
-import ExportDataModal from '../segments/modals/ExportDataModal';
-import ExportToggles from '../segments/chromdata/Cdata/ExportToggles';
-import RemotePagination from '../segments/RemotePagination';
+import ExportDataModal from '../../segments/modals/ExportDataModal';
+import ExportToggles from '../../segments/chromdata/Cdata/ExportToggles';
+import RemotePagination from '../../segments/RemotePagination';
 import SelectCdataTableColumnsModal
-  from '../segments/modals/SelectCdataTableColumnsModal';
+  from '../../segments/modals/SelectCdataTableColumnsModal';
 
-import commonHooks from '../segments/hooks';
+import commonHooks from '../../segments/hooks';
 
-import { crecordFacade } from '../../facades';
+import { crecordFacade } from '../../../facades';
 
 const PAGE_DETAIL = '/names/';
 const EDIT_RECORD = '/chromosome-data/edit/';
