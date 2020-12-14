@@ -137,6 +137,15 @@ export default {
               },
             },
           },
+          {
+            level: 1,
+            format: 'bullet',
+            style: {
+              paragraph: {
+                indent: { left: 720, hanging: 260 },
+              },
+            },
+          },
         ],
       },
     },

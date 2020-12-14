@@ -57,6 +57,12 @@ const bulletList = (label, values) => {
   return [labelPg, ...valuesPgs];
 };
 
+/**
+ * @param {string} label
+ * @param {Array} values
+ * @param {string} numberingReference reference to numbering style in config
+ * @param {Array<string>} include array of property names to include to lvl 1
+ */
 const synonymList = (label, values, numberingReference) => {
   if (!values || values.length === 0) {
     return [];
@@ -65,13 +71,30 @@ const synonymList = (label, values, numberingReference) => {
   if (label) {
     results.push(labelParagraph(label));
   }
-  const valuesPgs = values.map(({ name }) => new Paragraph({
-    text: name,
-    numbering: {
-      reference: numberingReference,
-      level: 0,
-    },
-  }));
+  const valuesPgs = values.map(({ name, misidentificationAuthor }) => {
+    const r = [
+      new Paragraph({
+        text: name,
+        numbering: {
+          reference: numberingReference,
+          level: 0,
+        },
+      }),
+    ];
+    if (misidentificationAuthor) {
+      r.push(new Paragraph({
+        numbering: {
+          reference: numberingReference,
+          level: 1,
+        },
+        children: [
+          new TextRun({ text: 'Misidentified by: ', bold: true }),
+          new TextRun(misidentificationAuthor),
+        ],
+      }));
+    }
+    return r;
+  }).flat();
   results.push(...valuesPgs);
   return results;
 };
