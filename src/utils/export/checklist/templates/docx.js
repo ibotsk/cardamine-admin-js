@@ -252,9 +252,6 @@ const makeSpeciesSection = (species) => {
  * @param {array} speciesList
  */
 function createDocument(speciesList) {
-  // TODO switch to all species when finished
-  const sl = speciesList.slice(0, 5);
-
   const doc = new Document({
     numbering: {
       config: [
@@ -265,7 +262,7 @@ function createDocument(speciesList) {
     },
   });
 
-  const speciesParagraphs = sl.map(makeSpeciesSection).flat();
+  const speciesParagraphs = speciesList.map(makeSpeciesSection).flat();
 
   doc.addSection({
     properties: {},
