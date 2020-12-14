@@ -49,4 +49,5 @@ export const functions = {
   }),
   and: (...objs) => ({ and: [...objs] }),
   or: (...objs) => ({ or: [...objs] }),
+  inq: (key, ...vals) => ({ [key]: { inq: [...vals] } }),
 };

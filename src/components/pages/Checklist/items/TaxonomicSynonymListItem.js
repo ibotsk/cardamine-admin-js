@@ -47,7 +47,7 @@ const TaxonomicSynonymListItem = ({
       data={data}
       prefix={config.mappings.synonym.taxonomic.prefix}
       additions={Additions}
-      showSubNomenclatoric={false}
+      showSubNomenclatoric
       onRowDelete={onRowDelete}
     />
   );

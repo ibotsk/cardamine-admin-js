@@ -71,12 +71,18 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
     ...options,
   };
 
+  const {
+    species, genus,
+    subsp, var: varieta, forma,
+    authors, publication, tribus,
+  } = nomenclature;
+
   let isAuthorLast = true;
 
   let name = [];
-  const slResult = makeSl(nomenclature.species);
+  const slResult = makeSl(species);
 
-  name.push(Formatted(nomenclature.genus));
+  name.push(Formatted(genus));
   name.push(Formatted(slResult.s));
 
   if (slResult.hasSl) {
@@ -85,21 +91,17 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
   const infras = infraTaxa(nomenclature);
 
-  if (
-    nomenclature.species === nomenclature.subsp
-    || nomenclature.species === nomenclature.var
-    || nomenclature.species === nomenclature.forma
-  ) {
-    if (nomenclature.authors) {
-      name.push(Plain(nomenclature.authors));
+  if (species === subsp || species === varieta || species === forma) {
+    if (authors) {
+      name.push(Plain(authors));
     }
     isAuthorLast = false;
   }
 
   name = name.concat(infras);
 
-  if (isAuthorLast) {
-    name.push(Plain(nomenclature.authors));
+  if (isAuthorLast && authors) {
+    name.push(Plain(authors));
   }
 
   if (nomenclature.hybrid) {
@@ -120,13 +122,13 @@ const listOfSpeciesFormat = (nomenclature, options = {}) => {
 
   name = invalidDesignation(name, options.syntype);
 
-  if (opts.isPublication) {
-    name.push(Plain(nomenclature.publication));
+  if (opts.isPublication && publication) {
+    name.push(Plain(','));
+    name.push(Plain(publication));
   }
-  if (opts.isTribus) {
-    name.push(Plain(nomenclature.tribus));
+  if (opts.isTribus && tribus) {
+    name.push(Plain(tribus));
   }
-
   return name;
 };
 
@@ -142,10 +144,16 @@ function listOfSpeciesForComponent(name, formatString, options = {}) {
 
   return formattedNameArr
     .reduce((acc, el) => acc.concat(el, ' '), [])
-    .slice(0, -1);
+    .slice(0, -1)
+    .filter((e, i, arr) => ( // remove all spaces that are followed by a comma
+      e !== ' ' || arr[i + 1] === undefined || arr[i + 1] !== ','
+    ));
 }
 
 function listOfSpeciesString(name, options) {
+  if (!name) {
+    return undefined;
+  }
   return listOfSpeciesForComponent(name, 'plain', options).join('');
 }
 

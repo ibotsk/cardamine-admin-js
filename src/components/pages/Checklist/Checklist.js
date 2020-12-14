@@ -26,6 +26,7 @@ import config from '../../../config';
 import '../../../styles/custom.css';
 import ChecklistDetail from './components/ChecklistDetail';
 import DeleteSpeciesModal from './modals/DeleteSpeciesModal';
+import ExportSpeciesModal from './modals/ExportSpeciesModal';
 
 const buildNtypesOptions = (ntypes) => {
   const obj = {};
@@ -51,6 +52,7 @@ const ntypesFilterOptions = buildNtypesOptions(ntypes);
 
 const MODAL_EDIT_SPECIES = 'modal-edit-species';
 const MODAL_DELETE_SPECIES = 'modal-delete-species';
+const MODAL_EXPORT = 'modal-export-species';
 
 const columns = [
   {
@@ -98,6 +100,7 @@ class Checklist extends Component {
     this.state = {
       showModalSpecies: false,
       showModalDelete: false,
+      showModalExport: false,
       modalSpeciesEditId: undefined,
 
       listOfSpecies: [], // options for autocomplete fields
@@ -130,6 +133,9 @@ class Checklist extends Component {
       case MODAL_DELETE_SPECIES:
         this.setState({ showModalDelete: true });
         break;
+      case MODAL_EXPORT:
+        this.setState({ showModalExport: true });
+        break;
       default:
         break;
     }
@@ -145,6 +151,7 @@ class Checklist extends Component {
     this.setState({
       showModalSpecies: false,
       showModalDelete: false,
+      showModalExport: false,
     });
   };
 
@@ -213,6 +220,7 @@ class Checklist extends Component {
       modalSpeciesEditId,
       showModalSpecies,
       showModalDelete,
+      showModalExport,
     } = this.state;
     const { id: speciesId } = species;
 
@@ -221,19 +229,32 @@ class Checklist extends Component {
       ...selectRowProperties,
       selected: tableRowsSelected,
     };
+
     return (
       <div id="names">
-        <Grid>
-          <div id="functions">
-            <Button
-              bsStyle="success"
-              onClick={() => this.showModal(MODAL_EDIT_SPECIES)}
-            >
-              <Glyphicon glyph="plus" />
-              {' '}
-              Add new
-            </Button>
-          </div>
+        <Grid id="functions">
+          <Row>
+            <Col md={2}>
+              <Button
+                bsStyle="success"
+                onClick={() => this.showModal(MODAL_EDIT_SPECIES)}
+              >
+                <Glyphicon glyph="plus" />
+                {' '}
+                Add new
+              </Button>
+            </Col>
+            <Col md={2}>
+              <Button
+                bsStyle="primary"
+                onClick={() => this.showModal(MODAL_EXPORT)}
+              >
+                <Glyphicon glyph="export" />
+                {' '}
+                Export
+              </Button>
+            </Col>
+          </Row>
           <h2>Names</h2>
         </Grid>
         <Grid fluid>
@@ -285,6 +306,12 @@ class Checklist extends Component {
           show={showModalDelete}
           onCancel={this.hideModal}
           onConfirm={() => this.deleteRecord(speciesId)}
+        />
+        <ExportSpeciesModal
+          id={MODAL_EXPORT}
+          show={showModalExport}
+          onHide={this.hideModal}
+          ids={[]} // TODO all species for now
         />
         <NotificationContainer />
       </div>

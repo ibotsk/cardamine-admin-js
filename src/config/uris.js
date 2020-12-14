@@ -40,6 +40,7 @@ export default {
     getReplacedForUri: `${backendBase}/api/list-of-species/<%id%>/replaced-for?access_token=<%accessToken%>`,
     getNomenNovumForUri: `${backendBase}/api/list-of-species/<%id%>/nomen-novum-for?access_token=<%accessToken%>`,
     getSynonymsOfParent: `${backendBase}/api/list-of-species/<%id%>/parent-of-synonyms?filter=<%filter%>&access_token=<%accessToken%>`,
+    exportUri: `${backendBase}/api/list-of-species?filter={"where":<%&where%>,"order":<%&order%>,"include":["accepted","basionym","replaced","nomen-novum",{"synonyms-taxonomic":{"synonym":"synonyms-nomenclatoric-through"}},"synonyms-nomenclatoric","synonyms-invalid","synonyms-misidentification","basionym-for","nomen-novum-for","replaced-for"]}&access_token=<%accessToken%>`,
     countUri: `${backendBase}/api/list-of-species/count?access_token=<%accessToken%>`,
   },
   literaturesUri: {

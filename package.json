@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.1",
+    "docx": "^5.4.1",
+    "downloadjs": "^1.4.7",
     "lodash.get": "^4.4.2",
     "lodash.merge": "^4.6.2",
     "mustache": "^3.2.1",
