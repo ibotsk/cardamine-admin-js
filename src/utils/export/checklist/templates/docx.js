@@ -137,7 +137,7 @@ const makeForsParagraphs = (basionymFor, replacedFor, nomenNovumFor) => {
 
 const makeSpeciesSection = (species) => {
   const {
-    name, ntype,
+    id, name, ntype,
     typification, typeLocality, referenceToTypeDesignation, indLoc,
     tribus, accepted, basionym, replaced, nomenNovum,
     synonymsNomenclatoric, synonymsTaxonomic, synonymsInvalid,
@@ -145,11 +145,12 @@ const makeSpeciesSection = (species) => {
     basionymFor, replacedFor, nomenNovumFor,
   } = species;
   const sections = [
-    new Paragraph(
-      {
-        children: [new TextRun({ text: name, size: 25, underline: true })],
-      },
-    ),
+    new Paragraph({
+      children: [new TextRun({ text: id, allCaps: true, color: '#cecece' })],
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: name, size: 25, underline: true })],
+    }),
     new Paragraph({
       children: [new TextRun({ text: ntype, italic: true })],
     }),
@@ -197,6 +198,7 @@ const makeSpeciesSection = (species) => {
 
 /**
  * [{
+ *  id: number|string,
  *  name: string,
  *  ntype: string,
  *  publication: string,

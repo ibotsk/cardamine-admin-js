@@ -13,7 +13,7 @@ import { exportFacade } from '../../../../facades';
 import config from '../../../../config';
 import { helperUtils, exportUtils } from '../../../../utils';
 
-const { mappings: { losType } } = config;
+const { mappings: { losType, typifications } } = config;
 const { listOfSpeciesString } = helperUtils;
 
 const EXPORT_TYPE_DOCX = 'docx';
@@ -30,10 +30,11 @@ const formatSynonyms = (synonyms) => {
 };
 
 const formatForExport = (s) => ({
+  id: s.id,
   name: listOfSpeciesString(s, { isPublication: true }),
   ntype: losType[s.ntype].text,
   publication: s.publication,
-  typification: s.typification,
+  typification: s.typification ? typifications[s.typification] : undefined,
   typeLocality: s.typeLocality,
   referenceToTypeDesignation: s.referenceToTypeDesignation,
   indLoc: s.indLoc,
@@ -86,7 +87,6 @@ const ExportSpeciesModal = ({
     return undefined;
   };
 
-  console.log(species);
   return (
     <Modal show={show} onHide={handleHide} onEnter={onEnter}>
       <Modal.Header closeButton>
@@ -94,7 +94,7 @@ const ExportSpeciesModal = ({
       </Modal.Header>
       <Modal.Body>
         <FormGroup controlId="formControlsSelect">
-          <ControlLabel>Eport as</ControlLabel>
+          <ControlLabel>Export as</ControlLabel>
           <FormControl
             componentClass="select"
             placeholder="type"
@@ -111,7 +111,13 @@ const ExportSpeciesModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleHide}>Close</Button>
-        <Button bsStyle="primary" onClick={handleExport}>Save</Button>
+        <Button
+          bsStyle="primary"
+          onClick={handleExport}
+          disabled={species.length < 1}
+        >
+          Save
+        </Button>
       </Modal.Footer>
     </Modal>
   );
