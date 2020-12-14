@@ -71,18 +71,16 @@ const synonymList = (label, values, numberingReference) => {
   if (label) {
     results.push(labelParagraph(label));
   }
-  const valuesPgs = values.map(({ name, misidentificationAuthor }) => {
-    const r = [
-      new Paragraph({
-        text: name,
-        numbering: {
-          reference: numberingReference,
-          level: 0,
-        },
-      }),
-    ];
+  values.forEach(({ name, misidentificationAuthor, synonymsNomenclatoric }) => {
+    results.push(new Paragraph({
+      text: name,
+      numbering: {
+        reference: numberingReference,
+        level: 0,
+      },
+    }));
     if (misidentificationAuthor) {
-      r.push(new Paragraph({
+      results.push(new Paragraph({
         numbering: {
           reference: numberingReference,
           level: 1,
@@ -93,9 +91,18 @@ const synonymList = (label, values, numberingReference) => {
         ],
       }));
     }
-    return r;
-  }).flat();
-  results.push(...valuesPgs);
+    if (synonymsNomenclatoric) {
+      const snPgs = synonymsNomenclatoric.map((sn) => new Paragraph({
+        text: sn.name,
+        numbering: {
+          reference: numberingReference,
+          level: 1,
+        },
+      }));
+      results.push(...snPgs);
+    }
+  });
+
   return results;
 };
 
@@ -237,7 +244,7 @@ const makeSpeciesSection = (species) => {
  *  synonymsNomenclatoric: [{ name }],
  *  synonymsTaxonomic: [{ name, synonymsNomenclatoric: [{ name }] }],
  *  synonymsInvalid: [{ name }],
- *  synonymsMisidentification: [{ name, misidentificationAuthor }],
+ *  synonymsMisidentification: [{ name, misidentificationAuthor, synonymsNomenclatoric }],
  *  basionymFor: [string],
  *  replacedFor: [string],
  *  nomenNovumFor: [string],

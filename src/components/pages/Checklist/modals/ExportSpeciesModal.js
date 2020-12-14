@@ -22,11 +22,17 @@ const formatSynonyms = (synonyms) => {
   if (!synonyms || synonyms.length === 0) {
     return [];
   }
-  return synonyms.map(({ synonym, misidentificationAuthor }) => ({
-    name: listOfSpeciesString(synonym, { isPublication: true }),
-    synonymsNomenclatoric: [],
-    misidentificationAuthor,
-  }));
+  return synonyms.map(({ synonym, misidentificationAuthor }) => {
+    const snts = synonym['synonyms-nomenclatoric-through'];
+    return {
+      name: listOfSpeciesString(synonym, { isPublication: true }),
+      synonymsNomenclatoric: snts
+        ? snts.map((snt) => ({
+          name: listOfSpeciesString(snt, { isPublication: true }),
+        })) : [],
+      misidentificationAuthor,
+    };
+  });
 };
 
 const formatForExport = (s) => ({

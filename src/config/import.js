@@ -108,6 +108,11 @@ export default {
           {
             level: 1,
             text: '≡',
+            style: {
+              paragraph: {
+                indent: { left: 720, hanging: 260 },
+              },
+            },
           },
         ],
       },
