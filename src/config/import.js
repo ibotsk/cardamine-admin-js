@@ -91,4 +91,54 @@ export default {
       authors: 10,
     },
   },
+  checklist: {
+    docx: {
+      numberingSynonymsTaxonomic: {
+        reference: 'synonyms-taxonomic-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '=',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+          {
+            level: 1,
+            text: '≡',
+          },
+        ],
+      },
+      numberingSynonymsNomenclatoric: {
+        reference: 'synonyms-nomenclatoric-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '≡',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+        ],
+      },
+      numberingSynonymsInvalid: {
+        reference: 'synonyms-invalid-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '–',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
 };
