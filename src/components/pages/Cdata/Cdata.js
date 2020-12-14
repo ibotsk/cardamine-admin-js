@@ -428,7 +428,8 @@ const Cdata = () => {
               disabled={getExportedCount() === 0}
             >
               <Glyphicon glyph="export" />
-              Export Export
+              {' '}
+              Export
               {' '}
               <Badge>{getExportedCount()}</Badge>
             </Button>

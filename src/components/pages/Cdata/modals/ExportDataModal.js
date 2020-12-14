@@ -58,13 +58,13 @@ class ExportDataModal extends React.Component {
 
   handleExport = async () => {
     const { type: which, ids, accessToken } = this.props;
-    const dataToExport = await exportFacade.getForExport(ids, accessToken);
+    const dataToExport = await exportFacade.getCdataForExport(ids, accessToken);
     // eslint-disable-next-line react/destructuring-assignment
     const fields = this.state[which];
     const checkedFields = Object.keys(fields).filter((f) => fields[f] === true);
     const exportconfigWhich = exportConfig[which];
 
-    const { data: exportData, headers: exportHeaders } = exportUtils
+    const { data: exportData, headers: exportHeaders } = exportUtils.cdata.csv
       .createCsvData(dataToExport, checkedFields, exportconfigWhich);
 
     this.setState({
