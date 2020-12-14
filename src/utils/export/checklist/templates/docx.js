@@ -6,6 +6,23 @@ import config from '../../../../config';
 
 const { import: { checklist: { docx } } } = config;
 
+const emptyParagraph = new Paragraph('');
+
+const dividerParagraph = [
+  new Paragraph({
+    text: '',
+    border: {
+      bottom: {
+        color: '#cecece',
+        space: 1,
+        value: 'single',
+        size: 6,
+      },
+    },
+  }),
+  emptyParagraph,
+];
+
 const labelParagraph = (value) => (
   new Paragraph({
     children: [
@@ -13,18 +30,6 @@ const labelParagraph = (value) => (
     ],
   })
 );
-
-const dividerParagraph = new Paragraph({
-  text: '',
-  border: {
-    bottom: {
-      color: 'auto',
-      space: 1,
-      value: 'single',
-      size: 6,
-    },
-  },
-});
 
 const labelValueParagraph = (label, value) => {
   if (value === null || value === undefined || value === '') {
@@ -71,6 +76,65 @@ const synonymList = (label, values, numberingReference) => {
   return results;
 };
 
+const makeAllSynonymsParagraphs = (
+  synonymsNomenclatoric, synonymsTaxonomic,
+  synonymsInvalid, synonymsMisidentification,
+) => {
+  const results = [];
+
+  const synonymsNomenclatoricPgs = synonymList(
+    undefined, synonymsNomenclatoric, 'synonyms-nomenclatoric-numbering',
+  );
+  const synonymsTaxonomicPgs = synonymList(
+    undefined, synonymsTaxonomic, 'synonyms-taxonomic-numbering',
+  );
+  const synonymsInvalidPgs = synonymList(
+    'Invalid designations', synonymsInvalid, 'synonyms-invalid-numbering',
+  );
+  const synonymsMisidentificationsPgs = synonymList(
+    'Misidentifications', synonymsMisidentification,
+    'synonyms-invalid-numbering',
+  );
+
+  if (synonymsNomenclatoricPgs.length > 0 || synonymsTaxonomicPgs.length > 0) {
+    results.push(emptyParagraph);
+    results.push(labelParagraph('Synonyms'));
+  }
+  results.push(...synonymsNomenclatoricPgs);
+  if (synonymsNomenclatoricPgs.length > 0 && synonymsTaxonomicPgs.length > 0) {
+    results.push(emptyParagraph);
+  }
+  results.push(...synonymsTaxonomicPgs);
+
+  if (synonymsInvalidPgs.length > 0) {
+    results.push(emptyParagraph);
+    results.push(...synonymsInvalidPgs);
+  }
+  if (synonymsMisidentificationsPgs.length > 0) {
+    results.push(emptyParagraph);
+    results.push(...synonymsMisidentificationsPgs);
+  }
+  return results;
+};
+
+const makeForsParagraphs = (basionymFor, replacedFor, nomenNovumFor) => {
+  const results = [];
+  const basionymForPgs = bulletList('Basionym for', basionymFor);
+  const replacedForPgs = bulletList('Replaced for', replacedFor);
+  const nomenNovumForPgs = bulletList('Nomen novum for', nomenNovumFor);
+  if (basionymForPgs.length > 0
+    || replacedForPgs.length > 0
+    || nomenNovumForPgs.length > 0) {
+    results.push(emptyParagraph);
+  }
+  return [
+    ...results,
+    ...basionymForPgs,
+    ...replacedForPgs,
+    ...nomenNovumForPgs,
+  ];
+};
+
 const makeSpeciesSection = (species) => {
   const {
     name, ntype,
@@ -81,11 +145,22 @@ const makeSpeciesSection = (species) => {
     basionymFor, replacedFor, nomenNovumFor,
   } = species;
   const sections = [
-    new Paragraph(name),
-    new Paragraph(ntype),
-    labelValueParagraph('Tribus', tribus),
+    new Paragraph(
+      {
+        children: [new TextRun({ text: name, size: 25, underline: true })],
+      },
+    ),
+    new Paragraph({
+      children: [new TextRun({ text: ntype, italic: true })],
+    }),
   ];
+  const tribusPg = labelValueParagraph('Tribus', tribus);
+  if (tribusPg) {
+    sections.push(emptyParagraph);
+    sections.push(tribusPg);
+  }
   if (typification) {
+    sections.push(emptyParagraph);
     sections.push(labelValueParagraph('Type', typification));
     sections.push(labelValueParagraph(
       'Type specimen / Illustration', typeLocality,
@@ -98,41 +173,24 @@ const makeSpeciesSection = (species) => {
       'Ind. loc. (from the protologue)', indLoc,
     ));
   }
+  if (accepted || basionym || replaced || nomenNovum) {
+    sections.push(emptyParagraph);
+  }
   sections.push(labelValueParagraph('Accepted name', accepted));
   sections.push(labelValueParagraph('Basionym', basionym));
   sections.push(labelValueParagraph('Replaced name', replaced));
   sections.push(labelValueParagraph('Nomen novum', nomenNovum));
 
-  const synonymsNomenclatoricPgs = synonymList(
-    undefined, synonymsNomenclatoric, 'synonyms-nomenclatoric-numbering',
+  const synonymsPgs = makeAllSynonymsParagraphs(
+    synonymsNomenclatoric, synonymsTaxonomic,
+    synonymsInvalid, synonymsMisidentification,
   );
-  const synonymsTaxonomicPgs = synonymList(
-    undefined, synonymsTaxonomic, 'synonyms-taxonomic-numbering',
-  );
-  if (synonymsNomenclatoricPgs || synonymsTaxonomicPgs) {
-    sections.push(labelParagraph('Synonyms'));
-  }
-  sections.push(...synonymsNomenclatoricPgs);
-  sections.push(...synonymsTaxonomicPgs);
+  sections.push(...synonymsPgs);
 
-  const synonymsInvalidPgs = synonymList(
-    'Invalid designations', synonymsInvalid, 'synonyms-invalid-numbering',
-  );
-  sections.push(...synonymsInvalidPgs);
-  const synonymsMisidentificationsPgs = synonymList(
-    'Misidentifications', synonymsMisidentification,
-    'synonyms-invalid-numbering',
-  );
-  sections.push(...synonymsMisidentificationsPgs);
+  const forsPgs = makeForsParagraphs(basionymFor, replacedFor, nomenNovumFor);
+  sections.push(...forsPgs);
 
-  const basionymForPgs = bulletList('Basionym for', basionymFor);
-  const replacedForPgs = bulletList('Replaced for', replacedFor);
-  const nomenNovumForPgs = bulletList('Nomen novum for', nomenNovumFor);
-  sections.push(...basionymForPgs);
-  sections.push(...replacedForPgs);
-  sections.push(...nomenNovumForPgs);
-
-  sections.push(dividerParagraph);
+  sections.push(...dividerParagraph);
 
   return sections.filter((s) => !!s);
 };
