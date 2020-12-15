@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-
+import isEqual from 'lodash.isequal';
 import {
-  Grid, Col, Row, Button, Glyphicon,
+  Grid, Col, Row, Button, Glyphicon, Badge,
 } from 'react-bootstrap';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -100,6 +100,8 @@ const Checklist = ({ match: { params }, history }) => {
   const [synonymIdsToDelete, setSynonymIdsToDelete] = useState([]);
   const [fors, setFors] = useState({});
 
+  const [filteredIds, setFilteredIds] = useState([]);
+
   const accessToken = useSelector((state) => state.authentication.accessToken);
 
   // refetch when species changes
@@ -176,6 +178,17 @@ const Checklist = ({ match: { params }, history }) => {
     setSynonymIdsToDelete(idsToDelete);
   };
 
+  const afterFilter = (newResult, newFilters) => {
+    let idsToExport = []; // by default, all ids are eligible for export
+    if (Object.keys(newFilters).length > 0) {
+      idsToExport = newResult.map((r) => parseInt(r.id, 10));
+      idsToExport.sort();
+    }
+    if (!isEqual(filteredIds, idsToExport)) {
+      setFilteredIds(idsToExport);
+    }
+  };
+
   const selectRowProperties = selectRow(history, setSpeciesEditId);
   const tableRowSelectedProps = {
     ...selectRowProperties,
@@ -183,6 +196,8 @@ const Checklist = ({ match: { params }, history }) => {
   };
 
   const { id: speciesId } = species;
+  const showingFiltered = filteredIds.length > 0
+    ? filteredIds.length : listOfSpecies.length;
 
   return (
     <div id="names">
@@ -206,10 +221,25 @@ const Checklist = ({ match: { params }, history }) => {
               <Glyphicon glyph="export" />
               {' '}
               Export
+              {' '}
+              <Badge>{showingFiltered}</Badge>
             </Button>
           </Col>
         </Row>
         <h2>Names</h2>
+        <h4>
+          <small>
+            Showing
+            {' '}
+            {showingFiltered}
+            {' '}
+            of
+            {' '}
+            {listOfSpecies.length}
+            {' '}
+            records
+          </small>
+        </h4>
       </Grid>
       <Grid fluid>
         <Row>
@@ -223,7 +253,7 @@ const Checklist = ({ match: { params }, history }) => {
                 rowClasses="as-pointer"
                 data={listOfSpecies}
                 columns={columns}
-                filter={filterFactory()}
+                filter={filterFactory({ afterFilter })}
                 selectRow={tableRowSelectedProps}
               />
             </div>
@@ -261,7 +291,7 @@ const Checklist = ({ match: { params }, history }) => {
         id="modal-export-species"
         show={showModalExport}
         onHide={handleHideModal}
-        ids={[]} // TODO all species for now
+        ids={filteredIds}
       />
       <NotificationContainer />
     </div>
