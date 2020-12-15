@@ -47,7 +47,7 @@ const ChecklistDetail = ({
   const submitForm = async (e) => {
     e.preventDefault();
     submit(species, synonyms, synonymIdsToDelete, accessToken);
-    onDetailsChanged();
+    onDetailsChanged(species);
   };
 
   const handleSpeciesChange = (prop, val) => {
