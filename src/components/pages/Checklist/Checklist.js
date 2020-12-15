@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import isEqual from 'lodash.isequal';
 import {
-  Grid, Col, Row, Button, Glyphicon,
+  Grid, Col, Row, Button, Glyphicon, Badge,
 } from 'react-bootstrap';
 
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -13,9 +14,7 @@ import filterFactory, {
 import { NotificationContainer } from 'react-notifications';
 
 import PropTypes from 'prop-types';
-import SpeciesType from '../../propTypes/species';
 
-import TabledPage from '../../wrappers/TabledPageParent';
 import SpeciesNameModal from './modals/SpeciesNameModal';
 
 import { checklistFacade } from '../../../facades';
@@ -36,23 +35,8 @@ const buildNtypesOptions = (ntypes) => {
   return obj;
 };
 
-const ntypeFormatter = (cell) => (
-  <span style={{ color: config.mappings.losType[cell].colour }}>{cell}</span>
-);
-
-const formatTableRow = (data) => data.map((n) => ({
-  id: n.id,
-  ntype: n.ntype,
-  speciesName: helperUtils.listOfSpeciesString(n),
-  extra: <Glyphicon glyph="chevron-right" style={{ color: '#cecece' }} />,
-}));
-
 const ntypes = config.mappings.losType;
 const ntypesFilterOptions = buildNtypesOptions(ntypes);
-
-const MODAL_EDIT_SPECIES = 'modal-edit-species';
-const MODAL_DELETE_SPECIES = 'modal-delete-species';
-const MODAL_EXPORT = 'modal-export-species';
 
 const columns = [
   {
@@ -63,7 +47,11 @@ const columns = [
   {
     dataField: 'ntype',
     text: 'Type',
-    formatter: ntypeFormatter,
+    formatter: (cell) => (
+      <span style={{ color: config.mappings.losType[cell].colour }}>
+        {cell}
+      </span>
+    ),
     filter: multiSelectFilter({
       options: ntypesFilterOptions,
     }),
@@ -72,95 +60,108 @@ const columns = [
   {
     dataField: 'speciesName',
     text: 'Name',
+    formatter: (cell, row) => helperUtils.listOfSpeciesString(row),
     filter: textFilter(),
     sort: true,
   },
   {
     dataField: 'extra',
     text: '',
+    formatter: () => (
+      <Glyphicon glyph="chevron-right" style={{ color: '#cecece' }} />
+    ),
     headerStyle: { width: '10px' },
   },
 ];
 
-const selectRow = (history, populateDetailsForEdit) => ({
+const selectRow = (history, onSelectedRow) => ({
   mode: 'radio',
   clickToSelect: true,
   hideSelectColumn: true,
   bgColor: '#ffea77',
   onSelect: (row) => {
     history.push(`/names/${row.id}`);
-    populateDetailsForEdit(row.id);
+    onSelectedRow(row.id);
   },
 });
 
-class Checklist extends Component {
-  constructor(props) {
-    super(props);
+const Checklist = ({ match: { params }, history }) => {
+  const [showModalSpecies, setShowModalSpecies] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalExport, setShowModalExport] = useState(false);
 
-    this.state = {
-      showModalSpecies: false,
-      showModalDelete: false,
-      showModalExport: false,
-      modalSpeciesEditId: undefined,
+  const selectedId = params.id ? parseInt(params.id, 10) : undefined;
+  const [speciesEditId, setSpeciesEditId] = useState(selectedId);
 
-      listOfSpecies: [], // options for autocomplete fields
-      species: {},
-      tableRowsSelected: [],
+  const [listOfSpecies, setListOfSpecies] = useState([]);
+  const [species, setSpecies] = useState({});
 
-      synonyms: {},
-      synonymIdsToDelete: [],
-      fors: {},
+  const [synonyms, setSynonyms] = useState({});
+  const [synonymIdsToDelete, setSynonymIdsToDelete] = useState([]);
+  const [fors, setFors] = useState({});
+
+  const [filteredIds, setFilteredIds] = useState([]);
+
+  const accessToken = useSelector((state) => state.authentication.accessToken);
+
+  // refetch when species changes
+  useEffect(() => {
+    const fetch = async () => {
+      const listOfSpeciesFetched = await checklistFacade.getAllSpecies(
+        accessToken,
+      );
+      setListOfSpecies(listOfSpeciesFetched);
     };
-  }
+    fetch();
+  }, [species, accessToken]);
 
-  componentDidMount() {
-    const { match } = this.props;
-    const selectedId = match.params.id;
-    if (selectedId) {
-      const selectedIdInt = parseInt(selectedId, 10);
-      this.populateDetailsForEdit(selectedIdInt);
-    }
-  }
+  // refetch when selected row changes and any modal closes
+  useEffect(() => {
+    const fetch = async () => {
+      if (speciesEditId && !showModalSpecies
+        && !showModalDelete && !showModalExport) {
+        const speciesFetched = await checklistFacade.getSpeciesByIdWithFilter(
+          speciesEditId, accessToken,
+        );
+        const synonymsFetched = await checklistFacade.getSynonyms(
+          speciesEditId, accessToken,
+        );
+        const forsFetched = await checklistFacade.getBasionymsFor(
+          speciesEditId, accessToken,
+        );
 
-  showModal = (name, id) => {
-    switch (name) {
-      case MODAL_EDIT_SPECIES:
-        this.setState({
-          showModalSpecies: true,
-          modalSpeciesEditId: id,
-        });
-        break;
-      case MODAL_DELETE_SPECIES:
-        this.setState({ showModalDelete: true });
-        break;
-      case MODAL_EXPORT:
-        this.setState({ showModalExport: true });
-        break;
-      default:
-        break;
-    }
+        setSpecies(speciesFetched);
+        setSynonyms(synonymsFetched);
+        setFors(forsFetched);
+      }
+    };
+
+    fetch();
+  }, [speciesEditId, accessToken,
+    showModalSpecies, showModalDelete, showModalExport]);
+
+  const handleShowModalEditSpecies = (id) => {
+    setSpeciesEditId(id);
+    setShowModalSpecies(true);
+  };
+  const handleShowModalDelete = () => {
+    setShowModalDelete(true);
+  };
+  const handleShowModalExport = () => {
+    setShowModalExport(true);
   };
 
-  hideModal = (repopulate = true) => {
-    const { onTableChange } = this.props;
-    const { species } = this.state;
-    onTableChange(undefined, {});
-
-    const id = repopulate ? species.id : undefined;
-    this.populateDetailsForEdit(id);
-    this.setState({
-      showModalSpecies: false,
-      showModalDelete: false,
-      showModalExport: false,
-    });
+  const handleHideModal = () => {
+    setShowModalSpecies(false);
+    setShowModalDelete(false);
+    setShowModalExport(false);
   };
 
-  deleteRecord = async (id) => {
-    const { accessToken, history } = this.props;
+  const deleteRecord = async (id) => {
     try {
       await checklistFacade.deleteSpecies(id, accessToken);
       history.push('/names');
-      this.hideModal(false);
+      handleHideModal();
       notifications.success('Succesfully deleted');
     } catch (e) {
       notifications.error('Error deleting record');
@@ -168,164 +169,138 @@ class Checklist extends Component {
     }
   };
 
-  populateDetailsForEdit = async (id) => {
-    let species = {};
-    let listOfSpecies = [];
-    let synonyms = {};
-    let fors = {};
-    let tableRowsSelected = [];
-
-    if (id) {
-      const { accessToken } = this.props;
-
-      species = await checklistFacade.getSpeciesByIdWithFilter(id, accessToken);
-      listOfSpecies = await checklistFacade.getAllSpecies(accessToken);
-
-      synonyms = await checklistFacade.getSynonyms(id, accessToken);
-      fors = await checklistFacade.getBasionymsFor(id, accessToken);
-
-      tableRowsSelected = [id];
-    }
-
-    this.setState({
-      species,
-      listOfSpecies,
-      tableRowsSelected,
-      synonymIdsToDelete: [],
-      fors,
-      synonyms,
-    });
+  const handleSpeciesChange = (updatedSpecies) => {
+    setSpecies(updatedSpecies);
   };
 
-  handleSpeciesChange = (updatedSpecies) => this.setState({
-    species: updatedSpecies,
-  });
+  const handleSynonymsChange = (newSynonyms, idsToDelete) => {
+    setSynonyms(newSynonyms);
+    setSynonymIdsToDelete(idsToDelete);
+  };
 
-  handleSynonymsChange = (newSynonyms, synonymIdsToDelete) => this.setState({
-    synonyms: newSynonyms,
-    synonymIdsToDelete,
-  });
+  const afterFilter = (newResult, newFilters) => {
+    let idsToExport = []; // by default, all ids are eligible for export
+    if (Object.keys(newFilters).length > 0) {
+      idsToExport = newResult.map((r) => parseInt(r.id, 10));
+      idsToExport.sort();
+    }
+    if (!isEqual(filteredIds, idsToExport)) {
+      setFilteredIds(idsToExport);
+    }
+  };
 
-  render() {
-    const {
-      data, onTableChange, history, accessToken,
-    } = this.props;
-    const {
-      tableRowsSelected,
-      species,
-      fors,
-      synonyms,
-      synonymIdsToDelete,
-      listOfSpecies,
-      modalSpeciesEditId,
-      showModalSpecies,
-      showModalDelete,
-      showModalExport,
-    } = this.state;
-    const { id: speciesId } = species;
+  const selectRowProperties = selectRow(history, setSpeciesEditId);
+  const tableRowSelectedProps = {
+    ...selectRowProperties,
+    selected: [speciesEditId].filter((i) => !!i),
+  };
 
-    const selectRowProperties = selectRow(history, this.populateDetailsForEdit);
-    const tableRowSelectedProps = {
-      ...selectRowProperties,
-      selected: tableRowsSelected,
-    };
+  const { id: speciesId } = species;
+  const showingFiltered = filteredIds.length > 0
+    ? filteredIds.length : listOfSpecies.length;
 
-    return (
-      <div id="names">
-        <Grid id="functions">
-          <Row>
-            <Col md={2}>
-              <Button
-                bsStyle="success"
-                onClick={() => this.showModal(MODAL_EDIT_SPECIES)}
-              >
-                <Glyphicon glyph="plus" />
-                {' '}
-                Add new
-              </Button>
-            </Col>
-            <Col md={2}>
-              <Button
-                bsStyle="primary"
-                onClick={() => this.showModal(MODAL_EXPORT)}
-              >
-                <Glyphicon glyph="export" />
-                {' '}
-                Export
-              </Button>
-            </Col>
-          </Row>
-          <h2>Names</h2>
-        </Grid>
-        <Grid fluid>
-          <Row>
-            <Col sm={6} id="species-list">
-              <div className="scrollable scrollable-higher">
-                <BootstrapTable
-                  hover
-                  striped
-                  condensed
-                  keyField="id"
-                  rowClasses="as-pointer"
-                  data={formatTableRow(data)}
-                  columns={columns}
-                  filter={filterFactory()}
-                  selectRow={tableRowSelectedProps}
-                  onTableChange={onTableChange}
-                />
-              </div>
-            </Col>
-            <Col sm={6} id="species-detail">
-              <ChecklistDetail
-                species={species}
-                fors={fors}
-                synonyms={synonyms}
-                synonymIdsToDelete={synonymIdsToDelete}
-                listOfSpecies={listOfSpecies}
-                accessToken={accessToken}
-                onShowEditModal={() => this.showModal(
-                  MODAL_EDIT_SPECIES,
-                  speciesId,
-                )}
-                onShowDeleteModal={() => this.showModal(MODAL_DELETE_SPECIES)}
-                onSpeciesChange={this.handleSpeciesChange}
-                onSynonymsChange={this.handleSynonymsChange}
-                onDetailsChanged={() => onTableChange(undefined, {})}
+  return (
+    <div id="names">
+      <Grid id="functions">
+        <Row>
+          <Col md={2}>
+            <Button
+              bsStyle="success"
+              onClick={() => handleShowModalEditSpecies()}
+            >
+              <Glyphicon glyph="plus" />
+              {' '}
+              Add new
+            </Button>
+          </Col>
+          <Col md={2}>
+            <Button
+              bsStyle="primary"
+              onClick={() => handleShowModalExport()}
+            >
+              <Glyphicon glyph="export" />
+              {' '}
+              Export
+              {' '}
+              <Badge>{showingFiltered}</Badge>
+            </Button>
+          </Col>
+        </Row>
+        <h2>Names</h2>
+        <h4>
+          <small>
+            Showing
+            {' '}
+            {showingFiltered}
+            {' '}
+            of
+            {' '}
+            {listOfSpecies.length}
+            {' '}
+            records
+          </small>
+        </h4>
+      </Grid>
+      <Grid fluid>
+        <Row>
+          <Col sm={6} id="species-list">
+            <div className="scrollable scrollable-higher">
+              <BootstrapTable
+                hover
+                striped
+                condensed
+                keyField="id"
+                rowClasses="as-pointer"
+                data={listOfSpecies}
+                columns={columns}
+                filter={filterFactory({ afterFilter })}
+                selectRow={tableRowSelectedProps}
               />
-            </Col>
-          </Row>
-        </Grid>
-        <SpeciesNameModal
-          id={MODAL_EDIT_SPECIES}
-          editId={modalSpeciesEditId}
-          show={showModalSpecies}
-          onHide={this.hideModal}
-        />
-        <DeleteSpeciesModal
-          id={MODAL_DELETE_SPECIES}
-          show={showModalDelete}
-          onCancel={this.hideModal}
-          onConfirm={() => this.deleteRecord(speciesId)}
-        />
-        <ExportSpeciesModal
-          id={MODAL_EXPORT}
-          show={showModalExport}
-          onHide={this.hideModal}
-          ids={[]} // TODO all species for now
-        />
-        <NotificationContainer />
-      </div>
-    );
-  }
-}
+            </div>
+          </Col>
+          <Col sm={6} id="species-detail">
+            <ChecklistDetail
+              species={species}
+              fors={fors}
+              synonyms={synonyms}
+              synonymIdsToDelete={synonymIdsToDelete}
+              listOfSpecies={listOfSpecies}
+              accessToken={accessToken}
+              onShowEditModal={() => handleShowModalEditSpecies(speciesId)}
+              onShowDeleteModal={() => handleShowModalDelete()}
+              onSpeciesChange={handleSpeciesChange}
+              onSynonymsChange={handleSynonymsChange}
+              onDetailsChanged={handleSpeciesChange}
+            />
+          </Col>
+        </Row>
+      </Grid>
+      <SpeciesNameModal
+        id="modal-edit-species"
+        editId={speciesEditId}
+        show={showModalSpecies}
+        onHide={handleHideModal}
+      />
+      <DeleteSpeciesModal
+        id="modal-delete-species"
+        show={showModalDelete}
+        onCancel={handleHideModal}
+        onConfirm={() => deleteRecord(speciesId)}
+      />
+      <ExportSpeciesModal
+        id="modal-export-species"
+        show={showModalExport}
+        onHide={handleHideModal}
+        ids={filteredIds}
+      />
+      <NotificationContainer />
+    </div>
+  );
+};
 
-export default TabledPage({
-  getAll: config.uris.listOfSpeciesUri.getAllWOrderUri,
-  getCount: config.uris.listOfSpeciesUri.countUri,
-})(Checklist);
+export default Checklist;
 
 Checklist.propTypes = {
-  data: PropTypes.arrayOf(SpeciesType.type).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string,
@@ -334,6 +309,4 @@ Checklist.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-  accessToken: PropTypes.string.isRequired,
-  onTableChange: PropTypes.func.isRequired,
 };

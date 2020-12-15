@@ -25,7 +25,7 @@ async function getCdataForExport(ids, accessToken) {
 async function getChecklistForExport(ids, accessToken, format = undefined) {
   const wb = new WhereBuilder();
   if (ids && ids.length > 0) {
-    wb.add(inq('id', ids));
+    wb.add(inq('id', ...ids));
   }
   const where = wb.buildString();
   const order = JSON.stringify(filterUtils.makeOrder(filters.listOfSpecies));
