@@ -19,7 +19,7 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import { NotificationContainer } from 'react-notifications';
 
 import {
-  setExportCdata, setCdataNeedsRefresh,
+  setCdataNeedsRefresh,
 } from '../../../actions';
 
 import LosName from '../../segments/LosName';
@@ -301,9 +301,9 @@ const Cdata = () => {
   const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
   const [showModalColumns, setShowModalColumns] = useState(false);
+  const [exportedCdata, setExportedCdata] = useState([]);
 
   const accessToken = useSelector((state) => state.authentication.accessToken);
-  const exportedCdata = useSelector((state) => state.exportData.cdata);
   const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
   const dispatch = useDispatch();
 
@@ -357,7 +357,7 @@ const Cdata = () => {
       }
     }
 
-    dispatch(setExportCdata(exportedIds));
+    setExportedCdata(exportedIds);
   };
 
   const isExported = (id) => exportedCdata.includes(id)
@@ -491,10 +491,8 @@ const Cdata = () => {
       <ExportDataModal
         show={showModalExport}
         onHide={hideModal}
-        type="chromdata"
         count={exportedCdata.length}
         ids={exportedCdata}
-        accessToken={accessToken}
       />
       <NotificationContainer />
     </div>

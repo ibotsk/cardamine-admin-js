@@ -74,7 +74,7 @@ const ExportSpeciesModal = ({
   const [exportType, setExportType] = useState(EXPORT_TYPE_DOCX);
   const accessToken = useSelector((state) => state.authentication.accessToken);
 
-  const onEnter = async () => {
+  const handleEnter = async () => {
     const fetchedSpecies = await exportFacade.getChecklistForExport(
       ids, accessToken, formatForExport,
     );
@@ -94,7 +94,7 @@ const ExportSpeciesModal = ({
   };
 
   return (
-    <Modal show={show} onHide={handleHide} onEnter={onEnter}>
+    <Modal show={show} onHide={handleHide} onEnter={handleEnter}>
       <Modal.Header closeButton>
         <Modal.Title>Export species</Modal.Title>
       </Modal.Header>
