@@ -4,7 +4,7 @@ import {
 
 import config from '../../../../config';
 
-const { import: { checklist: { docx } } } = config;
+const { export: { checklist: { docx } } } = config;
 
 const emptyParagraph = new Paragraph('');
 

@@ -302,4 +302,68 @@ export default {
       default: true,
     },
   },
+  checklist: {
+    docx: {
+      numberingSynonymsTaxonomic: {
+        reference: 'synonyms-taxonomic-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '=',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+          {
+            level: 1,
+            text: '≡',
+            style: {
+              paragraph: {
+                indent: { left: 720, hanging: 260 },
+              },
+            },
+          },
+        ],
+      },
+      numberingSynonymsNomenclatoric: {
+        reference: 'synonyms-nomenclatoric-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '≡',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+        ],
+      },
+      numberingSynonymsInvalid: {
+        reference: 'synonyms-invalid-numbering',
+        levels: [
+          {
+            level: 0,
+            text: '–',
+            style: {
+              paragraph: {
+                indent: { left: 260, hanging: 260 },
+              },
+            },
+          },
+          {
+            level: 1,
+            format: 'bullet',
+            style: {
+              paragraph: {
+                indent: { left: 720, hanging: 260 },
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
 };
