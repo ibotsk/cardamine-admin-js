@@ -9,15 +9,15 @@ import {
 
 import PropTypes from 'prop-types';
 
-import { CSVDownload } from 'react-csv';
-
 import config from '../../../../config';
 import { exportFacade } from '../../../../facades';
 import { exportUtils } from '../../../../utils';
 
 const {
   export: {
-    chromdata: columnsConfig,
+    chromdata: {
+      columns: columnsConfig,
+    },
     options: optionsConfig,
   },
 } = config;
@@ -55,39 +55,37 @@ const ExportDataModal = ({
   show, onHide, ids, count,
 }) => {
   const [exportType, setExportType] = useState(EXPORT_TYPE_CSV);
-  const [separator, setSeparator] = useState(optionsConfig.separator);
-  const [enclosingCharacter, setEnclosingCharacter] = useState(
-    optionsConfig.enclosingCharacter,
-  );
+  const [delimiter, setDelimiter] = useState(optionsConfig.separator);
+
   const [checkboxes, setCheckboxes] = useState(defaultCheckedCheckboxes);
   const [exportData, setExportData] = useState([]);
-  const [exportHeaders, setExportHeaders] = useState([]);
 
   const accessToken = useSelector((state) => state.authentication.accessToken);
 
-  const handleEnter = () => {
+  const handleEnter = async () => {
+    const exportIds = ids.includes('all') ? undefined : ids;
+    const dataToExport = await exportFacade.getCdataForExport(
+      exportIds, accessToken, exportUtils.cdata.transformRecord,
+    );
+    setExportData(dataToExport);
     setCheckboxes(defaultCheckedCheckboxes);
   };
 
   const handleHide = () => {
     onHide();
     setExportData([]);
-    setExportHeaders([]);
   };
 
   const handleExport = async () => {
-    const exportIds = ids.includes('all') ? undefined : ids;
-    const dataToExport = await exportFacade.getCdataForExport(
-      exportIds, accessToken,
-    );
     const checkedFields = Object.keys(checkboxes)
       .filter((f) => checkboxes[f] === true);
+    const headerColumns = exportUtils.cdata.csv.createHeaderColumns(
+      checkedFields,
+    );
 
-    const { data, headers } = exportUtils.cdata.csv
-      .createCsvData(dataToExport, checkedFields, columnsConfig);
-
-    setExportData(data);
-    setExportHeaders(headers);
+    exportUtils.cdata.csv.createAndDownload(exportData, headerColumns, {
+      delimiter,
+    });
   };
 
   const handleChangeCheckbox = (e) => {
@@ -106,8 +104,7 @@ const ExportDataModal = ({
   };
 
   const handleSetDefaultsFields = () => {
-    setSeparator(optionsConfig.separator);
-    setEnclosingCharacter(optionsConfig.enclosingCharacter);
+    setDelimiter(optionsConfig.separator);
   };
 
   // checked if all checkboxes are true -> no false value is found in values
@@ -155,18 +152,9 @@ const ExportDataModal = ({
               <ControlLabel>Separator</ControlLabel>
               <FormControl
                 type="text"
-                value={separator}
-                onChange={(e) => setSeparator(e.target.value)}
+                value={delimiter}
+                onChange={(e) => setDelimiter(e.target.value)}
                 placeholder="Separator"
-              />
-            </FormGroup>
-            <FormGroup controlId="enclosingCharacter" bsSize="sm">
-              <ControlLabel>Enclosing Character</ControlLabel>
-              <FormControl
-                type="text"
-                value={enclosingCharacter}
-                onChange={(e) => setEnclosingCharacter(e.target.value)}
-                placeholder="Enclosing character"
               />
             </FormGroup>
           </Tab>
@@ -231,19 +219,6 @@ const ExportDataModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleHide}>Close</Button>
-        {
-          exportData.length > 0
-          && (
-            <CSVDownload
-              headers={exportHeaders}
-              data={exportData}
-              separator={separator}
-              enclosingCharacter={enclosingCharacter}
-              filename="fnm.csv"
-              target="_self"
-            />
-          )
-        }
         <Button bsStyle="primary" onClick={handleExport}>Export</Button>
       </Modal.Footer>
     </Modal>

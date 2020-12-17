@@ -22,9 +22,15 @@ const whereIdIn = (ids) => {
   return wb.buildString();
 };
 
-async function getCdataForExport(ids, accessToken) {
+async function getCdataForExport(ids, accessToken, format = undefined) {
   const where = whereIdIn(ids);
-  return getRequest(chromosomeDataUri.exportUri, { where }, accessToken);
+  const data = await getRequest(
+    chromosomeDataUri.exportUri, { where }, accessToken,
+  );
+  if (format) {
+    return data.map(format);
+  }
+  return data;
 }
 
 async function getChecklistForExport(ids, accessToken, format = undefined) {

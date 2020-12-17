@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.1",
+    "csv-stringify": "^5.5.3",
     "docx": "^5.4.1",
     "downloadjs": "^1.4.7",
     "lodash.get": "^4.4.2",
