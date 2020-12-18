@@ -25,6 +25,10 @@ export default {
       'coordinatesGeorefLon',
     ],
     columns: {
+      id: {
+        name: 'ID',
+        column: 'id',
+      },
       nameAsPublished: {
         name: 'Name as published',
         column: 'material.reference.nameAsPublished',
@@ -122,11 +126,6 @@ export default {
       hocLoco: {
         name: 'Hoc Loco',
         column: 'hocLoco',
-        group: 'cdata',
-      },
-      id: {
-        name: 'ID',
-        column: 'id',
         group: 'cdata',
       },
       idiogram: {

@@ -6,21 +6,28 @@ import config from '../../../config';
 const {
   export: {
     options: optionsConfig,
+    chromdata: {
+      columns: columnsConfig,
+    },
   },
 } = config;
 
+function createKeyHeaderColumns(chosenColumnsInOrder) {
+  return chosenColumnsInOrder.map((col) => ({
+    key: col,
+    header: columnsConfig[col].name,
+  }));
+}
+
 /**
  * @param {array<object>} records array of objects to export
- * @param {array<object>} headerColumnsKeyLabel array of { key: '<keyVal>', label: '<headerVal>' }
+ * @param {array<string>} chosenColumnsInOrder array of 
  *  where keyVal is key of object from records and headerVal is title of column
  * @param {object} options
  */
-async function createAndDownload(records, headerColumnsKeyLabel, options = {}) {
+async function createAndDownload(records, chosenColumnsInOrder, options = {}) {
   const { delimiter = optionsConfig.separator } = options;
-  const headerColumns = headerColumnsKeyLabel.map(({ key, label }) => ({
-    key,
-    header: label,
-  }));
+  const headerColumns = createKeyHeaderColumns(chosenColumnsInOrder);
 
   const dataToDownload = [];
   const stringifier = stringify({

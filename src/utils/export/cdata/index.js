@@ -6,5 +6,5 @@ export default {
   csv,
   docx,
   transformRecord: helper.transformRecord,
-  createKeyLabelColumns: helper.createKeyLabelColumns,
+  createChosenColumnsInOrder: helper.createChosenColumnsInOrder,
 };

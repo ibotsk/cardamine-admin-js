@@ -67,21 +67,12 @@ function transformRecord(record) {
   }, {});
 }
 
-/**
- * Creates array of { key: '<keyVal>', label: '<labelVal>' } in order
- * @param {array<string>} chosenColumns
- */
-function createKeyLabelColumns(chosenColumns) {
-  const chosenColumnsInOrder = defaultOrder
-    .filter((k) => chosenColumns.includes(k));
 
-  return chosenColumnsInOrder.map((col) => ({
-    key: col,
-    label: columnsConfig[col].name,
-  }));
+function createChosenColumnsInOrder(chosenColumns) {
+  return defaultOrder.filter((k) => chosenColumns.includes(k));
 }
 
 export default {
   transformRecord,
-  createKeyLabelColumns,
+  createChosenColumnsInOrder,
 };

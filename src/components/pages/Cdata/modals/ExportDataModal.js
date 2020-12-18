@@ -105,16 +105,16 @@ const ExportDataModal = ({
   const handleExport = () => {
     const checkedFields = Object.keys(checkboxes)
       .filter((f) => checkboxes[f] === true);
-    const headerColumns = exportUtils.cdata.createKeyLabelColumns(
+    const chosenColumnsInOrder = exportUtils.cdata.createChosenColumnsInOrder(
       checkedFields,
     );
 
     if (exportType === EXPORT_TYPE_CSV) {
-      exportUtils.cdata.csv.createAndDownload(data, headerColumns, {
+      exportUtils.cdata.csv.createAndDownload(data, chosenColumnsInOrder, {
         delimiter,
       });
     } else if (exportType === EXPORT_TYPE_DOCX) {
-      exportUtils.cdata.docx.createAndDownload(data, headerColumns, {
+      exportUtils.cdata.docx.createAndDownload(data, chosenColumnsInOrder, {
         includeEmptyFields,
       });
     }
@@ -223,6 +223,13 @@ const ExportDataModal = ({
                   All
                 </Checkbox>
 
+                <Checkbox
+                  name="id"
+                  checked={checkboxes.id}
+                  onChange={handleChangeCheckbox}
+                >
+                  <b>ID</b>
+                </Checkbox>
                 <h6>Identification:</h6>
                 <GroupCheckboxes
                   checkboxesState={checkboxes}
