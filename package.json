@@ -12,7 +12,6 @@
     "lodash.merge": "^4.6.2",
     "mustache": "^3.2.1",
     "prop-types": "^15.6.2",
-    "rc-progress": "^2.5.2",
     "react": "^16.14.0",
     "react-bootstrap": "^0.33.1",
     "react-bootstrap-table-next": "^4.0.3",
