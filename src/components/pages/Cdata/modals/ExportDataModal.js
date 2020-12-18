@@ -4,14 +4,17 @@ import {
   Modal, Button, Checkbox,
   Tabs, Tab,
   FormGroup, FormControl, ControlLabel,
-  Row, Col,
+  Row, Col, Panel,
 } from 'react-bootstrap';
+
+import { BeatLoader } from 'react-spinners';
 
 import PropTypes from 'prop-types';
 
-import config from '../../../../config';
+import commonHooks from '../../../segments/hooks';
 import { exportFacade } from '../../../../facades';
 import { exportUtils } from '../../../../utils';
+import config from '../../../../config';
 
 const {
   export: {
@@ -51,29 +54,51 @@ const GroupCheckboxes = ({ checkboxesState, group, onChangeCheckbox }) => {
   ));
 };
 
+const LoadDataInfo = ({ isLoading, loadedCount }) => {
+  if (isLoading) {
+    return (
+      <div className="text-center">
+        <div>Loading data</div>
+        <BeatLoader loading={isLoading} color="#50E3C2" />
+      </div>
+    );
+  }
+  return (
+    <div>
+      {loadedCount}
+      {' '}
+      records ready
+    </div>
+  );
+};
+
 const ExportDataModal = ({
-  show, onHide, ids, count,
+  show, onHide, ids,
 }) => {
   const [exportType, setExportType] = useState(EXPORT_TYPE_CSV);
   const [delimiter, setDelimiter] = useState(optionsConfig.separator);
 
   const [checkboxes, setCheckboxes] = useState(defaultCheckedCheckboxes);
-  const [exportData, setExportData] = useState([]);
-
   const accessToken = useSelector((state) => state.authentication.accessToken);
 
-  const handleEnter = async () => {
+
+  const getCdata = () => {
     const exportIds = ids.includes('all') ? undefined : ids;
-    const dataToExport = await exportFacade.getCdataForExport(
+    return exportFacade.getCdataForExport(
       exportIds, accessToken, exportUtils.cdata.transformRecord,
     );
-    setExportData(dataToExport);
+  };
+  const { data, isLoading, doFetch } = commonHooks.useSimpleFetch(getCdata);
+
+  const handleEnter = async () => {
+    doFetch();
     setCheckboxes(defaultCheckedCheckboxes);
   };
 
   const handleHide = () => {
     onHide();
-    setExportData([]);
+    // not resetting data for caching reasons
+    // setData([]);
   };
 
   const handleExport = async () => {
@@ -83,7 +108,7 @@ const ExportDataModal = ({
       checkedFields,
     );
 
-    exportUtils.cdata.csv.createAndDownload(exportData, headerColumns, {
+    exportUtils.cdata.csv.createAndDownload(data, headerColumns, {
       delimiter,
     });
   };
@@ -120,15 +145,16 @@ const ExportDataModal = ({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          Export data -
-          {' '}
-          {count || 0}
-          {' '}
-          records to export
+          Export data
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Tabs defaultActiveKey={1} id="export-tabs" className="">
+        <Panel>
+          <Panel.Body>
+            <LoadDataInfo isLoading={isLoading} loadedCount={data.length} />
+          </Panel.Body>
+        </Panel>
+        <Tabs defaultActiveKey={1} id="export-tabs">
           <Tab eventKey={1} title="File">
             <Button
               bsSize="xsmall"
@@ -219,7 +245,13 @@ const ExportDataModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleHide}>Close</Button>
-        <Button bsStyle="primary" onClick={handleExport}>Export</Button>
+        <Button
+          bsStyle="primary"
+          onClick={handleExport}
+          disabled={data.length < 1}
+        >
+          Export
+        </Button>
       </Modal.Footer>
     </Modal>
   );
@@ -229,7 +261,11 @@ export default ExportDataModal;
 
 ExportDataModal.propTypes = {
   ids: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  count: PropTypes.number.isRequired,
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
+};
+
+LoadDataInfo.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  loadedCount: PropTypes.number.isRequired,
 };

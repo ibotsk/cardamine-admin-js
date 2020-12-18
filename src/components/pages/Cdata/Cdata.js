@@ -301,7 +301,7 @@ const Cdata = () => {
   const [tableColumns, setTableColumns] = useState(columns);
   const [showModalExport, setShowModalExport] = useState(false);
   const [showModalColumns, setShowModalColumns] = useState(false);
-  const [exportedCdata, setExportedCdata] = useState([]);
+  const [exportedCdataIds, setExportedCdataIds] = useState([]);
 
   const accessToken = useSelector((state) => state.authentication.accessToken);
   const needsRefresh = useSelector((state) => state.cdataRefresh.needsRefresh);
@@ -342,7 +342,8 @@ const Cdata = () => {
   };
 
   const onAddToExport = (e, ids) => {
-    let exportedIds = ids.includes(EXPORT_ALL_VALUE) ? [] : [...exportedCdata]; // when adding "all", remove all others
+    let exportedIds = ids.includes(EXPORT_ALL_VALUE)
+      ? [] : [...exportedCdataIds]; // when adding "all", remove all others
 
     const { checked } = e.target;
     for (const id of ids) {
@@ -357,18 +358,14 @@ const Cdata = () => {
       }
     }
 
-    setExportedCdata(exportedIds);
+    setExportedCdataIds(exportedIds);
   };
 
-  const isExported = (id) => exportedCdata.includes(id)
-    || exportedCdata.includes(EXPORT_ALL_VALUE);
-
-  const getExportedCount = () => (
-    exportedCdata.includes(EXPORT_ALL_VALUE) ? totalSize : exportedCdata.length
-  );
+  const isExported = (id) => exportedCdataIds.includes(id)
+    || exportedCdataIds.includes(EXPORT_ALL_VALUE);
 
   const showExportModal = () => {
-    if (exportedCdata.length > 0) {
+    if (exportedCdataIds.length > 0) {
       setShowModalExport(true);
     }
   };
@@ -408,6 +405,9 @@ const Cdata = () => {
     });
   };
 
+  const exportedCount = exportedCdataIds.includes(EXPORT_ALL_VALUE)
+    ? totalSize : exportedCdataIds.length;
+
   return (
     <div id="chromosome-data">
       <Grid id="functions">
@@ -425,13 +425,13 @@ const Cdata = () => {
             <Button
               bsStyle="primary"
               onClick={showExportModal}
-              disabled={getExportedCount() === 0}
+              disabled={exportedCount === 0}
             >
               <Glyphicon glyph="export" />
               {' '}
               Export
               {' '}
-              <Badge>{getExportedCount()}</Badge>
+              <Badge>{exportedCount}</Badge>
             </Button>
           </Col>
         </Row>
@@ -491,8 +491,8 @@ const Cdata = () => {
       <ExportDataModal
         show={showModalExport}
         onHide={hideModal}
-        count={exportedCdata.length}
-        ids={exportedCdata}
+        count={exportedCdataIds.length}
+        ids={exportedCdataIds}
       />
       <NotificationContainer />
     </div>
