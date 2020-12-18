@@ -12,6 +12,8 @@ const {
   },
 } = config;
 
+const EMPTY_VALUE = '';
+
 const emptyParagraph = new Paragraph('');
 
 const dividerParagraph = [
@@ -38,14 +40,14 @@ const labelParagraph = (value) => (
   })
 );
 
-const labelValueParagraph = (label, value) => {
-  if (value === null || value === undefined || value === '') {
+const labelValueParagraph = (label, value, showEmpty) => {
+  if (!showEmpty && (value === null || value === undefined || value === '')) {
     return undefined;
   }
   return new Paragraph({
     children: [
       new TextRun({ text: `${label}: `, bold: true }),
-      new TextRun(value),
+      new TextRun(value || EMPTY_VALUE),
     ],
   });
 };
@@ -56,7 +58,9 @@ const labelValueParagraph = (label, value) => {
  * @param {object} record
  * @param {array} chosenColumns key, label in order in which they will appear in file
  */
-const makeGroupSection = (group, groupLabel, record, chosenColumns) => {
+const makeGroupSection = (
+  group, groupLabel, record, chosenColumns, showEmpty,
+) => {
   const colsOfGroupKeys = Object.keys(columns)
     .filter((ck) => columns[ck].group === group);
 
@@ -67,7 +71,7 @@ const makeGroupSection = (group, groupLabel, record, chosenColumns) => {
     .map(({ key }) => {
       const value = record[key];
       const label = columns[key].name;
-      return labelValueParagraph(label, value);
+      return labelValueParagraph(label, value, showEmpty);
     })
     .filter((pg) => !!pg);
 
@@ -77,22 +81,22 @@ const makeGroupSection = (group, groupLabel, record, chosenColumns) => {
   return paragraphs;
 };
 
-const makeRecordSection = (r, chosenColumns) => {
+const makeRecordSection = (r, chosenColumns, includeEmpty) => {
   const sections = [];
   const identificationPgs = makeGroupSection(
-    'identification', undefined, r, chosenColumns,
+    'identification', undefined, r, chosenColumns, includeEmpty,
   );
   const publicationPgs = makeGroupSection(
-    'publication', 'Publication', r, chosenColumns,
+    'publication', 'Publication', r, chosenColumns, includeEmpty,
   );
   const cdataPgs = makeGroupSection(
-    'cdata', 'Chromosome data', r, chosenColumns,
+    'cdata', 'Chromosome data', r, chosenColumns, includeEmpty,
   );
   const dnaPgs = makeGroupSection(
-    'dna', 'DNA', r, chosenColumns,
+    'dna', 'DNA', r, chosenColumns, includeEmpty,
   );
   const materialPgs = makeGroupSection(
-    'material', 'Material', r, chosenColumns,
+    'material', 'Material', r, chosenColumns, includeEmpty,
   );
 
   sections.push(...identificationPgs);
@@ -113,22 +117,25 @@ const makeRecordSection = (r, chosenColumns) => {
   return sections;
 };
 
-function createDocument(dataList, chosenColumns) {
+function createDocument(dataList, chosenColumns, options) {
+  const { includeEmptyFields } = options;
+
   const doc = new Document();
 
-  const paragraphs = dataList
-    .map((r) => makeRecordSection(r, chosenColumns))
-    .flat();
+  const dataParagraphs = dataList
+    .map((r) => makeRecordSection(r, chosenColumns, includeEmptyFields));
 
-  doc.addSection({
-    properties: {},
-    children: paragraphs,
+  dataParagraphs.forEach((paragraphs) => {
+    doc.addSection({
+      properties: {},
+      children: paragraphs.flat(),
+    });
   });
   return doc;
 }
 
-async function createDocumentAsBlob(dataList, chosenColumns) {
-  const doc = createDocument(dataList, chosenColumns);
+async function createDocumentAsBlob(dataList, chosenColumns, options) {
+  const doc = createDocument(dataList, chosenColumns, options);
   return Packer.toBlob(doc);
 }
 

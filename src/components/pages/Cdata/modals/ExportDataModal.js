@@ -78,10 +78,10 @@ const ExportDataModal = ({
 }) => {
   const [exportType, setExportType] = useState(EXPORT_TYPE_CSV);
   const [delimiter, setDelimiter] = useState(optionsConfig.separator);
+  const [includeEmptyFields, setIncludeEmptyFields] = useState(false);
 
   const [checkboxes, setCheckboxes] = useState(defaultCheckedCheckboxes);
   const accessToken = useSelector((state) => state.authentication.accessToken);
-
 
   const getCdata = () => {
     const exportIds = ids.includes('all') ? undefined : ids;
@@ -114,7 +114,9 @@ const ExportDataModal = ({
         delimiter,
       });
     } else if (exportType === EXPORT_TYPE_DOCX) {
-      exportUtils.cdata.docx.createAndDownload(data, headerColumns);
+      exportUtils.cdata.docx.createAndDownload(data, headerColumns, {
+        includeEmptyFields,
+      });
     }
   };
 
@@ -189,6 +191,16 @@ const ExportDataModal = ({
                   onChange={(e) => setDelimiter(e.target.value)}
                   placeholder="Separator"
                 />
+              </FormGroup>
+            )}
+            {exportType === EXPORT_TYPE_DOCX && (
+              <FormGroup controlId="separator " bsSize="sm">
+                <Checkbox
+                  checked={includeEmptyFields}
+                  onChange={(e) => setIncludeEmptyFields(e.target.checked)}
+                >
+                  Include empty fields
+                </Checkbox>
               </FormGroup>
             )}
           </Tab>
