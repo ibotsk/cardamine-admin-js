@@ -6,32 +6,28 @@ import config from '../../../config';
 const {
   export: {
     options: optionsConfig,
-    chromdata: { defaultOrder, columns },
+    chromdata: {
+      columns: columnsConfig,
+    },
   },
 } = config;
 
-/**
- * Creates array of { key: '<keyVal>', header: '<headerVal>' }
- * @param {array<string>} chosenColumns
- */
-function createHeaderColumns(chosenColumns) {
-  const chosenColumnsInOrder = defaultOrder
-    .filter((k) => chosenColumns.includes(k));
-
+function createKeyHeaderColumns(chosenColumnsInOrder) {
   return chosenColumnsInOrder.map((col) => ({
     key: col,
-    header: columns[col].name,
+    header: columnsConfig[col].name,
   }));
 }
 
 /**
  * @param {array<object>} records array of objects to export
- * @param {array<object>} headerColumns array of { key: '<keyVal>', header: '<headerVal>' }
+ * @param {array<string>} chosenColumnsInOrder array of 
  *  where keyVal is key of object from records and headerVal is title of column
  * @param {object} options
  */
-async function createAndDownload(records, headerColumns, options = {}) {
+async function createAndDownload(records, chosenColumnsInOrder, options = {}) {
   const { delimiter = optionsConfig.separator } = options;
+  const headerColumns = createKeyHeaderColumns(chosenColumnsInOrder);
 
   const dataToDownload = [];
   const stringifier = stringify({
@@ -67,6 +63,5 @@ async function createAndDownload(records, headerColumns, options = {}) {
 }
 
 export default {
-  createHeaderColumns,
   createAndDownload,
 };

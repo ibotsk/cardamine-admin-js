@@ -7,6 +7,7 @@ const {
   export: {
     chromdata: {
       columns: columnsConfig,
+      defaultOrder,
     },
   },
 } = config;
@@ -66,6 +67,12 @@ function transformRecord(record) {
   }, {});
 }
 
+
+function createChosenColumnsInOrder(chosenColumns) {
+  return defaultOrder.filter((k) => chosenColumns.includes(k));
+}
+
 export default {
   transformRecord,
+  createChosenColumnsInOrder,
 };
