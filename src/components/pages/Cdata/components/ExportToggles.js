@@ -42,8 +42,6 @@ const ExportToggles = ({ data, onAddToExport }) => {
           name={EXPORT_ALL}
           checked={exportAll}
           onChange={(e) => onChangeCheckboxAll(e)}
-          disabled
-          title="Disabled because of the fix being in progress"
         >
           Add
           {' '}

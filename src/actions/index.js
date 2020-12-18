@@ -3,8 +3,6 @@ import {
   UNSET_AUTHENTICATED,
   SET_PAGINATION,
   RESET_PAGINATION,
-  SET_EXPORT_CDATA,
-  RESET_EXPORT_CDATA,
   SET_CDATA_NEEDS_REFRESH,
 } from './action-types';
 
@@ -26,15 +24,6 @@ export const setPagination = ({ page, pageSize }) => ({
 
 export const resetPagination = () => ({
   type: RESET_PAGINATION,
-});
-
-export const setExportCdata = (ids) => ({
-  type: SET_EXPORT_CDATA,
-  ids,
-});
-
-export const resetExportCdata = () => ({
-  type: RESET_EXPORT_CDATA,
 });
 
 export const setCdataNeedsRefresh = (needsRefresh) => ({

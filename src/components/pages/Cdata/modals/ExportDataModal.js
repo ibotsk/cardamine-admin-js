@@ -1,256 +1,271 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Modal, Button, Checkbox,
   Tabs, Tab,
   FormGroup, FormControl, ControlLabel,
-  Row, Col,
+  Row, Col, Panel,
 } from 'react-bootstrap';
+
+import { BeatLoader } from 'react-spinners';
 
 import PropTypes from 'prop-types';
 
-import { CSVDownload } from 'react-csv';
-
-import config from '../../../../config';
+import commonHooks from '../../../segments/hooks';
 import { exportFacade } from '../../../../facades';
 import { exportUtils } from '../../../../utils';
+import config from '../../../../config';
 
-const { export: exportConfig } = config;
+const {
+  export: {
+    chromdata: {
+      columns: columnsConfig,
+    },
+    options: optionsConfig,
+  },
+} = config;
 
 const CHECK_ALL = 'All';
-const EXPORT_CHROMDATA = 'chromdata';
+const EXPORT_TYPE_CSV = 'CSV';
 
-const makeCheckedDefaultCheckboxes = (which) => {
-  const cols = exportConfig[which];
-  return Object.keys(cols).reduce(
+const defaultCheckedCheckboxes = (
+  Object.keys(columnsConfig).reduce(
     (prev, curr) => ({
       ...prev,
-      [curr]: cols[curr].default === true,
+      [curr]: columnsConfig[curr].default === true,
     }),
     {},
+  )
+);
+
+const GroupCheckboxes = ({ checkboxesState, group, onChangeCheckbox }) => {
+  const groupCols = Object.keys(columnsConfig)
+    .filter((c) => columnsConfig[c].group === group);
+  return groupCols.map((c) => (
+    <Checkbox
+      key={c}
+      name={c}
+      checked={checkboxesState[c]}
+      value={c}
+      onChange={onChangeCheckbox}
+    >
+      {columnsConfig[c].name}
+    </Checkbox>
+  ));
+};
+
+const LoadDataInfo = ({ isLoading, loadedCount }) => {
+  if (isLoading) {
+    return (
+      <div className="text-center">
+        <div>Loading data</div>
+        <BeatLoader loading={isLoading} color="#50E3C2" />
+      </div>
+    );
+  }
+  return (
+    <div>
+      {loadedCount}
+      {' '}
+      records ready
+    </div>
   );
 };
 
-const initialState = {
-  exportFormat: ['CSV'],
-  filename: 'chromdata_export.csv',
-  separator: exportConfig.options.separator,
-  enclosingCharacter: exportConfig.options.enclosingCharacter,
-  chromdata: makeCheckedDefaultCheckboxes(EXPORT_CHROMDATA), // checkboxes
-  checkedAll: false,
-  exportData: [],
-  exportHeaders: [],
-};
+const ExportDataModal = ({
+  show, onHide, ids,
+}) => {
+  const [exportType, setExportType] = useState(EXPORT_TYPE_CSV);
+  const [delimiter, setDelimiter] = useState(optionsConfig.separator);
 
-class ExportDataModal extends React.Component {
-  constructor(props) {
-    super(props);
+  const [checkboxes, setCheckboxes] = useState(defaultCheckedCheckboxes);
+  const accessToken = useSelector((state) => state.authentication.accessToken);
 
-    this.state = {
-      ...initialState,
-    };
-  }
 
-  handleHide = () => {
-    this.setState({ ...initialState });
-    const { onHide } = this.props;
-    onHide();
-  }
-
-  handleExport = async () => {
-    const { type: which, ids, accessToken } = this.props;
-    const dataToExport = await exportFacade.getCdataForExport(ids, accessToken);
-    // eslint-disable-next-line react/destructuring-assignment
-    const fields = this.state[which];
-    const checkedFields = Object.keys(fields).filter((f) => fields[f] === true);
-    const exportconfigWhich = exportConfig[which];
-
-    const { data: exportData, headers: exportHeaders } = exportUtils.cdata.csv
-      .createCsvData(dataToExport, checkedFields, exportconfigWhich);
-
-    this.setState({
-      exportData,
-      exportHeaders,
-    });
-  }
-
-  onChangeTextInput = (e) => {
-    this.setState({ [e.target.id]: e.target.value });
-  }
-
-  onChangeCheckbox = (e, which) => {
-    const targetName = e.target.name;
-    const targetChecked = e.target.checked;
-
-    // eslint-disable-next-line react/destructuring-assignment
-    const checkboxesToChooseFromState = this.state[which];
-    const checkboxesToChooseFrom = { ...checkboxesToChooseFromState };
-    let { checkedAll } = this.state;
-
-    if (targetName === CHECK_ALL) {
-      if (targetChecked) {
-        Object.keys(checkboxesToChooseFrom)
-          .forEach((k) => { checkboxesToChooseFrom[k] = true; });
-      } else {
-        Object.keys(checkboxesToChooseFrom)
-          .forEach((k) => { checkboxesToChooseFrom[k] = false; });
-      }
-      checkedAll = targetChecked;
-    } else {
-      checkboxesToChooseFrom[targetName] = targetChecked;
-    }
-
-    this.setState({
-      [which]: checkboxesToChooseFrom,
-      checkedAll,
-    });
-  }
-
-  makeCheckboxes = (which, subwhich) => {
-    // eslint-disable-next-line react/destructuring-assignment
-    const stateWhich = this.state[which];
-    const configCols = exportConfig[which];
-    const relevantCols = Object.keys(configCols)
-      .filter((c) => configCols[c].group === subwhich);
-    return relevantCols.map((c) => (
-      <Checkbox
-        key={c}
-        name={c}
-        checked={stateWhich[c]}
-        value={c}
-        onChange={(e) => this.onChangeCheckbox(e, which)}
-      >
-        {configCols[c].name}
-      </Checkbox>
-    ));
-  }
-
-  render() {
-    const { show, count } = this.props;
-    const {
-      exportFormat,
-      exportData,
-      exportHeaders,
-      filename,
-      separator,
-      enclosingCharacter,
-      checkedAll,
-    } = this.state;
-    return (
-      <Modal
-        id="export-data-modal"
-        show={show}
-        onHide={this.handleHide}
-        onEnter={this.handleEnter}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Export data -
-            {' '}
-            {count || 0}
-            {' '}
-            records to export
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Tabs defaultActiveKey={1} id="export-tabs" className="">
-            <Tab eventKey={1} title="File">
-              <FormGroup controlId="formControlsSelect">
-                <ControlLabel>Export format</ControlLabel>
-                <FormControl componentClass="select">
-                  {exportFormat.map((v, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <option key={i} value={v}>{v}</option>
-                  ))}
-                </FormControl>
-              </FormGroup>
-              <FormGroup controlId="filename" bsSize="sm">
-                <ControlLabel>File name</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={filename}
-                  onChange={this.onChangeTextInput}
-                  placeholder="Filename"
-                />
-              </FormGroup>
-              <FormGroup controlId="separator " bsSize="sm">
-                <ControlLabel>Separator</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={separator}
-                  onChange={this.onChangeTextInput}
-                  placeholder="Separator"
-                />
-              </FormGroup>
-              <FormGroup controlId="enclosingCharacter" bsSize="sm">
-                <ControlLabel>Enclosing Character</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={enclosingCharacter}
-                  onChange={this.onChangeTextInput}
-                  placeholder="Enclosing character"
-                />
-              </FormGroup>
-            </Tab>
-            <Tab eventKey={2} title="Columns">
-              <Row>
-                <Col md={6}>
-                  <Checkbox
-                    name={CHECK_ALL}
-                    checked={checkedAll}
-                    value={CHECK_ALL}
-                    onChange={(e) => this.onChangeCheckbox(e, 'chromdata')}
-                  >
-                    All
-                  </Checkbox>
-
-                  <h6>Identification:</h6>
-                  {this.makeCheckboxes('chromdata', 'identification')}
-
-                  <h6>Publication:</h6>
-                  {this.makeCheckboxes('chromdata', 'publication')}
-
-                  <h6>Chromosomes data:</h6>
-                  {this.makeCheckboxes('chromdata', 'cdata')}
-                </Col>
-                <Col md={6}>
-                  <h6>Material:</h6>
-                  {this.makeCheckboxes('chromdata', 'material')}
-                  <h6>DNA data:</h6>
-                  {this.makeCheckboxes('chromdata', 'dna')}
-                </Col>
-              </Row>
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.handleHide}>Close</Button>
-          {
-            exportData.length > 0
-            && (
-            <CSVDownload
-              headers={exportHeaders}
-              data={exportData}
-              filename={filename}
-              separator={separator}
-              enclosingCharacter={enclosingCharacter}
-              target="_self"
-            />
-            )
-          }
-          <Button bsStyle="primary" onClick={this.handleExport}>Export</Button>
-        </Modal.Footer>
-      </Modal>
+  const getCdata = () => {
+    const exportIds = ids.includes('all') ? undefined : ids;
+    return exportFacade.getCdataForExport(
+      exportIds, accessToken, exportUtils.cdata.transformRecord,
     );
-  }
-}
+  };
+  const { data, isLoading, doFetch } = commonHooks.useSimpleFetch(getCdata);
+
+  const handleEnter = async () => {
+    doFetch();
+    setCheckboxes(defaultCheckedCheckboxes);
+  };
+
+  const handleHide = () => {
+    onHide();
+    // not resetting data for caching reasons
+    // setData([]);
+  };
+
+  const handleExport = async () => {
+    const checkedFields = Object.keys(checkboxes)
+      .filter((f) => checkboxes[f] === true);
+    const headerColumns = exportUtils.cdata.csv.createHeaderColumns(
+      checkedFields,
+    );
+
+    exportUtils.cdata.csv.createAndDownload(data, headerColumns, {
+      delimiter,
+    });
+  };
+
+  const handleChangeCheckbox = (e) => {
+    const { name, checked } = e.target;
+    if (name === CHECK_ALL) {
+      setCheckboxes((cbxs) => Object.keys(cbxs).reduce((prev, curr) => ({
+        ...prev,
+        [curr]: checked,
+      }), {}));
+    } else {
+      setCheckboxes((cbxs) => ({
+        ...cbxs,
+        [name]: checked,
+      }));
+    }
+  };
+
+  const handleSetDefaultsFields = () => {
+    setDelimiter(optionsConfig.separator);
+  };
+
+  // checked if all checkboxes are true -> no false value is found in values
+  const isAllChecked = Object.values(checkboxes)
+    .filter((el) => el === false).length === 0;
+
+  return (
+    <Modal
+      id="export-data-modal"
+      show={show}
+      onEnter={handleEnter}
+      onHide={handleHide}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>
+          Export data
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Panel>
+          <Panel.Body>
+            <LoadDataInfo isLoading={isLoading} loadedCount={data.length} />
+          </Panel.Body>
+        </Panel>
+        <Tabs defaultActiveKey={1} id="export-tabs">
+          <Tab eventKey={1} title="File">
+            <Button
+              bsSize="xsmall"
+              bsStyle="primary"
+              onClick={() => handleSetDefaultsFields()}
+            >
+              Reset
+            </Button>
+            <FormGroup controlId="formControlsSelect">
+              <ControlLabel>Export format</ControlLabel>
+              <FormControl
+                componentClass="select"
+                placeholder="type"
+                value={exportType}
+                onChange={(e) => setExportType(e.target.value)}
+              >
+                <option value={EXPORT_TYPE_CSV}>CSV</option>
+              </FormControl>
+            </FormGroup>
+            <FormGroup controlId="separator " bsSize="sm">
+              <ControlLabel>Separator</ControlLabel>
+              <FormControl
+                type="text"
+                value={delimiter}
+                onChange={(e) => setDelimiter(e.target.value)}
+                placeholder="Separator"
+              />
+            </FormGroup>
+          </Tab>
+          <Tab eventKey={2} title="Columns">
+            <Row>
+              <Col md={6}>
+                <Button
+                  bsSize="xsmall"
+                  bsStyle="primary"
+                  onClick={() => setCheckboxes(defaultCheckedCheckboxes)}
+                >
+                  Reset
+                </Button>
+                <Checkbox
+                  name={CHECK_ALL}
+                  checked={isAllChecked}
+                  value={CHECK_ALL}
+                  onChange={handleChangeCheckbox}
+                >
+                  All
+                </Checkbox>
+
+                <h6>Identification:</h6>
+                <GroupCheckboxes
+                  checkboxesState={checkboxes}
+                  group="identification"
+                  onChangeCheckbox={handleChangeCheckbox}
+                />
+
+                <h6>Publication:</h6>
+                <GroupCheckboxes
+                  checkboxesState={checkboxes}
+                  group="publication"
+                  onChangeCheckbox={handleChangeCheckbox}
+                />
+
+                <h6>Chromosomes data:</h6>
+                <GroupCheckboxes
+                  checkboxesState={checkboxes}
+                  group="cdata"
+                  onChangeCheckbox={handleChangeCheckbox}
+                />
+              </Col>
+              <Col md={6}>
+                <h6>Material:</h6>
+                <GroupCheckboxes
+                  checkboxesState={checkboxes}
+                  group="material"
+                  onChangeCheckbox={handleChangeCheckbox}
+                />
+
+                <h6>DNA data:</h6>
+                <GroupCheckboxes
+                  checkboxesState={checkboxes}
+                  group="dna"
+                  onChangeCheckbox={handleChangeCheckbox}
+                />
+              </Col>
+            </Row>
+          </Tab>
+        </Tabs>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={handleHide}>Close</Button>
+        <Button
+          bsStyle="primary"
+          onClick={handleExport}
+          disabled={data.length < 1}
+        >
+          Export
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
 
 export default ExportDataModal;
 
 ExportDataModal.propTypes = {
-  type: PropTypes.string.isRequired,
-  ids: PropTypes.arrayOf(PropTypes.number).isRequired,
-  count: PropTypes.number.isRequired,
+  ids: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   show: PropTypes.bool.isRequired,
-  accessToken: PropTypes.string.isRequired,
   onHide: PropTypes.func.isRequired,
+};
+
+LoadDataInfo.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+  loadedCount: PropTypes.number.isRequired,
 };

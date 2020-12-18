@@ -1,66 +1,72 @@
-import get from 'lodash.get';
-import helper from '../../helper';
+import stringify from 'csv-stringify';
+import download from 'downloadjs';
 
-const VALUE_NA = '-';
+import config from '../../../config';
 
-const createPublication = (data) => helper.parsePublication(data);
-
-const createLosName = (name) => helper
-  .listOfSpeciesString(name, { isPublication: true });
-
-const getValue = (data, column) => {
-  const fieldValue = get(data, column, VALUE_NA);
-  if (fieldValue === false) {
-    return 'FALSE';
-  }
-  if (!fieldValue || fieldValue === '') {
-    return VALUE_NA;
-  }
-  return fieldValue;
-};
+const {
+  export: {
+    options: optionsConfig,
+    chromdata: { defaultOrder, columns },
+  },
+} = config;
 
 /**
- *
- * @param {*} data value of field, can be json
- * @param {*} fieldInfo field from config
+ * Creates array of { key: '<keyVal>', header: '<headerVal>' }
+ * @param {array<string>} chosenColumns
  */
-const handleCompositeField = (data, field, fieldInfo) => {
-  if (!fieldInfo.composite) {
-    return data;
-  }
-  switch (field) {
-    case 'publicationFull':
-      return createPublication(data);
-    case 'originalIdentification':
-    case 'latestRevision':
-      return createLosName(data);
-    default:
-      return data;
-  }
-};
+function createHeaderColumns(chosenColumns) {
+  const chosenColumnsInOrder = defaultOrder
+    .filter((k) => chosenColumns.includes(k));
 
-function createCsvData(dataToExport, fields, configfields) {
-  const headers = fields.map((f) => ({
-    label: configfields[f].name,
-    key: f,
+  return chosenColumnsInOrder.map((col) => ({
+    key: col,
+    header: columns[col].name,
   }));
+}
 
-  const data = dataToExport.map((d) => {
-    const obj = {};
-    for (const f of fields) {
-      const info = configfields[f];
-      const fieldValue = getValue(d, info.column);
-      obj[f] = handleCompositeField(fieldValue, f, info);
+/**
+ * @param {array<object>} records array of objects to export
+ * @param {array<object>} headerColumns array of { key: '<keyVal>', header: '<headerVal>' }
+ *  where keyVal is key of object from records and headerVal is title of column
+ * @param {object} options
+ */
+async function createAndDownload(records, headerColumns, options = {}) {
+  const { delimiter = optionsConfig.separator } = options;
+
+  const dataToDownload = [];
+  const stringifier = stringify({
+    delimiter,
+    quoted_string: true,
+    // header columns must be in order in which they will appear in the file
+    header: true,
+    columns: headerColumns,
+  });
+  stringifier.on('readable', () => {
+    let row = stringifier.read();
+    while (row) {
+      dataToDownload.push(row);
+      row = stringifier.read();
     }
-    return obj;
+  });
+  const stringifiedPromise = new Promise((resolve, reject) => {
+    stringifier.on('error', (err) => reject(err));
+    stringifier.on('finish', () => resolve(dataToDownload.join('')));
   });
 
-  return {
-    data,
-    headers,
-  };
+  for (const record of records) {
+    stringifier.write(record);
+  }
+  stringifier.end();
+
+  const stringContentToDownload = await stringifiedPromise;
+  return download(
+    new Blob([stringContentToDownload]), // must be as Blob for the correct encoding
+    'chromosomes.csv',
+    'text/csv',
+  );
 }
 
 export default {
-  createCsvData,
+  createHeaderColumns,
+  createAndDownload,
 };

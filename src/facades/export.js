@@ -14,20 +14,27 @@ const {
 
 const { inq } = functions;
 
-async function getCdataForExport(ids, accessToken) {
-  const whereObj = {
-    or: ids.map((id) => ({ id })),
-  };
-  const where = JSON.stringify(whereObj);
-  return getRequest(chromosomeDataUri.exportUri, { where }, accessToken);
-}
-
-async function getChecklistForExport(ids, accessToken, format = undefined) {
+const whereIdIn = (ids) => {
   const wb = new WhereBuilder();
   if (ids && ids.length > 0) {
     wb.add(inq('id', ...ids));
   }
-  const where = wb.buildString();
+  return wb.buildString();
+};
+
+async function getCdataForExport(ids, accessToken, format = undefined) {
+  const where = whereIdIn(ids);
+  const data = await getRequest(
+    chromosomeDataUri.exportUri, { where }, accessToken,
+  );
+  if (format) {
+    return data.map(format);
+  }
+  return data;
+}
+
+async function getChecklistForExport(ids, accessToken, format = undefined) {
+  const where = whereIdIn(ids);
   const order = JSON.stringify(filterUtils.makeOrder(filters.listOfSpecies));
   const data = await getRequest(
     listOfSpeciesUri.exportUri, { where, order }, accessToken,

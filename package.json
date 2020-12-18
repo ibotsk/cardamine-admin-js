@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.1",
+    "csv-stringify": "^5.5.3",
     "docx": "^5.4.1",
     "downloadjs": "^1.4.7",
     "lodash.get": "^4.4.2",
@@ -11,7 +12,6 @@
     "lodash.merge": "^4.6.2",
     "mustache": "^3.2.1",
     "prop-types": "^15.6.2",
-    "rc-progress": "^2.5.2",
     "react": "^16.14.0",
     "react-bootstrap": "^0.33.1",
     "react-bootstrap-table-next": "^4.0.3",
@@ -20,7 +20,6 @@
     "react-bootstrap-table2-paginator": "^2.1.2",
     "react-bootstrap-table2-toolkit": "^2.1.3",
     "react-bootstrap-typeahead": "^3.4.2",
-    "react-csv": "^1.1.1",
     "react-csv-reader": "^1.3.1",
     "react-dom": "^16.14.0",
     "react-notifications": "^1.4.3",
@@ -29,6 +28,7 @@
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.3.0",
+    "react-spinners": "^0.9.0",
     "redux": "^4.0.1"
   },
   "scripts": {

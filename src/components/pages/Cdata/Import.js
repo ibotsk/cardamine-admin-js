@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Grid, Col, Row, Button, Panel, Well,
+  Grid, Button, Panel, Well,
+  ProgressBar,
 } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
 
 import CSVReader from 'react-csv-reader';
-import { Line, Circle } from 'rc-progress';
 import { Link } from 'react-router-dom';
 
 import { NotificationContainer } from 'react-notifications';
@@ -163,7 +163,10 @@ class Import extends React.Component {
           </Panel>
           <Panel>
             <Panel.Body>
-              <Line percent={loadDataPercent} />
+              <ProgressBar
+                now={loadDataPercent}
+                label={`${loadDataPercent}%`}
+              />
               <h4>
                 Total records:
                 {loadDataCountTotal}
@@ -179,9 +182,9 @@ class Import extends React.Component {
               <ImportReport report={report} />
             </Panel.Body>
           </Panel>
-          <Row>
-            <Col sm={4} smOffset={4}>
-              <div className="text-center">
+          <Panel>
+            <Panel.Body className="text-center">
+              <div>
                 <h3>
                   Importing:
                   {' '}
@@ -190,22 +193,15 @@ class Import extends React.Component {
                   %
                 </h3>
               </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={2} smOffset={5}>
-              <Circle
-                percent={importDataPercent}
-                strokeWidth={4}
-                strokeColor={{
-                  '0%': '#108ee9',
-                  '100%': '#87d068',
-                }}
+              <ProgressBar
+                bsStyle="success"
+                now={importDataPercent}
+                striped
               />
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={2}>
+            </Panel.Body>
+          </Panel>
+          <Panel>
+            <Panel.Body sm={2}>
               <Button
                 bsStyle="info"
                 disabled={!submitEnabled}
@@ -213,13 +209,15 @@ class Import extends React.Component {
               >
                 Import
               </Button>
-            </Col>
-            <Col sm={2} smOffset={8}>
-              <Button bsStyle="default" onClick={this.handleCancel}>
+              <Button
+                className="pull-right"
+                bsStyle="default"
+                onClick={this.handleCancel}
+              >
                 Start over
               </Button>
-            </Col>
-          </Row>
+            </Panel.Body>
+          </Panel>
         </Grid>
         <NotificationContainer />
       </div>

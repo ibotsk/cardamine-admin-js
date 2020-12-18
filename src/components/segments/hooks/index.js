@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { tablesFacade } from '../../../facades';
 import { filterUtils, whereUtils } from '../../../utils';
@@ -106,7 +106,41 @@ function useTableChange({
   };
 }
 
+/**
+ * Running fetchFunction with isLoading state
+ * @param {function} fetchFunction
+ */
+function useSimpleFetch(fetchFunction) {
+  const [isLoading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+
+  const doFetch = useCallback(() => {
+    let cancelled = false;
+
+    const fetch = async () => {
+      setLoading(true);
+      const records = await fetchFunction();
+
+      if (!cancelled) {
+        setData(records);
+        setLoading(false);
+      }
+    };
+
+    fetch();
+
+    return () => { cancelled = true; };
+  }, [fetchFunction]);
+
+  return {
+    data,
+    isLoading,
+    doFetch,
+  };
+}
+
 export default {
   useTableData,
   useTableChange,
+  useSimpleFetch,
 };
