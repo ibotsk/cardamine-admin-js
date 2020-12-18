@@ -6,7 +6,7 @@ export default {
     defaultOrder: [
       // cdata
       'id', 'nameAsPublished', 'originalIdentification', 'latestRevision',
-      'publicationFull', 'n', 'dn', 'x', 'xRevised', 'ploidyLevel',
+      'publicationFull', 'pages', 'n', 'dn', 'x', 'xRevised', 'ploidyLevel',
       'ploidyLevelRevised', 'countedBy', 'countedDate', 'karyotype',
       'numberOfAnalysedPlants', 'slideNo', 'cdataDepositedIn', 'cdataNote',
       'drawing', 'photo', 'idiogram', 'ambiguousRecord', 'countCredibility',
@@ -51,6 +51,12 @@ export default {
         group: 'publication',
         default: true,
         composite: true,
+      },
+      pages: {
+        name: 'Published on pages',
+        column: 'material.reference.page',
+        group: 'publication',
+        default: true,
       },
       ambiguousRecord: {
         name: 'Ambiguous Record',
@@ -144,7 +150,7 @@ export default {
         group: 'cdata',
       },
       numberOfAnalysedPlants: {
-        name: 'Number Of Analysed Plants',
+        name: 'Number of Analysed Plants',
         column: 'numberOfAnalysedPlants',
         group: 'cdata',
       },
@@ -194,7 +200,7 @@ export default {
         group: 'dna',
       },
       numberAnalyses: {
-        name: 'Number Of Analyses',
+        name: 'Number of Analyses',
         column: 'dna.numberAnalyses',
         group: 'dna',
       },

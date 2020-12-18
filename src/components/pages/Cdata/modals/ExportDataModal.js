@@ -27,6 +27,7 @@ const {
 
 const CHECK_ALL = 'All';
 const EXPORT_TYPE_CSV = 'CSV';
+const EXPORT_TYPE_DOCX = 'DOCX';
 
 const defaultCheckedCheckboxes = (
   Object.keys(columnsConfig).reduce(
@@ -101,16 +102,20 @@ const ExportDataModal = ({
     // setData([]);
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
     const checkedFields = Object.keys(checkboxes)
       .filter((f) => checkboxes[f] === true);
-    const headerColumns = exportUtils.cdata.csv.createHeaderColumns(
+    const headerColumns = exportUtils.cdata.createKeyLabelColumns(
       checkedFields,
     );
 
-    exportUtils.cdata.csv.createAndDownload(data, headerColumns, {
-      delimiter,
-    });
+    if (exportType === EXPORT_TYPE_CSV) {
+      exportUtils.cdata.csv.createAndDownload(data, headerColumns, {
+        delimiter,
+      });
+    } else if (exportType === EXPORT_TYPE_DOCX) {
+      exportUtils.cdata.docx.createAndDownload(data, headerColumns);
+    }
   };
 
   const handleChangeCheckbox = (e) => {
@@ -172,17 +177,20 @@ const ExportDataModal = ({
                 onChange={(e) => setExportType(e.target.value)}
               >
                 <option value={EXPORT_TYPE_CSV}>CSV</option>
+                <option value={EXPORT_TYPE_DOCX}>DOCX</option>
               </FormControl>
             </FormGroup>
-            <FormGroup controlId="separator " bsSize="sm">
-              <ControlLabel>Separator</ControlLabel>
-              <FormControl
-                type="text"
-                value={delimiter}
-                onChange={(e) => setDelimiter(e.target.value)}
-                placeholder="Separator"
-              />
-            </FormGroup>
+            {exportType === EXPORT_TYPE_CSV && (
+              <FormGroup controlId="separator " bsSize="sm">
+                <ControlLabel>Separator</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={delimiter}
+                  onChange={(e) => setDelimiter(e.target.value)}
+                  placeholder="Separator"
+                />
+              </FormGroup>
+            )}
           </Tab>
           <Tab eventKey={2} title="Columns">
             <Row>
