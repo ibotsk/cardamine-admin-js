@@ -99,6 +99,8 @@ const ExportDataModal = ({
 
   const handleHide = () => {
     onHide();
+    setOneRecordPerPage(true);
+    setIncludeEmptyFields(false);
     // not resetting data for caching reasons
     // setData([]);
   };
@@ -139,6 +141,8 @@ const ExportDataModal = ({
 
   const handleSetDefaultsFields = () => {
     setDelimiter(optionsConfig.separator);
+    setOneRecordPerPage(true);
+    setIncludeEmptyFields(false);
   };
 
   // checked if all checkboxes are true -> no false value is found in values
