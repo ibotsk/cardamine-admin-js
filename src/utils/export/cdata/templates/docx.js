@@ -98,19 +98,44 @@ const makeRecordSection = (r, chosenColumnsInOrder, includeEmpty) => {
   const materialPgs = makeGroupSection(
     'material', 'Material', r, chosenColumnsInOrder, includeEmpty,
   );
-  sections.push(...identificationPgs);
 
-  sections.push(emptyParagraph);
-  sections.push(...publicationPgs);
-
-  sections.push(emptyParagraph);
-  sections.push(...cdataPgs);
-
-  sections.push(emptyParagraph);
-  sections.push(...dnaPgs);
-
-  sections.push(emptyParagraph);
-  sections.push(...materialPgs);
+  if (chosenColumnsInOrder.includes('id')) {
+    sections.push(
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${columns.id.name}: `,
+            allCaps: true,
+            color: '#cecece',
+          }),
+          new TextRun({
+            text: r[columns.id.column],
+            allCaps: true,
+            color: '#cecece',
+          }),
+        ],
+      }),
+    );
+  }
+  if (identificationPgs.length > 0) {
+    sections.push(...identificationPgs);
+  }
+  if (publicationPgs.length > 0) {
+    sections.push(emptyParagraph);
+    sections.push(...publicationPgs);
+  }
+  if (cdataPgs.length > 0) {
+    sections.push(emptyParagraph);
+    sections.push(...cdataPgs);
+  }
+  if (dnaPgs.length) {
+    sections.push(emptyParagraph);
+    sections.push(...dnaPgs);
+  }
+  if (materialPgs.length) {
+    sections.push(emptyParagraph);
+    sections.push(...materialPgs);
+  }
 
   sections.push(...dividerParagraph);
   return sections;
