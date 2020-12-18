@@ -79,6 +79,7 @@ const ExportDataModal = ({
   const [exportType, setExportType] = useState(EXPORT_TYPE_CSV);
   const [delimiter, setDelimiter] = useState(optionsConfig.separator);
   const [includeEmptyFields, setIncludeEmptyFields] = useState(false);
+  const [oneRecordPerPage, setOneRecordPerPage] = useState(true);
 
   const [checkboxes, setCheckboxes] = useState(defaultCheckedCheckboxes);
   const accessToken = useSelector((state) => state.authentication.accessToken);
@@ -115,6 +116,7 @@ const ExportDataModal = ({
       });
     } else if (exportType === EXPORT_TYPE_DOCX) {
       exportUtils.cdata.docx.createAndDownload(data, chosenColumnsInOrder, {
+        oneRecordPerPage,
         includeEmptyFields,
       });
     }
@@ -183,7 +185,7 @@ const ExportDataModal = ({
               </FormControl>
             </FormGroup>
             {exportType === EXPORT_TYPE_CSV && (
-              <FormGroup controlId="separator " bsSize="sm">
+              <FormGroup controlId="delimiter" bsSize="sm">
                 <ControlLabel>Separator</ControlLabel>
                 <FormControl
                   type="text"
@@ -194,14 +196,24 @@ const ExportDataModal = ({
               </FormGroup>
             )}
             {exportType === EXPORT_TYPE_DOCX && (
-              <FormGroup controlId="separator " bsSize="sm">
-                <Checkbox
-                  checked={includeEmptyFields}
-                  onChange={(e) => setIncludeEmptyFields(e.target.checked)}
-                >
-                  Include empty fields
-                </Checkbox>
-              </FormGroup>
+              <>
+                <FormGroup controlId="oneRecordPerPage">
+                  <Checkbox
+                    checked={oneRecordPerPage}
+                    onChange={(e) => setOneRecordPerPage(e.target.checked)}
+                  >
+                    One record per page
+                  </Checkbox>
+                </FormGroup>
+                <FormGroup controlId="includeEmptyFields">
+                  <Checkbox
+                    checked={includeEmptyFields}
+                    onChange={(e) => setIncludeEmptyFields(e.target.checked)}
+                  >
+                    Include empty fields
+                  </Checkbox>
+                </FormGroup>
+              </>
             )}
           </Tab>
           <Tab eventKey={2} title="Columns">

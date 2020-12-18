@@ -142,19 +142,30 @@ const makeRecordSection = (r, chosenColumnsInOrder, includeEmpty) => {
 };
 
 function createDocument(dataList, chosenColumnsInOrder, options) {
-  const { includeEmptyFields } = options;
+  const {
+    includeEmptyFields,
+    oneRecordPerPage,
+  } = options;
 
   const doc = new Document();
 
   const dataParagraphs = dataList
     .map((r) => makeRecordSection(r, chosenColumnsInOrder, includeEmptyFields));
 
-  dataParagraphs.forEach((paragraphs) => {
+  if (oneRecordPerPage) {
+    dataParagraphs.forEach((paragraphs) => {
+      doc.addSection({
+        properties: {},
+        children: paragraphs.flat(),
+      });
+    });
+  } else {
     doc.addSection({
       properties: {},
-      children: paragraphs.flat(),
+      children: dataParagraphs.flat(),
     });
-  });
+  }
+
   return doc;
 }
 
