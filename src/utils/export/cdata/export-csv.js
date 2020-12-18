@@ -60,9 +60,9 @@ async function createAndDownload(records, headerColumns, options = {}) {
 
   const stringContentToDownload = await stringifiedPromise;
   return download(
-    stringContentToDownload,
+    new Blob([stringContentToDownload]), // must be as Blob for the correct encoding
     'chromosomes.csv',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/csv',
   );
 }
 
