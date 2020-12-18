@@ -47,7 +47,7 @@ const labelValueParagraph = (label, value, showEmpty) => {
   return new Paragraph({
     children: [
       new TextRun({ text: `${label}: `, bold: true }),
-      new TextRun(value || EMPTY_VALUE),
+      new TextRun(`${value}` || EMPTY_VALUE),
     ],
   });
 };
