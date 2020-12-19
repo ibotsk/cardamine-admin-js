@@ -13,6 +13,14 @@ import { publicationsFacade } from '../../../../facades';
 
 import config from '../../../../config';
 
+const {
+  mappings: {
+    publication: {
+      displayType: displayTypes,
+    },
+  },
+} = config;
+
 const titleColWidth = 2;
 const mainColWidth = 10;
 
@@ -34,8 +42,6 @@ const initialValues = {
   inputDate: '',
   note: '',
 };
-
-const displayTypes = config.mappings.displayType;
 
 class PublicationModal extends Component {
   constructor(props) {
