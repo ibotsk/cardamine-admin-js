@@ -12,7 +12,7 @@ const formatTermAsPublication = (term) => helperUtils.parsePublication(term);
 const formatTermAsSpeciesName = (term) => helperUtils.listOfSpeciesString(term);
 
 const { savePerson } = personsFacade;
-const savePublication = publicationsFacade.savePublicationCurated;
+const { savePublication } = publicationsFacade;
 const { saveSpecies } = checklistFacade;
 
 const getIdOfFound = (found) => {
