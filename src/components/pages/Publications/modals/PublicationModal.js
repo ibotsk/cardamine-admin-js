@@ -17,6 +17,7 @@ const {
   mappings: {
     publication: {
       displayType: displayTypes,
+      columnLabels,
     },
   },
 } = config;
@@ -41,6 +42,25 @@ const initialValues = {
   journalName: '',
   inputDate: '',
   note: '',
+};
+
+const createFieldsByDisplayType = (displayType, state, handleChange) => {
+  const displayTypeColumns = displayTypes[displayType].columns;
+  return displayTypeColumns.map((col) => (
+    <FormGroup controlId={col} bsSize="sm">
+      <Col componentClass={ControlLabel} sm={titleColWidth}>
+        {columnLabels[col]}
+      </Col>
+      <Col sm={mainColWidth}>
+        <FormControl
+          type="text"
+          value={state[col]}
+          placeholder={columnLabels[col]}
+          onChange={handleChange}
+        />
+      </Col>
+    </FormGroup>
+  ));
 };
 
 class PublicationModal extends Component {
@@ -104,9 +124,7 @@ class PublicationModal extends Component {
   render() {
     const { show, id } = this.props;
     const {
-      displayType, paperAuthor, paperTitle, year,
-      seriesSource, publisher, volume, issue, editor,
-      pages, journalName, note,
+      displayType,
     } = this.state;
     return (
       <Modal show={show} onHide={this.handleHide} onEnter={this.onEnter}>
@@ -136,180 +154,11 @@ class PublicationModal extends Component {
                 </FormControl>
               </Col>
             </FormGroup>
-            <FormGroup controlId="paperAuthor" bsSize="sm">
-              <Col componentClass={ControlLabel} sm={titleColWidth}>
-                Paper Authors
-              </Col>
-              <Col sm={mainColWidth}>
-                <FormControl
-                  type="text"
-                  value={paperAuthor}
-                  placeholder="Paper Authors"
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
-            <FormGroup controlId="paperTitle" bsSize="sm">
-              <Col componentClass={ControlLabel} sm={titleColWidth}>
-                Paper Title
-              </Col>
-              <Col sm={mainColWidth}>
-                <FormControl
-                  type="text"
-                  value={paperTitle}
-                  placeholder="Paper Title"
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
-            <FormGroup controlId="year" bsSize="sm">
-              <Col componentClass={ControlLabel} sm={titleColWidth}>
-                Year
-              </Col>
-              <Col sm={mainColWidth}>
-                <FormControl
-                  type="text"
-                  value={year}
-                  placeholder="Year"
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
             {
-              ([3, 4, 5].includes(displayType))
-              && (
-                <FormGroup controlId="seriesSource" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Series Source
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={seriesSource}
-                      placeholder="Series Source"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-
-                </FormGroup>
+              createFieldsByDisplayType(
+                displayType, this.state, this.handleChange,
               )
             }
-            {
-              ([2, 3, 4].includes(displayType))
-              && (
-                <FormGroup controlId="publisher" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Publisher
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={publisher}
-                      placeholder="Publisher"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-                </FormGroup>
-              )
-            }
-            {
-              ([1, 5].includes(displayType))
-              && (
-                <FormGroup controlId="volume" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Volume
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={volume}
-                      placeholder="Volume"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-                </FormGroup>
-              )
-            }
-            {
-              ([1, 5].includes(displayType))
-              && (
-                <FormGroup controlId="issue" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Issue
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={issue}
-                      placeholder="Issue"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-                </FormGroup>
-              )
-            }
-            {
-              ([3, 4, 5].includes(displayType))
-              && (
-                <FormGroup controlId="editor" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Editors
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={editor}
-                      placeholder="Editors"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-                </FormGroup>
-              )
-            }
-            <FormGroup controlId="pages" bsSize="sm">
-              <Col componentClass={ControlLabel} sm={titleColWidth}>
-                Pages
-              </Col>
-              <Col sm={mainColWidth}>
-                <FormControl
-                  type="text"
-                  value={pages}
-                  placeholder="Pages"
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
-            {
-              ([1, 5].includes(displayType))
-              && (
-                <FormGroup controlId="journalName" bsSize="sm">
-                  <Col componentClass={ControlLabel} sm={titleColWidth}>
-                    Journal Name
-                  </Col>
-                  <Col sm={mainColWidth}>
-                    <FormControl
-                      type="text"
-                      value={journalName}
-                      placeholder="Journal"
-                      onChange={this.handleChange}
-                    />
-                  </Col>
-                </FormGroup>
-              )
-            }
-            <FormGroup controlId="note" bsSize="sm">
-              <Col componentClass={ControlLabel} sm={titleColWidth}>
-                Note
-              </Col>
-              <Col sm={mainColWidth}>
-                <FormControl
-                  componentClass="textarea"
-                  value={note}
-                  placeholder="Note"
-                  onChange={this.handleChange}
-                />
-              </Col>
-            </FormGroup>
           </Form>
         </Modal.Body>
         <Modal.Footer>

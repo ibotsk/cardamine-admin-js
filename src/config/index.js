@@ -92,6 +92,19 @@ export default {
   },
   mappings: {
     publication: {
+      columnLabels: {
+        paperAuthor: 'Paper Authors',
+        paperTitle: 'Paper Title',
+        seriesSource: 'Series Source',
+        volume: 'Volume',
+        issue: 'Issue',
+        editor: 'Editors',
+        publisher: 'Publisher',
+        year: 'Year',
+        pages: 'Pages',
+        journalName: 'Journal Name',
+        note: 'Note',
+      },
       displayType: {
         nullableFields: [
           'paperAuthor',
