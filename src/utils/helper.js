@@ -2,11 +2,26 @@ import Mustache from 'mustache';
 import config from '../config';
 import formatter from './formatter';
 
-const tags = config.constants.mustacheTags.publication;
+const {
+  constants: {
+    mustacheTags,
+  },
+  nomenclature: {
+    name: configName,
+  },
+  format: {
+    formatted: ff,
+    plain: plf,
+  },
+  mappings: {
+    publication: {
+      displayType: displayTypeConfig,
+      displayTypeStringToId: displayTypeStringToIdConfig,
+    },
+  },
+} = config;
 
-const configName = config.nomenclature.name;
-const ff = config.format.formatted;
-const plf = config.format.plain;
+const tags = mustacheTags.publication;
 
 const o = (string, format) => {
   let s = '';
@@ -255,7 +270,7 @@ function parsePublication(publication) {
   if (!publication.displayType) {
     return undefined;
   }
-  const typeMapping = config.mappings.displayType[publication.displayType].name;
+  const typeMapping = displayTypeConfig[publication.displayType].name;
   const template = config.nomenclature.publication[typeMapping];
 
   return Mustache.render(template, {
@@ -275,8 +290,8 @@ function parsePublication(publication) {
 // useful when changing type of publication, so the unused fields are set to empty
 function publicationCurateFields(publication) {
   const { displayType } = publication;
-  const usedFields = config.mappings.displayType[displayType].columns;
-  const fieldsToBeEmpty = config.mappings.displayType.nullableFields.filter(
+  const usedFields = displayTypeConfig[displayType].columns;
+  const fieldsToBeEmpty = displayTypeConfig.nullableFields.filter(
     (el) => !usedFields.includes(el),
   );
 
@@ -296,7 +311,7 @@ function publicationCurateStringDisplayType(publication) {
   }
 
   const displayTypeStr = publication.displayType;
-  const displayTypeId = config.mappings.displayTypeStringToId[displayTypeStr];
+  const displayTypeId = displayTypeStringToIdConfig[displayTypeStr];
 
   if (!displayTypeId) {
     throw new Error(`Unknown display type "${displayTypeStr}"`);

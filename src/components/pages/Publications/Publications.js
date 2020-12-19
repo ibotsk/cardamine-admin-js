@@ -17,7 +17,9 @@ import commonHooks from '../../segments/hooks';
 const {
   nomenclature,
   uris,
-  mappings,
+  mappings: {
+    publication,
+  },
 } = config;
 
 const columns = [
@@ -34,12 +36,12 @@ const columns = [
   {
     dataField: 'displayType',
     text: 'Type',
-    formatter: (cell) => mappings.displayType[cell].name,
+    formatter: (cell) => publication.displayType[cell].name,
     filter: multiSelectFilter({
-      options: Object.keys(mappings.displayTypeStringToId).reduce(
+      options: Object.keys(publication.displayTypeStringToId).reduce(
         (ret, key) => ({
           ...ret,
-          [mappings.displayTypeStringToId[key]]: key,
+          [publication.displayTypeStringToId[key]]: key,
         }), {},
       ),
     }),

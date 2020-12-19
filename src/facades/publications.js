@@ -39,16 +39,21 @@ async function getPublicationByAll(
   };
 }
 
-async function savePublicationCurated(data, accessToken) {
-  const toBeSaved = helperUtils.publicationCurateFields(data);
+async function savePublication(data, accessToken) {
   const response = await putRequest(
-    literaturesUri.baseUri, toBeSaved, undefined, accessToken,
+    literaturesUri.baseUri, data, undefined, accessToken,
   );
   return response.data;
+}
+
+async function savePublicationCurated(data, accessToken) {
+  const toBeSaved = helperUtils.publicationCurateFields(data);
+  return savePublication(toBeSaved, accessToken);
 }
 
 export default {
   getPublicationByIdCurated,
   getPublicationByAll,
+  savePublication,
   savePublicationCurated,
 };
