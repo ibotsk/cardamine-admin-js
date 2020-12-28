@@ -58,9 +58,8 @@ const columns = [
     sort: true,
   },
   {
-    dataField: 'speciesName',
+    dataField: 'species',
     text: 'Name',
-    formatter: (cell, row) => helperUtils.listOfSpeciesString(row),
     filter: textFilter(),
     sort: true,
   },
@@ -108,7 +107,11 @@ const Checklist = ({ match: { params }, history }) => {
   useEffect(() => {
     const fetch = async () => {
       const listOfSpeciesFetched = await checklistFacade.getAllSpecies(
-        accessToken,
+        accessToken, (d) => ({
+          id: d.id,
+          ntype: d.ntype,
+          species: helperUtils.listOfSpeciesString(d), // this string format must go to the table, otherwise it doesn't work with column formatter and textFilter
+        }),
       );
       setListOfSpecies(listOfSpeciesFetched);
     };
